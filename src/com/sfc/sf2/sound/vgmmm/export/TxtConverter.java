@@ -5,7 +5,9 @@
  */
 package com.sfc.sf2.sound.vgmmm.export;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,13 +31,14 @@ public class TxtConverter {
     
     private static void exportTxt(){
         
+        String inputFilePath = "D:\\SEGADEV\\GITHUB\\SF2DISASM\\disasm\\data\\sound\\musicbank1\\propellerplanesf2.txt";
         
-        File txt = new File("D:\\SEGADEV\\MUSIC\\vgmmusicmaker111\\propellerplanesf2.txt");
+        File inputFile = new File(inputFilePath);
         String orderLen = null;
         String orderLoop = null;
         String[] orderPositions = null;
         try{
-        Scanner mainScan = new Scanner(txt);
+        Scanner mainScan = new Scanner(inputFile);
         
         /* Parsing pattern layout */
         while(mainScan.hasNext()){
@@ -162,23 +165,50 @@ public class TxtConverter {
         /* Converting channel data */
         for(int i=0;i<5;i++){
             ChannelData c = introPattern.getChannels()[i];
-            ChannelContext cc = YmConverter.convertYmChannel(c, null);
+            ChannelContext cc = new YmConverter().convertYmChannel(c, null);
             System.out.println("Intro Channel "+i+" :\n"+c.getOutput().toString());
             c = mainLoopPattern.getChannels()[i];
-            cc = YmConverter.convertYmChannel(mainLoopPattern.getChannels()[i], cc);
+            cc = new YmConverter().convertYmChannel(mainLoopPattern.getChannels()[i], cc);
             System.out.println("Main Loop Channel "+i+" :\n"+c.getOutput().toString());
         }
         
         
         
+        /* Producing output file */
+        String outputFilePath = inputFilePath.replace(".txt","02.asm");
+        File outputFile = new File(outputFilePath);
+        BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
+        String inputFileName = inputFile.getName();
+        bw.write("\n; converted from file "+inputFileName+"\n\n");
+        String musicName = inputFileName.replace(".txt", "");
+        
+        bw.write(musicName+":\n");
+        bw.write("\t\tdb 0\n");
+        bw.write("\t\tdb 0\n");
+        bw.write("\t\tdb 0\n");
+        bw.write("\t\tdb 0C0h\n");
+        for(int i=0;i<10;i++){
+            bw.write("		dw "+musicName+"_channel_"+i+"\n");
+        }
+        for(int i=0;i<10;i++){
+            bw.write(musicName+"_channel_"+i+":\n");            
+            bw.write("\t\t    stereo 0C0h\n");
+            bw.write(introPattern.getChannels()[i].getOutput().toString());
+            bw.write("\t\tmainLoopStart\n");
+            bw.write(mainLoopPattern.getChannels()[i].getOutput().toString());
+            bw.write("\t\tmainLoopEnd\n");
+        }
         
         
         
+        bw.close();
+        System.out.println("Created file "+outputFile.getCanonicalPath());
         
         
         
         }catch(Exception e){
              System.err.println("Error while converting VGM MM TXT to ASM Cube Music : "+e);
+             e.printStackTrace();
         }         
         
         

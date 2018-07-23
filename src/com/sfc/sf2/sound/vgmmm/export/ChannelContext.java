@@ -12,13 +12,13 @@ package com.sfc.sf2.sound.vgmmm.export;
 public class ChannelContext {
     
     
-    private int level;
+    private int level=0xF;
     private int release;
     private int length;
     private int legato;
     private int vibratoTime;
-    private int pitch;
-    private int instrument;
+    private String key = "";
+    private int instrument=-1;
     private int slideTarget;
     private int noteShift;
     private int freqShift;
@@ -65,12 +65,12 @@ public class ChannelContext {
         this.vibratoTime = vibratoTime;
     }
 
-    public int getPitch() {
-        return pitch;
+    public String getKey() {
+        return key;
     }
 
-    public void setPitch(int pitch) {
-        this.pitch = pitch;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public int getInstrument() {

@@ -1,0 +1,82 @@
+YM commands : 
+
+
+
+FC xx		Set Key Release or Pitch Slides :
+		- if xx < 80, release notes key at (note length - xx)
+		- if xx = 80, key is never released, even between different notes.
+ECx - Note cut 
+Generates Key Off event on x frame of the current row. 
+Zero x value or a value greater than the number of frames in a row will be ignored. 
+The effect works only for a row. 
+The effect also could be used without a note, this causes to currently playing note being cut. 
+
+Found => release position = current position + x - 1
+	- determine note length
+	- apply release length-position before current note
+	- after note, apply no release
+		
+		- if 80<xx<FF, make slides between notes. xx bits 6-0 = slide speed. The higher the value, the quicker the slide.
+		- if xx = FF, stop pitch slides.
+3xx - Porta to note 
+Slide pitch from previous note to the new one, which specified at the same line with the effect. 
+Value xx defines speed of the pitch change and measured in 32th of semitone per frame. 
+Zero xx value could be used to repeat previously used value for this effect. 
+
+Found =>
+		- apply "key never released" before current note
+		- define current note length
+		- apply slide with ((speed/2) || 0x80)
+		- apply target note
+		- apply release 0
+		- apply vibrato 0
+		
+		
+
+FB xy		Load Vibrato x, triggered at Note Length 2*y
+4xy - Vibrato 
+Sine vibrato, changes pitch up and down with specified depth and speed. Value x defines speed of the vibrato. 
+Zero means no vibrato, 1 is minimal speed, F is maximum. Value y defines depth of the vibrato and measured in 16th of semitone. 
+Maximum depth is about whole note (semitone up and down from the base note). When the effect ends, normal pitch is restored. 
+Zero values of xy could be used to repeat previously used value for this effect (separate for x and y). 
+
+Found with note => applied before note.
+Found without note => 
+	if current note not further than length 30, apply before current note
+	else, 	- apply "key never released" before current note
+		- define current note length
+		- apply vibrato
+		- apply identical note
+		- apply release 0
+		- apply vibrato 0
+
+Cube vibrato 0 : no vibrato
+1 : -$10 -$10 +$10 +$10
+2 :   -3   -3   -1   +1   +3   +3   +3   +1   -1   -3
+3 :   -2   -2   -1   +1   +2   +2   +2   +1   -1   -2
+4 :   -1   -1    0   +1   +1   +1   +1    0   -1   -1
+5 :   -1    0    0   +1    0   +1    0    0   -1    0
+Mostly used : 2 with y=$C or 0.
+For PSG : 4
+
+
+
+
+
+
+
+FA xx		Set Stereo :
+		- xx bit 7 : 1 for LEFT output ON, 0 for OFF
+		- xx bit 6 : 1 for RIGHT output ON, 0 for OFF
+E8x - Pan (YM2612 only) 
+Effect does not work on the TFM device and is not audible in the editor. Allows to use YM2612 pan control. 
+Pan has three fixed settings - left (x value is 1), right (x value is 2) or center (any other value). 
+
+Found => applied before note 
+
+
+
+F0 xx		Set Note Length xx and Play Silence for that length
+
+70		Play Silence for Note Length
+
