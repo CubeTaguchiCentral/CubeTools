@@ -162,20 +162,36 @@ public class TxtConverter {
             System.out.println(mainLoopPattern.getChannels()[i].getInput().toString());
         }        
         
-        /* Converting channel data */
+        /* Converting YM1-5 channel data */
         for(int i=0;i<5;i++){
             ChannelData c = introPattern.getChannels()[i];
             ChannelContext cc = new YmConverter().convertYmChannel(c, null);
             System.out.println("Intro Channel "+i+" :\n"+c.getOutput().toString());
             c = mainLoopPattern.getChannels()[i];
-            cc = new YmConverter().convertYmChannel(mainLoopPattern.getChannels()[i], cc);
+            new YmConverter().convertYmChannel(mainLoopPattern.getChannels()[i], cc);
             System.out.println("Main Loop Channel "+i+" :\n"+c.getOutput().toString());
+        }
+        /* Converting YM6 Channel Data */
+        if(introPattern.getChannels()[5].getInput().toString().contains("S")
+                || mainLoopPattern.getChannels()[5].getInput().toString().contains("S")){
+            ChannelData c = introPattern.getChannels()[5];
+            ChannelContext cc = new PcmConverter().convertPcmChannel(c, null);
+            System.out.println("Intro Channel "+5+" :\n"+c.getOutput().toString());
+            c = mainLoopPattern.getChannels()[5];
+            new PcmConverter().convertPcmChannel(mainLoopPattern.getChannels()[5], cc);
+            System.out.println("Main Loop Channel "+5+" :\n"+c.getOutput().toString());
+        }else{
+            ChannelData c = introPattern.getChannels()[5];
+            ChannelContext cc = new YmConverter().convertYmChannel(c, null);
+            System.out.println("Intro Channel "+5+" :\n"+c.getOutput().toString());
+            c = mainLoopPattern.getChannels()[5];
+            new YmConverter().convertYmChannel(mainLoopPattern.getChannels()[5], cc);
+            System.out.println("Main Loop Channel "+5+" :\n"+c.getOutput().toString());
         }
         
         
-        
         /* Producing output file */
-        String outputFilePath = inputFilePath.replace(".txt","02.asm");
+        String outputFilePath = inputFilePath.replace(".txt","03.asm");
         File outputFile = new File(outputFilePath);
         BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
         String inputFileName = inputFile.getName();
@@ -191,12 +207,18 @@ public class TxtConverter {
             bw.write("		dw "+musicName+"_channel_"+i+"\n");
         }
         for(int i=0;i<10;i++){
-            bw.write(musicName+"_channel_"+i+":\n");            
-            bw.write("\t\t    stereo 0C0h\n");
-            bw.write(introPattern.getChannels()[i].getOutput().toString());
-            bw.write("\t\tmainLoopStart\n");
-            bw.write(mainLoopPattern.getChannels()[i].getOutput().toString());
-            bw.write("\t\tmainLoopEnd\n");
+            bw.write(musicName+"_channel_"+i+":\n");   
+            String introPatternOutput = introPattern.getChannels()[i].getOutput().toString();
+            String mainLoopPatternOutput = mainLoopPattern.getChannels()[i].getOutput().toString();
+            if(!introPatternOutput.trim().isEmpty() || !mainLoopPatternOutput.trim().isEmpty()){
+                bw.write("\t\t    stereo 0C0h\n");
+                bw.write(introPattern.getChannels()[i].getOutput().toString());
+                bw.write("\t\tmainLoopStart\n");
+                bw.write(mainLoopPattern.getChannels()[i].getOutput().toString());
+                bw.write("\t\tmainLoopEnd\n");
+            }else{
+                bw.write("\t\tchannel_end\n");
+            }
         }
         
         

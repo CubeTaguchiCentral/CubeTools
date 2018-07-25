@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author wiz
  */
-public class YmConverter {
+public class PsgConverter {
     
         
     
@@ -42,15 +42,15 @@ public class YmConverter {
     String slide = null;
     String stereo = null;
     
-    public ChannelContext convertYmChannel(ChannelData ymc, ChannelContext channelContext){
+    public ChannelContext convertPsgChannel(ChannelData psgc, ChannelContext channelContext){
         cc = channelContext;
         if(cc==null){
             cc = new ChannelContext();
         }
         
-        lines = ymc.getInput().toString().replace(".", " ").split("\n");
+        lines = psgc.getInput().toString().replace(".", " ").split("\n");
         
-        outsb = ymc.getOutput();
+        outsb = psgc.getOutput();
         
         while(frame<lines.length){
             line = lines[frame];

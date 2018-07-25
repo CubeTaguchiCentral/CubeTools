@@ -16,13 +16,13 @@ public class ChannelContext {
     private int release;
     private int length;
     private int legato;
-    private int vibratoTime;
+    private int vibrato;
     private String key = "";
     private int instrument=-1;
     private int slideTarget;
     private int noteShift;
     private int freqShift;
-    private int stereo;
+    private int stereo = 0xC0;
     private int slideSpeed;
 
     public int getLevel() {
@@ -57,12 +57,12 @@ public class ChannelContext {
         this.legato = legato;
     }
 
-    public int getVibratoTime() {
-        return vibratoTime;
+    public int getVibrato() {
+        return vibrato;
     }
 
-    public void setVibratoTime(int vibratoTime) {
-        this.vibratoTime = vibratoTime;
+    public void setVibrato(int vibrato) {
+        this.vibrato = vibrato;
     }
 
     public String getKey() {
