@@ -219,29 +219,6 @@ public class PcmConverter {
         
     }
     
-    private void sustain(){
-        if(cc.getRelease()!=0){
-            // keep as is
-        }else{
-            cc.setRelease(0x80);
-            int cursor = 1;
-            if(cursor>cmds.size()){
-                return;
-            }
-            String cmd = cmds.get(cmds.size()-cursor)[0];
-            while(!cmd.contains("note")&&!cmd.contains("wait")){
-                cursor++;
-                if(cursor>cmds.size()){
-                    return;
-                }
-                cmd = cmds.get(cmds.size()-cursor)[0];
-            }
-            String[] command = {"\t\t    sustain"};
-            cmds.add(cmds.size()-cursor,command);
-            
-        }
-    }
-    
     private void producePostCommands(){
         
         

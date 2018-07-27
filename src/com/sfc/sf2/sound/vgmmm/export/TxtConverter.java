@@ -189,9 +189,18 @@ public class TxtConverter {
             System.out.println("Main Loop Channel "+5+" :\n"+c.getOutput().toString());
         }
         
+        /* Converting PSG Tone 1-3 Channel Data */
+        for(int i=6;i<9;i++){
+            ChannelData c = introPattern.getChannels()[i];
+            ChannelContext cc = new PsgConverter().convertPsgChannel(c, null);
+            System.out.println("Intro Channel "+i+" :\n"+c.getOutput().toString());
+            c = mainLoopPattern.getChannels()[i];
+            new PsgConverter().convertPsgChannel(mainLoopPattern.getChannels()[i], cc);
+            System.out.println("Main Loop Channel "+i+" :\n"+c.getOutput().toString());
+        }
         
         /* Producing output file */
-        String outputFilePath = inputFilePath.replace(".txt","03.asm");
+        String outputFilePath = inputFilePath.replace(".txt","04.asm");
         File outputFile = new File(outputFilePath);
         BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
         String inputFileName = inputFile.getName();
@@ -206,12 +215,25 @@ public class TxtConverter {
         for(int i=0;i<10;i++){
             bw.write("		dw "+musicName+"_channel_"+i+"\n");
         }
-        for(int i=0;i<10;i++){
+        for(int i=0;i<6;i++){
             bw.write(musicName+"_channel_"+i+":\n");   
             String introPatternOutput = introPattern.getChannels()[i].getOutput().toString();
             String mainLoopPatternOutput = mainLoopPattern.getChannels()[i].getOutput().toString();
             if(!introPatternOutput.trim().isEmpty() || !mainLoopPatternOutput.trim().isEmpty()){
                 bw.write("\t\t    stereo 0C0h\n");
+                bw.write(introPattern.getChannels()[i].getOutput().toString());
+                bw.write("\t\tmainLoopStart\n");
+                bw.write(mainLoopPattern.getChannels()[i].getOutput().toString());
+                bw.write("\t\tmainLoopEnd\n");
+            }else{
+                bw.write("\t\tchannel_end\n");
+            }
+        }
+        for(int i=6;i<10;i++){
+            bw.write(musicName+"_channel_"+i+":\n");   
+            String introPatternOutput = introPattern.getChannels()[i].getOutput().toString();
+            String mainLoopPatternOutput = mainLoopPattern.getChannels()[i].getOutput().toString();
+            if(!introPatternOutput.trim().isEmpty() || !mainLoopPatternOutput.trim().isEmpty()){
                 bw.write(introPattern.getChannels()[i].getOutput().toString());
                 bw.write("\t\tmainLoopStart\n");
                 bw.write(mainLoopPattern.getChannels()[i].getOutput().toString());

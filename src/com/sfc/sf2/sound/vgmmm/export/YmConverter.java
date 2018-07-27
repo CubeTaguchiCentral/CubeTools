@@ -95,16 +95,6 @@ public class YmConverter {
     }
     
     
-    
-    private void ymVol(List<String[]> commandList, ChannelContext cc, int volume){
-        if(volume!=cc.getLevel()){
-            cc.setLevel(volume);
-            String[] command = {"\t\t    ymVol",String.valueOf(volume)};
-            commandList.add(command);
-        }
-    }
-    
-    
     private boolean eventFound(){
  
         if(frame+length>=lines.length){
@@ -330,11 +320,11 @@ public class YmConverter {
             if(!key.isEmpty()){
                 String note = key.substring(0,2);
                 int octave = Integer.valueOf(key.substring(2));
-                if(("B".compareTo(note)<0 && octave==7) || octave>7){
-                    octave=6;
+                if(octave<2){
+                    octave=2;
                 }
-                if(("C".compareTo(note)>0 && octave==1) || octave<1){
-                    octave = 2;
+                if(octave>8){
+                    octave=8;
                 }
                 key = note+octave;
                 key = key.replace("-", "").replace("#","s");
