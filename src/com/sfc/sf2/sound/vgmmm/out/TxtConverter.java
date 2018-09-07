@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sfc.sf2.sound.vgmmm.export;
+package com.sfc.sf2.sound.vgmmm.out;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,15 +23,23 @@ public class TxtConverter {
     
     public static void main(String[] args){
         
-        
-        exportTxt();
+        if(args.length>0){
+            exportTxt(args[0]);
+        }else{
+            exportTxt(null);
+        }
         
         
     }
     
-    private static void exportTxt(){
+    private static void exportTxt(String filePath){
         
-        String inputFilePath = "D:\\SEGADEV\\GITHUB\\SF2DISASM\\disasm\\data\\sound\\musicbank1\\propellerplanesf2.txt";
+        String inputFilePath = filePath;
+        if(inputFilePath==null){
+            System.out.println("Input File Path argument is missing.");
+            return;
+            //inputFilePath = "D:\\SEGADEV\\GITHUB\\SF2DISASM\\disasm\\data\\sound\\musicbank1\\propellerplanesf2.txt";
+        }
         
         File inputFile = new File(inputFilePath);
         String orderLen = null;

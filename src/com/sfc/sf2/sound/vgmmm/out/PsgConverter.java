@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sfc.sf2.sound.vgmmm.export;
+package com.sfc.sf2.sound.vgmmm.out;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author wiz
  */
-public class YmConverter {
+public class PsgConverter {
     
         
     
@@ -39,18 +39,17 @@ public class YmConverter {
     boolean volumeSent = false;
     String noteCut = null;
     String vibrato = null;
-    String slide = null;
     String stereo = null;
     
-    public ChannelContext convertYmChannel(ChannelData ymc, ChannelContext channelContext){
+    public ChannelContext convertPsgChannel(ChannelData psgc, ChannelContext channelContext){
         cc = channelContext;
         if(cc==null){
             cc = new ChannelContext();
         }
         
-        lines = ymc.getInput().toString().replace(".", " ").split("\n");
+        lines = psgc.getInput().toString().replace(".", " ").split("\n");
         
-        outsb = ymc.getOutput();
+        outsb = psgc.getOutput();
         
         while(frame<lines.length){
             line = lines[frame];
@@ -93,6 +92,7 @@ public class YmConverter {
         
         return cc;
     }
+    
     
     
     private boolean eventFound(){
@@ -177,18 +177,17 @@ public class YmConverter {
             int inst = Integer.valueOf(instrument,16)-1;
             if(inst!=cc.getInstrument()){
                 cc.setInstrument(inst);
-                String[] command0 = {"\t\t    inst",String.valueOf(inst)};
-                cmds.add(command0);
-                String vol = null;
+                int vol = 0;
                 if(!volume.isEmpty()){
-                    vol = String.valueOf(Integer.valueOf(volume,16)/2);
-                    cc.setLevel(Integer.valueOf(volume,16)/2);
+                    vol = Integer.valueOf(volume,16)/2;
+                    cc.setLevel(vol);
                     volumeSent = true;
                 }else{
-                    vol = String.valueOf(cc.getLevel());
+                    vol = cc.getLevel();
                 }                
-                String[] command1 = {"\t\t    vol",vol};
-                cmds.add(command1);
+                String param = "0"+Integer.toHexString(inst*16+vol)+"h";
+                String[] command0 = {"\t\t    psgInst",param};
+                cmds.add(command0);
             }
         }
                         
@@ -196,8 +195,10 @@ public class YmConverter {
             int vol = Integer.valueOf(volume,16)/2;
             if(vol!=cc.getLevel()){
                 cc.setLevel(vol);
-                String[] command = {"\t\t    vol",String.valueOf(vol)};
-                cmds.add(command);      
+                int inst = cc.getInstrument();
+                String param = "0"+Integer.toHexString(inst*16+vol)+"h";
+                String[] command0 = {"\t\t    psgInst",param};
+                cmds.add(command0);
             }
         }
         
@@ -237,24 +238,7 @@ public class YmConverter {
             cc.setVibrato(0x20);
             String[] command = {"\t\t    vibrato","020h"};
             cmds.add(command);
-        }        
-        
-        slide = null;
-        if(effect4.startsWith("3")){ slide = effect4;}
-        if(effect3.startsWith("3")){ slide = effect3;}
-        if(effect2.startsWith("3")){ slide = effect2;}
-        if(effect1.startsWith("3")){ slide = effect1;}
-        if(cc.getSlideSpeed()!=0 && slide==null){
-            cc.setSlideSpeed(0);
-            String[] command = {"\t\t    noSlide"};
-            cmds.add(command);
-        }else if(slide!=null && cc.getSlideSpeed()==0){
-            int speed = Integer.valueOf(slide.substring(1),16);
-            speed = speed / 8;
-            cc.setSlideSpeed(speed);
-            String[] command = {"\t\t    setSlide",String.valueOf(speed)};
-            cmds.add(command);
-        }   
+        }    
         
         stereo = null;
         if(effect4.startsWith("E8")){ stereo = effect4;}
@@ -277,7 +261,7 @@ public class YmConverter {
             }
         }     
         
-        if(!key.isEmpty() && cc.getRelease()==0x80 && slide==null){
+        if(!key.isEmpty() && cc.getRelease()==0x80){
             cc.setRelease(0);
             String[] cmdr = {"\t\t    setRelease","0"};
             cmds.add(cmdr);
@@ -320,11 +304,14 @@ public class YmConverter {
             if(!key.isEmpty()){
                 String note = key.substring(0,2);
                 int octave = Integer.valueOf(key.substring(2));
-                if(octave<2){
-                    octave=2;
+                if(octave==1 || (octave==2 && "C".compareTo(note.substring(0,1))<=0)){
+                    octave++;
                 }
-                if(octave>8){
-                    octave=8;
+                while(octave>7){
+                    octave--;
+                }
+                if(("C".compareTo(note.substring(0,1))>0 && octave==7)){
+                    octave=6;
                 }
                 key = note+octave;
                 key = key.replace("-", "").replace("#","s");
@@ -335,7 +322,7 @@ public class YmConverter {
                 
             if(outputLength==cc.getLength() && outputLength<256){
                 cc.setKey(key);
-                String[] command = {"\t\t          note",String.valueOf(key)};
+                String[] command = {"\t\t          psgNote ",String.valueOf(key)};
                 cmds.add(command);
             }else{
                 cc.setKey(key);
@@ -346,16 +333,16 @@ public class YmConverter {
                         String[] cmdnr = {"\t\t    sustain"};
                         cmds.add(cmdnr);
                     }
-                    String[] cmd0 = {"\t\t          noteL",String.valueOf(key),"255"};
+                    String[] cmd0 = {"\t\t          psgNoteL",String.valueOf(key),"255"};
                     cmds.add(cmd0);
                     count-=255;
                     while(count>255){
-                        String[] cmdr = {"\t\t          note",String.valueOf(key)};
+                        String[] cmdr = {"\t\t          psgNote ",String.valueOf(key)};
                         cmds.add(cmdr);
                         count-=255;
                     }
                 }
-                String[] cmdf = {"\t\t          noteL",String.valueOf(key),String.valueOf(count)};
+                String[] cmdf = {"\t\t          psgNoteL",String.valueOf(key),String.valueOf(count)};
                 cmds.add(cmdf);
                 if(outputLength>255){
                     String[] cmdr = {"\t\t    setRelease","0"};
