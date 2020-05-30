@@ -47,48 +47,53 @@ public class PsgConverter {
             cc = new ChannelContext();
         }
         
-        lines = psgc.getInput().toString().replace(".", " ").split("\n");
+        String channelString = psgc.getInput().toString().replace(".", " ");
         
-        outsb = psgc.getOutput();
-        
-        while(frame<lines.length){
-            line = lines[frame];
-            key = line.substring(0,3).trim();
-            volume = line.substring(3,5).trim();
-            instrument = line.substring(5,7).trim();
-            effect1 = line.substring(7,10).trim();
-            effect2 = line.substring(10,13).trim();
-            effect3 = line.substring(13,16).trim();
-            effect4 = line.substring(16).trim();
-            
-            /* Get length before next event */
-            length = 1;
-            while(!eventFound()){
-                length++;
+        if(!channelString.replace("\n", "").isBlank()){
+
+            lines = channelString.split("\n");
+
+            outsb = psgc.getOutput();
+
+            while(frame<lines.length){
+                line = lines[frame];
+                key = line.substring(0,3).trim();
+                volume = line.substring(3,5).trim();
+                instrument = line.substring(5,7).trim();
+                effect1 = line.substring(7,10).trim();
+                effect2 = line.substring(10,13).trim();
+                effect3 = line.substring(13,16).trim();
+                effect4 = line.substring(16).trim();
+
+                /* Get length before next event */
+                length = 1;
+                while(!eventFound()){
+                    length++;
+                }
+                outputLength=length*3;
+
+                volumeSent = false;
+                noteCut = null;
+                produceCommands();
+
+                System.out.println("Parsed frame "+frame);
+                frame+=length;
             }
-            outputLength=length*3;
-            
-            volumeSent = false;
-            noteCut = null;
-            produceCommands();
-            
-            System.out.println("Parsed frame "+frame);
-            frame+=length;
+
+
+            for(String[] command : cmds){
+
+                outsb.append(command[0]);
+                if(command.length>=2){
+                    outsb.append(" "+command[1]);
+                }
+                if(command.length>=3){
+                    outsb.append(","+command[2]);
+                }
+                outsb.append("\n");
+            }
+        
         }
-        
-        
-        for(String[] command : cmds){
-            
-            outsb.append(command[0]);
-            if(command.length>=2){
-                outsb.append(" "+command[1]);
-            }
-            if(command.length>=3){
-                outsb.append(","+command[2]);
-            }
-            outsb.append("\n");
-        }
-        
         
         return cc;
     }
@@ -304,8 +309,8 @@ public class PsgConverter {
             if(!key.isEmpty()){
                 String note = key.substring(0,2);
                 int octave = Integer.valueOf(key.substring(2));
-                if(octave==1 || (octave==2 && "C".compareTo(note.substring(0,1))<=0)){
-                    octave++;
+                if(octave<2){
+                    octave=2;
                 }
                 while(octave>7){
                     octave--;

@@ -41,43 +41,48 @@ public class PcmConverter {
             cc = new ChannelContext();
         }
         
-        lines = pcmc.getInput().toString().replace(".", " ").split("\n");
+        String channelString = pcmc.getInput().toString().replace(".", " ");
         
-        outsb = pcmc.getOutput();
-        
-        while(frame<lines.length){
-            line = lines[frame];
-            effect1 = line.substring(7,10).trim();
-            effect2 = line.substring(10,13).trim();
-            effect3 = line.substring(13,16).trim();
-            effect4 = line.substring(16).trim();
-            
-            /* Get length before next event */
-            length = 1;
-            while(!eventFound()){
-                length++;
+        if(!channelString.replace("\n", "").isBlank()){
+
+            lines = channelString.split("\n");
+
+            outsb = pcmc.getOutput();
+
+            while(frame<lines.length){
+                line = lines[frame];
+                effect1 = line.substring(7,10).trim();
+                effect2 = line.substring(10,13).trim();
+                effect3 = line.substring(13,16).trim();
+                effect4 = line.substring(16).trim();
+
+                /* Get length before next event */
+                length = 1;
+                while(!eventFound()){
+                    length++;
+                }
+                outputLength=length*3;
+
+                produceCommands();
+
+                System.out.println("Parsed frame "+frame);
+                frame+=length;
             }
-            outputLength=length*3;
-            
-            produceCommands();
-            
-            System.out.println("Parsed frame "+frame);
-            frame+=length;
+
+
+            for(String[] command : cmds){
+
+                outsb.append(command[0]);
+                if(command.length>=2){
+                    outsb.append(" "+command[1]);
+                }
+                if(command.length>=3){
+                    outsb.append(","+command[2]);
+                }
+                outsb.append("\n");
+            }
+        
         }
-        
-        
-        for(String[] command : cmds){
-            
-            outsb.append(command[0]);
-            if(command.length>=2){
-                outsb.append(" "+command[1]);
-            }
-            if(command.length>=3){
-                outsb.append(","+command[2]);
-            }
-            outsb.append("\n");
-        }
-        
         
         return cc;
     }

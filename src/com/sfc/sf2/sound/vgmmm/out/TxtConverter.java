@@ -35,10 +35,10 @@ public class TxtConverter {
     private static void exportTxt(String filePath){
         
         String inputFilePath = filePath;
+        inputFilePath = "C:\\SEGADEV\\GITHUB\\SF2DISASM\\disasm\\data\\sound\\musicbank0\\untitled.txt";
         if(inputFilePath==null){
             System.out.println("Input File Path argument is missing.");
             return;
-            //inputFilePath = "D:\\SEGADEV\\GITHUB\\SF2DISASM\\disasm\\data\\sound\\musicbank1\\propellerplanesf2.txt";
         }
         
         File inputFile = new File(inputFilePath);
@@ -229,6 +229,8 @@ public class TxtConverter {
             String mainLoopPatternOutput = mainLoopPattern.getChannels()[i].getOutput().toString();
             if(!introPatternOutput.trim().isEmpty() || !mainLoopPatternOutput.trim().isEmpty()){
                 bw.write("\t\t    stereo 0C0h\n");
+                bw.write("\t\t    inst 0\n");
+                bw.write("\t\t    vol 15\n");
                 bw.write(introPattern.getChannels()[i].getOutput().toString());
                 bw.write("\t\tmainLoopStart\n");
                 bw.write(mainLoopPattern.getChannels()[i].getOutput().toString());
@@ -242,6 +244,9 @@ public class TxtConverter {
             String introPatternOutput = introPattern.getChannels()[i].getOutput().toString();
             String mainLoopPatternOutput = mainLoopPattern.getChannels()[i].getOutput().toString();
             if(!introPatternOutput.trim().isEmpty() || !mainLoopPatternOutput.trim().isEmpty()){
+                bw.write("\t\t    setRelease 00h\n");
+                bw.write("\t\t    vibrato 00h\n");
+                bw.write("\t\t    psgInst 0Ch\n");
                 bw.write(introPattern.getChannels()[i].getOutput().toString());
                 bw.write("\t\tmainLoopStart\n");
                 bw.write(mainLoopPattern.getChannels()[i].getOutput().toString());

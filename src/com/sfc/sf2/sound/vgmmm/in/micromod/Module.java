@@ -16,7 +16,7 @@ public class Module {
 		patterns = new Pattern[ 128 ];
 		setSequenceLength( 1 );
 		setNumChannels( 4 );
-		instruments = new Instrument[ 32 ];
+		instruments = new Instrument[ 128 ];
 		for( int instIdx = 1; instIdx < instruments.length; instIdx++ ) {
 			instruments[ instIdx ] = new Instrument();
 		}
@@ -126,15 +126,15 @@ public class Module {
 	}
 	
 	public Instrument getInstrument( int instIdx ) {
-		if( instIdx < 1 || instIdx > 31 ) {
-			throw new IllegalArgumentException( "Instrument index out of range (1 to 31): " + instIdx );
+		if( instIdx < 1 || instIdx > 127 ) {
+			throw new IllegalArgumentException( "Instrument index out of range (1 to 127): " + instIdx );
 		}
 		return instruments[ instIdx ];
 	}
 
 	public static int calculateModuleLength( byte[] moduleHeader ) {
 		int moduleLength = 1084 + 4 * calculateNumChannels( moduleHeader ) * 64 * calculateNumPatterns( moduleHeader );
-		for( int instIdx = 1; instIdx < 32; instIdx++ ) {
+		for( int instIdx = 1; instIdx < 128; instIdx++ ) {
 			moduleLength += Instrument.calculateSampleDataLength( moduleHeader, instIdx );
 		}
 		return moduleLength;
@@ -161,7 +161,7 @@ public class Module {
 		for( int patIdx = 0; patIdx < numPatterns; patIdx++ ) {
 			moduleOffset = getPattern( patIdx ).load( module, moduleOffset );
 		}
-		for( int instIdx = 1; instIdx <= 31; instIdx++ ) {
+		for( int instIdx = 1; instIdx <= 127; instIdx++ ) {
 			moduleOffset = getInstrument( instIdx ).load( module, instIdx, moduleOffset );
 		}
 		return moduleOffset;
@@ -213,7 +213,7 @@ public class Module {
 		for( int patIdx = 0; patIdx < numPatterns; patIdx++ ) {
 			outIdx = patterns[ patIdx ].save( outBuf, outIdx );
 		}
-		for( int instIdx = 1; instIdx <= 31; instIdx++ ) {
+		for( int instIdx = 1; instIdx <= 127; instIdx++ ) {
 			outIdx = instruments[ instIdx ].save( outBuf, instIdx, outIdx );
 		}
 		return outIdx;

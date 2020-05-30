@@ -36,7 +36,7 @@ public class YMInstManager {
     
     private static void exportTFI(){
         
-        String yminstFilepath = "D:\\SEGADEV\\GITHUB\\SF2DISASM\\disasm\\data\\sound\\yminst.bin";
+        String yminstFilepath = "C:\\SEGADEV\\GITHUB\\LSUSDISASM\\disasm\\data\\sound\\yminst.bin";
         
         byte[][] instruments = null;
         try {
@@ -45,7 +45,7 @@ public class YMInstManager {
             byte[] data = Files.readAllBytes(yminstPath);
             List<byte[]> instList = new ArrayList();
             while(true){
-                if( ((int)(data[cursor]) ==-1) || ((cursor+28) > data.length)){
+                if( (cursor >= data.length) || ((int)(data[cursor]) ==-1)){
                     break;
                 }
                 byte[] inst = new byte[29];
@@ -60,7 +60,7 @@ public class YMInstManager {
             ex.printStackTrace();
         }
         
-        String destDir = "D:\\SEGADEV\\MUSIC\\vgmmusicmaker111\\sf2\\yminst\\";
+        String destDir = "C:\\SEGADEV\\AUDIO\\vgmmusicmaker111\\ls\\yminst\\";
         try { 
             for(int i=0;i<instruments.length;i++){
                 byte[] data = instruments[i];
