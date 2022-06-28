@@ -19,7 +19,7 @@ public class Sustain extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "  sustain";
     }
 

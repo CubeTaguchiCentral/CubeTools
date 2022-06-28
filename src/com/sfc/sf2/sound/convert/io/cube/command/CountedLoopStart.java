@@ -25,7 +25,7 @@ public class CountedLoopStart extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "countedLoopStart "+value;
     }
 

@@ -12,6 +12,6 @@ package com.sfc.sf2.sound.convert.io.cube;
 public abstract class CubeCommand {
      
     public abstract byte[] produceBinaryOutput();
-    public abstract String produceStringOutput();
+    public abstract String produceAsmOutput();
     public abstract boolean equals(CubeCommand cc);
 }

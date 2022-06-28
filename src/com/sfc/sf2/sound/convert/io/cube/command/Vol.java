@@ -25,7 +25,7 @@ public class Vol extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "  vol "+Integer.toString(value&0xFF);
     }
 

@@ -26,7 +26,7 @@ public class PsgNote extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "        psgNote "+note;
     }
 

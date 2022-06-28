@@ -19,7 +19,7 @@ public class ChannelEnd extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "channel_end";
     }
 

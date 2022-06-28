@@ -19,7 +19,7 @@ public class MainLoopEnd extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "mainLoopEnd";
     }
 

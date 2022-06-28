@@ -5,6 +5,7 @@
  */
 package com.sfc.sf2.sound.convert;
 
+import com.sfc.sf2.sound.convert.io.AsmMusicEntryManager;
 import com.sfc.sf2.sound.convert.io.BinaryMusicBankManager;
 import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
 
@@ -18,7 +19,11 @@ public class CubeConversionManager {
     
     public void importMusicEntryFromBinaryMusicBank(String filePath, int ptOffset, int index){
         me = BinaryMusicBankManager.importMusicEntry(filePath, ptOffset, index);
-        System.out.println("done");
+    }
+    
+    public void exportMusicEntryAsAsm(String filePath, String name){
+        me.setName(name);
+        AsmMusicEntryManager.exportMusicEntryAsAsm(me, filePath, name);
     }
     
     

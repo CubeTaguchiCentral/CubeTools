@@ -1,0 +1,39 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.sfc.sf2.sound.convert.io;
+
+import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author Wiz
+ */
+public class AsmMusicEntryManager {
+    
+    
+    
+    public static void exportMusicEntryAsAsm(MusicEntry me, String filePath, String name){
+        try {
+            System.out.println("com.sfc.sf2.sound.convert.io.AsmMusicEntryManager() - Exporting ASM ...");
+            Path path = Paths.get(filePath);
+            PrintWriter pw;
+            pw = new PrintWriter(path.toString(),System.getProperty("file.encoding"));
+            pw.print(me.produceAsmOutput());
+            pw.close();
+            System.out.println("com.sfc.sf2.sound.convert.io.AsmMusicEntryManager() - ASM exported.");
+        } catch (IOException ex) {
+            Logger.getLogger(AsmMusicEntryManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
+}

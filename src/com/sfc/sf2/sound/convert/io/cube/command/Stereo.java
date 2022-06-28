@@ -25,7 +25,7 @@ public class Stereo extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "  stereo 0"+Integer.toHexString(value&0xFF)+"h";
     }
 

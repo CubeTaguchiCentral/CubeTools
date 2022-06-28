@@ -19,7 +19,7 @@ public class RepeatEnd extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "repeatEnd";
     }
 

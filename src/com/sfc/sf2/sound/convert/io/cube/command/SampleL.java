@@ -27,7 +27,7 @@ public class SampleL extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "        sampleL "+sample+", "+Integer.toString(length&0xFF);
     }
 

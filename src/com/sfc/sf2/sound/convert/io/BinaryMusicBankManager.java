@@ -164,7 +164,7 @@ public class BinaryMusicBankManager {
                 ccs.add(new Note(Pitch.valueOf((cmd&0xFF)+24)));
             }            
             
-            System.out.println(ccs.get(ccs.size()-1).produceStringOutput());
+            System.out.println(ccs.get(ccs.size()-1).produceAsmOutput());
             
             cursor+=cmdLength;
         }
@@ -262,7 +262,7 @@ public class BinaryMusicBankManager {
                 ccs.add(new Sample(cmd));
             }            
             
-            System.out.println(ccs.get(ccs.size()-1).produceStringOutput());
+            System.out.println(ccs.get(ccs.size()-1).produceAsmOutput());
             
             cursor+=cmdLength;
         }
@@ -357,7 +357,7 @@ public class BinaryMusicBankManager {
                 ccs.add(new PsgNote(Pitch.valueOf(cmd&0xFF)));
             }            
             
-            System.out.println(ccs.get(ccs.size()-1).produceStringOutput());
+            System.out.println(ccs.get(ccs.size()-1).produceAsmOutput());
             
             cursor+=cmdLength;
         }
@@ -439,7 +439,7 @@ public class BinaryMusicBankManager {
                 ccs.add(new PsgNote(Pitch.valueOf(cmd&0xFF)));
             }            
             
-            System.out.println(ccs.get(ccs.size()-1).produceStringOutput());
+            System.out.println(ccs.get(ccs.size()-1).produceAsmOutput());
             
             cursor+=cmdLength;
         }

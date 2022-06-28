@@ -25,7 +25,7 @@ public class Inst extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "  inst "+Integer.toString(value&0xFF);
     }
 

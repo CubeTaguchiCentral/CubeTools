@@ -25,7 +25,7 @@ public class SetSlide extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "  setSlide "+Integer.toString(value&0xFF);
     }
 

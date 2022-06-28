@@ -10,7 +10,7 @@ package com.sfc.sf2.sound.convert.io.cube;
  * @author Wiz
  */
 public class MusicEntry {
-    
+    String name;
     boolean ym6InDacMode = false;
     byte ymTimerBValue = 0;
     CubeCommand[] ym1ChannelData;
@@ -24,6 +24,13 @@ public class MusicEntry {
     CubeCommand[] psgTone3ChannelData;
     CubeCommand[] psgNoiseChannelData;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
     public boolean isYm6InDacMode() {
         return ym6InDacMode;
     }
@@ -118,6 +125,47 @@ public class MusicEntry {
 
     public void setPsgNoiseChannelData(CubeCommand[] psgNoiseChannelData) {
         this.psgNoiseChannelData = psgNoiseChannelData;
+    }
+    
+    public String produceAsmOutput(){
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append(name+":"
+                + "\n"+"    db 0"
+                + "\n"+"    db 0"+(ym6InDacMode?"0":"1")+"h"
+                + "\n"+"    db 0"
+                + "\n"+"    db "+Integer.toString(ymTimerBValue&0xFF)
+                + "\n"+"    dw "+name+"_Channel_0"
+                + "\n"+"    dw "+name+"_Channel_1"
+                + "\n"+"    dw "+name+"_Channel_2"
+                + "\n"+"    dw "+name+"_Channel_3"
+                + "\n"+"    dw "+name+"_Channel_4"
+                + "\n"+"    dw "+name+"_Channel_5"
+                + "\n"+"    dw "+name+"_Channel_6"
+                + "\n"+"    dw "+name+"_Channel_7"
+                + "\n"+"    dw "+name+"_Channel_8"
+                + "\n"+"    dw "+name+"_Channel_9");
+            
+        sb.append("\n"+name+"_Channel_0:"+channelToString(ym1ChannelData));
+        sb.append("\n"+name+"_Channel_1:"+channelToString(ym2ChannelData));
+        sb.append("\n"+name+"_Channel_2:"+channelToString(ym3ChannelData));
+        sb.append("\n"+name+"_Channel_3:"+channelToString(ym4ChannelData));
+        sb.append("\n"+name+"_Channel_4:"+channelToString(ym5ChannelData));
+        sb.append("\n"+name+"_Channel_5:"+channelToString(ym6ChannelData));
+        sb.append("\n"+name+"_Channel_6:"+channelToString(psgTone1ChannelData));
+        sb.append("\n"+name+"_Channel_7:"+channelToString(psgTone2ChannelData));
+        sb.append("\n"+name+"_Channel_8:"+channelToString(psgTone3ChannelData));
+        sb.append("\n"+name+"_Channel_9:"+channelToString(psgNoiseChannelData));
+            
+        return sb.toString();
+    }
+    
+    private String channelToString(CubeCommand[] ccs){
+        StringBuilder sb = new StringBuilder();
+        for(CubeCommand cc : ccs){
+            sb.append("\n    "+cc.produceAsmOutput());
+        }
+        return sb.toString();
     }
     
     

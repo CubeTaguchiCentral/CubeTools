@@ -550,7 +550,9 @@ public class MainEditor extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton27ActionPerformed
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
-        //TextManager.exportTxt(jTextField15.getText());
+        String filePath = jTextField15.getText();
+        String name = jTextField35.getText();
+        ccm.exportMusicEntryAsAsm(filePath, name);
     }//GEN-LAST:event_jButton13ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed

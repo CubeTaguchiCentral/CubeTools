@@ -19,7 +19,7 @@ public class MainLoopStart extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "mainLoopStart";
     }
 

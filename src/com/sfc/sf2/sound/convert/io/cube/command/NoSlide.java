@@ -19,7 +19,7 @@ public class NoSlide extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "  noSlide";
     }
 

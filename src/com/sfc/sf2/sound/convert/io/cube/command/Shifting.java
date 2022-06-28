@@ -25,7 +25,7 @@ public class Shifting extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "  shifting "+Integer.toString(value&0xFF);
     }
 

@@ -25,7 +25,7 @@ public class YmTimer extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "  ymTimer "+Integer.toString(value&0xFF);
     }
 

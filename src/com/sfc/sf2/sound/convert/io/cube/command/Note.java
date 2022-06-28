@@ -26,7 +26,7 @@ public class Note extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "        note "+note;
     }
 

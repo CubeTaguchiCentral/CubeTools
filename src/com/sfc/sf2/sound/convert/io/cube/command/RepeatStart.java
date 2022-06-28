@@ -19,7 +19,7 @@ public class RepeatStart extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "repeatStart";
     }
 

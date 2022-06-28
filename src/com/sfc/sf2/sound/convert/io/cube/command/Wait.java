@@ -19,7 +19,7 @@ public class Wait extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "        wait";
     }
 

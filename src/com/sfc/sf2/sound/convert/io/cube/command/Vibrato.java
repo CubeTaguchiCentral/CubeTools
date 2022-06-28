@@ -25,7 +25,7 @@ public class Vibrato extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "  vibrato "+Integer.toString(value&0xFF);
     }
 

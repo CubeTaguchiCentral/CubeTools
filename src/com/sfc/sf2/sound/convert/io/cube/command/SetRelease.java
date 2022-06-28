@@ -25,7 +25,7 @@ public class SetRelease extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "  setRelease "+Integer.toString(value&0xFF);
     }
 

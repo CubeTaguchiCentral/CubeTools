@@ -28,7 +28,7 @@ public class NoteL extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "        noteL "+note+", "+Integer.toString(length&0xFF);
     }
 

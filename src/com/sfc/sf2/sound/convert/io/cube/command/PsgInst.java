@@ -25,7 +25,7 @@ public class PsgInst extends CubeCommand {
     }
 
     @Override
-    public String produceStringOutput() {
+    public String produceAsmOutput() {
         return "  psgInst "+value;
     }
 
