@@ -24,7 +24,7 @@ public class NoteL extends CubeCommand {
 
     @Override
     public byte[] produceBinaryOutput() {
-        return new byte[]{(byte)(note.getValue()+24+0x80), length};
+        return new byte[]{(byte)(note.getValue()-24+0x80), length};
     }
 
     @Override

@@ -22,7 +22,7 @@ public class Note extends CubeCommand {
 
     @Override
     public byte[] produceBinaryOutput() {
-        return new byte[]{(byte)(note.getValue()+24)};
+        return new byte[]{(byte)(note.getValue()-24)};
     }
 
     @Override

@@ -5,6 +5,11 @@
  */
 package com.sfc.sf2.sound.convert.io.cube;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Wiz
@@ -146,21 +151,21 @@ public class MusicEntry {
                 + "\n"+"    dw "+name+"_Channel_8"
                 + "\n"+"    dw "+name+"_Channel_9");
             
-        sb.append("\n"+name+"_Channel_0:"+channelToString(ym1ChannelData));
-        sb.append("\n"+name+"_Channel_1:"+channelToString(ym2ChannelData));
-        sb.append("\n"+name+"_Channel_2:"+channelToString(ym3ChannelData));
-        sb.append("\n"+name+"_Channel_3:"+channelToString(ym4ChannelData));
-        sb.append("\n"+name+"_Channel_4:"+channelToString(ym5ChannelData));
-        sb.append("\n"+name+"_Channel_5:"+channelToString(ym6ChannelData));
-        sb.append("\n"+name+"_Channel_6:"+channelToString(psgTone1ChannelData));
-        sb.append("\n"+name+"_Channel_7:"+channelToString(psgTone2ChannelData));
-        sb.append("\n"+name+"_Channel_8:"+channelToString(psgTone3ChannelData));
-        sb.append("\n"+name+"_Channel_9:"+channelToString(psgNoiseChannelData));
+        sb.append("\n"+name+"_Channel_0:"+produceChannelAsmOutput(ym1ChannelData));
+        sb.append("\n"+name+"_Channel_1:"+produceChannelAsmOutput(ym2ChannelData));
+        sb.append("\n"+name+"_Channel_2:"+produceChannelAsmOutput(ym3ChannelData));
+        sb.append("\n"+name+"_Channel_3:"+produceChannelAsmOutput(ym4ChannelData));
+        sb.append("\n"+name+"_Channel_4:"+produceChannelAsmOutput(ym5ChannelData));
+        sb.append("\n"+name+"_Channel_5:"+produceChannelAsmOutput(ym6ChannelData));
+        sb.append("\n"+name+"_Channel_6:"+produceChannelAsmOutput(psgTone1ChannelData));
+        sb.append("\n"+name+"_Channel_7:"+produceChannelAsmOutput(psgTone2ChannelData));
+        sb.append("\n"+name+"_Channel_8:"+produceChannelAsmOutput(psgTone3ChannelData));
+        sb.append("\n"+name+"_Channel_9:"+produceChannelAsmOutput(psgNoiseChannelData));
             
         return sb.toString();
     }
     
-    private String channelToString(CubeCommand[] ccs){
+    private String produceChannelAsmOutput(CubeCommand[] ccs){
         StringBuilder sb = new StringBuilder();
         for(CubeCommand cc : ccs){
             sb.append("\n    "+cc.produceAsmOutput());
@@ -168,5 +173,83 @@ public class MusicEntry {
         return sb.toString();
     }
     
+    public byte[] produceBinaryOutput(){
+        
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        
+        try {
+            output.write(0);
+            output.write(ym6InDacMode?(byte)0:(byte)1);
+            output.write(0);
+            output.write(ymTimerBValue);
+            
+            byte[] ym1ChannelBytes = produceChannelBinaryOutput(ym1ChannelData);
+            byte[] ym2ChannelBytes = produceChannelBinaryOutput(ym2ChannelData);
+            byte[] ym3ChannelBytes = produceChannelBinaryOutput(ym3ChannelData);
+            byte[] ym4ChannelBytes = produceChannelBinaryOutput(ym4ChannelData);
+            byte[] ym5ChannelBytes = produceChannelBinaryOutput(ym5ChannelData);
+            byte[] ym6ChannelBytes = produceChannelBinaryOutput(ym6ChannelData);
+            byte[] psgTone1ChannelBytes = produceChannelBinaryOutput(psgTone1ChannelData);
+            byte[] psgTone2ChannelBytes = produceChannelBinaryOutput(psgTone2ChannelData);
+            byte[] psgTone3ChannelBytes = produceChannelBinaryOutput(psgTone3ChannelData);
+            byte[] psgNoiseChannelBytes = produceChannelBinaryOutput(psgNoiseChannelData);
+            
+            int ym1ChannelPointer = 24;
+            int ym2ChannelPointer = ym1ChannelPointer+ym1ChannelBytes.length;
+            int ym3ChannelPointer = ym2ChannelPointer+ym2ChannelBytes.length;
+            int ym4ChannelPointer = ym3ChannelPointer+ym3ChannelBytes.length;
+            int ym5ChannelPointer = ym4ChannelPointer+ym4ChannelBytes.length;
+            int ym6ChannelPointer = ym5ChannelPointer+ym5ChannelBytes.length;
+            int psgTone1ChannelPointer = ym6ChannelPointer+ym6ChannelBytes.length;
+            int psgTone2ChannelPointer = psgTone1ChannelPointer+psgTone1ChannelBytes.length;
+            int psgTone3ChannelPointer = psgTone2ChannelPointer+psgTone2ChannelBytes.length;
+            int psgNoiseChannelPointer = psgTone3ChannelPointer+psgTone3ChannelBytes.length;
+            
+            output.write((byte)(ym1ChannelPointer&0xFF));
+            output.write((byte)((ym1ChannelPointer>>8)&0xFF));
+            output.write((byte)(ym2ChannelPointer&0xFF));
+            output.write((byte)((ym2ChannelPointer>>8)&0xFF));
+            output.write((byte)(ym3ChannelPointer&0xFF));
+            output.write((byte)((ym3ChannelPointer>>8)&0xFF));
+            output.write((byte)(ym4ChannelPointer&0xFF));
+            output.write((byte)((ym4ChannelPointer>>8)&0xFF));
+            output.write((byte)(ym5ChannelPointer&0xFF));
+            output.write((byte)((ym5ChannelPointer>>8)&0xFF));
+            output.write((byte)(ym6ChannelPointer&0xFF));
+            output.write((byte)((ym6ChannelPointer>>8)&0xFF));
+            output.write((byte)(psgTone1ChannelPointer&0xFF));
+            output.write((byte)((psgTone1ChannelPointer>>8)&0xFF));
+            output.write((byte)(psgTone2ChannelPointer&0xFF));
+            output.write((byte)((psgTone2ChannelPointer>>8)&0xFF));
+            output.write((byte)(psgTone3ChannelPointer&0xFF));
+            output.write((byte)((psgTone3ChannelPointer>>8)&0xFF));
+            output.write((byte)(psgNoiseChannelPointer&0xFF));
+            output.write((byte)((psgNoiseChannelPointer>>8)&0xFF));
+            
+            output.write(ym1ChannelBytes);
+            output.write(ym2ChannelBytes);
+            output.write(ym3ChannelBytes);
+            output.write(ym4ChannelBytes);
+            output.write(ym5ChannelBytes);
+            output.write(ym6ChannelBytes);
+            output.write(psgTone1ChannelBytes);
+            output.write(psgTone2ChannelBytes);
+            output.write(psgTone3ChannelBytes);
+            output.write(psgNoiseChannelBytes);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(MusicEntry.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return output.toByteArray();
+    }
+    
+    private byte[] produceChannelBinaryOutput(CubeCommand[] ccs) throws IOException{
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        for(CubeCommand cc : ccs){
+           output.write(cc.produceBinaryOutput());
+        }
+        return output.toByteArray();
+    }
     
 }

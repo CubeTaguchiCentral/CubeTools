@@ -12,6 +12,7 @@ import com.sfc.sf2.sound.convert.io.cube.command.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,21 +23,30 @@ import java.util.logging.Logger;
  *
  * @author Wiz
  */
-public class BinaryMusicBankManager {
-    
-    public static final int BANK_SIZE = 0x8000;
+public class BinaryMusicEntryManager {
        
-    public static MusicEntry importMusicEntry(String filePath, int ptOffset, int index){
+    public static void exportMusicEntryAsBinary(MusicEntry me, String filePath){
+    
+        try {
+            System.out.println("com.sfc.sf2.sound.convert.io.BinaryMusicEntryManager.exportMusicEntryAsBinary() - Writing file ...");
+            File file = new File(filePath);
+            Path path = Paths.get(file.getAbsolutePath());
+            byte[] data = me.produceBinaryOutput();
+            Files.write(path,data);
+            System.out.println(data.length + " bytes into " + filePath);  
+            System.out.println("com.sfc.sf2.sound.convert.io.BinaryMusicEntryManager.exportMusicEntryAsBinary() - File written.");
+        } catch (IOException ex) {
+            Logger.getLogger(BinaryMusicEntryManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+    }
+       
+    public static MusicEntry importMusicEntry(String filePath){
         MusicEntry me = new MusicEntry();
         try{
             File f = new File(filePath);
             byte[] data = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
-            int bankBaseOffset = ptOffset - (ptOffset % BANK_SIZE);
-            index--;
-            byte offsetLow = data[ptOffset + 2*index];
-            byte offsetHigh = data[ptOffset + 2*index + 1];
-            int offset = ((offsetHigh&0xFF)<<8) + (offsetLow&0xFF);
-            int musicEntryOffset = bankBaseOffset + offset - BANK_SIZE;
+            int musicEntryOffset = 0;
             if(data[musicEntryOffset+1]==0){
                 me.setYm6InDacMode(true);
             }else{
@@ -78,9 +88,7 @@ public class BinaryMusicBankManager {
         channelIndex--;
         byte offsetLow = data[musicEntryOffset+4 + 2*channelIndex];
         byte offsetHigh = data[musicEntryOffset+4 + 2*channelIndex + 1];
-        int offset = ((offsetHigh&0xFF)<<8) + (offsetLow&0xFF);
-        int bankBaseOffset = musicEntryOffset - (musicEntryOffset % BANK_SIZE);
-        int cursor = bankBaseOffset + offset - BANK_SIZE;
+        int cursor = ((offsetHigh&0xFF)<<8) + (offsetLow&0xFF);
         int cmdLength = 1;
         while(ccs.isEmpty() || (!(ccs.get(ccs.size()-1) instanceof ChannelEnd) && !(ccs.get(ccs.size()-1) instanceof MainLoopEnd))){
             byte cmd = data[cursor];
@@ -176,9 +184,7 @@ public class BinaryMusicBankManager {
         List<CubeCommand> ccs = new ArrayList();
         byte offsetLow = data[musicEntryOffset+4 + 2*5];
         byte offsetHigh = data[musicEntryOffset+4 + 2*5 + 1];
-        int offset = ((offsetHigh&0xFF)<<8) + (offsetLow&0xFF);
-        int bankBaseOffset = musicEntryOffset - (musicEntryOffset % BANK_SIZE);
-        int cursor = bankBaseOffset + offset - BANK_SIZE;
+        int cursor = ((offsetHigh&0xFF)<<8) + (offsetLow&0xFF);
         int cmdLength = 1;
         while(ccs.isEmpty() || (!(ccs.get(ccs.size()-1) instanceof ChannelEnd) && !(ccs.get(ccs.size()-1) instanceof MainLoopEnd))){
             byte cmd = data[cursor];
@@ -275,9 +281,7 @@ public class BinaryMusicBankManager {
         channelIndex--;
         byte offsetLow = data[musicEntryOffset+4 + 6*2 + 2*channelIndex];
         byte offsetHigh = data[musicEntryOffset+4 + 6*2 + 2*channelIndex + 1];
-        int offset = ((offsetHigh&0xFF)<<8) + (offsetLow&0xFF);
-        int bankBaseOffset = musicEntryOffset - (musicEntryOffset % BANK_SIZE);
-        int cursor = bankBaseOffset + offset - BANK_SIZE;
+        int cursor = ((offsetHigh&0xFF)<<8) + (offsetLow&0xFF);
         int cmdLength = 1;
         while(ccs.isEmpty() || (!(ccs.get(ccs.size()-1) instanceof ChannelEnd) && !(ccs.get(ccs.size()-1) instanceof MainLoopEnd))){
             byte cmd = data[cursor];
@@ -369,9 +373,7 @@ public class BinaryMusicBankManager {
         List<CubeCommand> ccs = new ArrayList();
         byte offsetLow = data[musicEntryOffset+4 + 6*2 + 2*3];
         byte offsetHigh = data[musicEntryOffset+4 + 6*2 + 2*3 + 1];
-        int offset = ((offsetHigh&0xFF)<<8) + (offsetLow&0xFF);
-        int bankBaseOffset = musicEntryOffset - (musicEntryOffset % BANK_SIZE);
-        int cursor = bankBaseOffset + offset - BANK_SIZE;
+        int cursor = ((offsetHigh&0xFF)<<8) + (offsetLow&0xFF);
         int cmdLength = 1;
         while(ccs.isEmpty() || (!(ccs.get(ccs.size()-1) instanceof ChannelEnd) && !(ccs.get(ccs.size()-1) instanceof MainLoopEnd))){
             byte cmd = data[cursor];
@@ -446,5 +448,6 @@ public class BinaryMusicBankManager {
         CubeCommand[] ccsArray = new CubeCommand[ccs.size()];
         return ccs.toArray(ccsArray);
     }
-
+    
+    
 }
