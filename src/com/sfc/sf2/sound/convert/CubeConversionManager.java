@@ -35,6 +35,10 @@ public class CubeConversionManager {
         me = BinaryMusicEntryManager.importMusicEntry(filePath);
     }
     
+    public void exportMusicEntryToBinaryMusicBank(String filePath, int ptOffset, int index){
+        BinaryMusicBankManager.exportMusicEntry(me, filePath, ptOffset, index);
+    }
+    
     
     
     

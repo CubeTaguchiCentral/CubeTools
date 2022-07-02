@@ -162,7 +162,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jLabel20" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jTextField20" pref="439" max="32767" attributes="0"/>
+                                  <Component id="jTextField20" pref="413" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jButton31" min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -216,7 +216,7 @@
               <SubComponents>
                 <Component class="javax.swing.JLabel" name="jLabel20">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="File :"/>
+                    <Property name="text" type="java.lang.String" value="ROM File :"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="jTextField20">
@@ -303,10 +303,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jButton35" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace max="32767" attributes="0"/>
-                                  <Component id="jButton36" min="-2" max="-2" attributes="0"/>
-                              </Group>
+                              <Component id="jButton36" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -636,7 +633,7 @@
               <SubComponents>
                 <Component class="javax.swing.JLabel" name="jLabel25">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Custom ROM :"/>
+                    <Property name="text" type="java.lang.String" value="Existing ROM File :"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="jTextField25">
@@ -678,7 +675,7 @@
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel38">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Target Entry index : $"/>
+                    <Property name="text" type="java.lang.String" value="Target Entry index ($01..$20) : $"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="jTextField34">

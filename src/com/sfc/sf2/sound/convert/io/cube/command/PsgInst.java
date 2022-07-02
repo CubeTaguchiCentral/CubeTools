@@ -26,7 +26,7 @@ public class PsgInst extends CubeCommand {
 
     @Override
     public String produceAsmOutput() {
-        return "  psgInst "+value;
+        return "  psgInst 0"+Integer.toHexString(value&0xFF)+"h";
     }
 
     @Override

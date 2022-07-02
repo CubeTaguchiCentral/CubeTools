@@ -167,7 +167,7 @@ public class MainEditor extends javax.swing.JFrame {
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Import from :"));
         jPanel3.setPreferredSize(new java.awt.Dimension(590, 135));
 
-        jLabel20.setText("File :");
+        jLabel20.setText("ROM File :");
 
         jTextField20.setText("C:\\SEGADEV\\GITHUB\\SF2DISASM\\rom\\sf2.bin");
         jTextField20.addActionListener(new java.awt.event.ActionListener() {
@@ -222,7 +222,7 @@ public class MainEditor extends javax.swing.JFrame {
                     .addGroup(jPanel10Layout.createSequentialGroup()
                         .addComponent(jLabel20)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField20, javax.swing.GroupLayout.DEFAULT_SIZE, 439, Short.MAX_VALUE)
+                        .addComponent(jTextField20, javax.swing.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton31))
                     .addGroup(jPanel10Layout.createSequentialGroup()
@@ -300,9 +300,7 @@ public class MainEditor extends javax.swing.JFrame {
                         .addComponent(jTextField22, javax.swing.GroupLayout.DEFAULT_SIZE, 439, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton35))
-                    .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton36)))
+                    .addComponent(jButton36))
                 .addContainerGap())
         );
         jPanel11Layout.setVerticalGroup(
@@ -460,7 +458,7 @@ public class MainEditor extends javax.swing.JFrame {
 
         jTabbedPane2.addTab("Binary File", jPanel16);
 
-        jLabel25.setText("Custom ROM :");
+        jLabel25.setText("Existing ROM File :");
 
         jTextField25.setText(".\\sf2.bin");
         jTextField25.addActionListener(new java.awt.event.ActionListener() {
@@ -492,7 +490,7 @@ public class MainEditor extends javax.swing.JFrame {
             }
         });
 
-        jLabel38.setText("Target Entry index : $");
+        jLabel38.setText("Target Entry index ($01..$20) : $");
 
         jTextField34.setText("01");
         jTextField34.addActionListener(new java.awt.event.ActionListener() {
@@ -690,11 +688,10 @@ public class MainEditor extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton33ActionPerformed
 
     private void jButton34ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton34ActionPerformed
-        //int huffmanTreeOffsetsOffset = Integer.parseInt(jTextField26.getText(),16);
-        //int huffmanTreesOffset = Integer.parseInt(jTextField27.getText(),16);
-        //int textbanksPointerOffset = Integer.parseInt(jTextField31.getText(),16);
-        //int textbanksOffset = Integer.parseInt(jTextField32.getText(),16);
-        //TextManager.exportCustomRom(jTextField25.getText(), huffmanTreeOffsetsOffset, huffmanTreesOffset, textbanksPointerOffset, textbanksOffset);
+        String filePath = jTextField25.getText();
+        int ptOffset = Integer.parseInt(jTextField26.getText(),16);
+        int index = Integer.parseInt(jTextField34.getText(),16);
+        ccm.exportMusicEntryToBinaryMusicBank(filePath, ptOffset, index);
     }//GEN-LAST:event_jButton34ActionPerformed
 
     private void jTextField26ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField26ActionPerformed

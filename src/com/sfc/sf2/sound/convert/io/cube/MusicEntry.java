@@ -137,7 +137,7 @@ public class MusicEntry {
         StringBuilder sb = new StringBuilder();
         sb.append(name+":"
                 + "\n"+"    db 0"
-                + "\n"+"    db 0"+(ym6InDacMode?"0":"1")+"h"
+                + "\n"+"    db "+(ym6InDacMode?"0":"1")
                 + "\n"+"    db 0"
                 + "\n"+"    db "+Integer.toString(ymTimerBValue&0xFF)
                 + "\n"+"    dw "+name+"_Channel_0"
@@ -173,7 +173,7 @@ public class MusicEntry {
         return sb.toString();
     }
     
-    public byte[] produceBinaryOutput(){
+    public byte[] produceBinaryOutput(int baseOffset){
         
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         
@@ -194,7 +194,7 @@ public class MusicEntry {
             byte[] psgTone3ChannelBytes = produceChannelBinaryOutput(psgTone3ChannelData);
             byte[] psgNoiseChannelBytes = produceChannelBinaryOutput(psgNoiseChannelData);
             
-            int ym1ChannelPointer = 24;
+            int ym1ChannelPointer = baseOffset+24;
             int ym2ChannelPointer = ym1ChannelPointer+ym1ChannelBytes.length;
             int ym3ChannelPointer = ym2ChannelPointer+ym2ChannelBytes.length;
             int ym4ChannelPointer = ym3ChannelPointer+ym3ChannelBytes.length;

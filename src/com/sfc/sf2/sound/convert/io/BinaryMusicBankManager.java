@@ -9,9 +9,11 @@ import com.sfc.sf2.sound.convert.io.cube.CubeCommand;
 import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
 import com.sfc.sf2.sound.convert.io.cube.Pitch;
 import com.sfc.sf2.sound.convert.io.cube.command.*;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -447,4 +449,60 @@ public class BinaryMusicBankManager {
         return ccs.toArray(ccsArray);
     }
 
+    
+    
+    
+
+    public static void exportMusicEntry(MusicEntry me, String filePath, int ptOffset, int index){
+        
+        try{
+            File f = new File(filePath);
+            byte[] data = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
+            int bankBaseOffset = ptOffset - (ptOffset % BANK_SIZE);
+            byte[] dataBeforeMusicBank = new byte[bankBaseOffset];
+            System.arraycopy(data, 0, dataBeforeMusicBank, 0, dataBeforeMusicBank.length);
+            byte[] dataAfterMusicBank = new byte[data.length-(bankBaseOffset+BANK_SIZE)];
+            System.arraycopy(data, bankBaseOffset+BANK_SIZE, dataAfterMusicBank, 0, dataAfterMusicBank.length);
+            MusicEntry[] mes = new MusicEntry[32];
+            for(int i=0;i<32;i++){
+                mes[i] = BinaryMusicBankManager.importMusicEntry(filePath, ptOffset, i+1);
+            }
+            mes[index-1] = me;
+            byte[][] meBytes = new byte[32][];
+            int baseOffset = 0x8040;
+            for(int i=0;i<32;i++){
+                meBytes[i] = mes[i].produceBinaryOutput(baseOffset);
+                baseOffset+=meBytes[i].length;
+            }
+            int[] pt = new int[32];
+            pt[0] = 0x8040;
+            for(int i=1;i<32;i++){
+                pt[i] = pt[i-1]+meBytes[i-1].length;
+            }
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            for(int i=0;i<32;i++){
+                output.write((byte)(pt[i]&0xFF));
+                output.write((byte)((pt[i]>>8)&0xFF));
+            }
+            for(int i=0;i<32;i++){
+                output.write(meBytes[i]);
+            }
+            byte[] newMusicBankBytes = output.toByteArray();
+            if(newMusicBankBytes.length<=BANK_SIZE){
+                System.arraycopy(newMusicBankBytes, 0, data, bankBaseOffset, newMusicBankBytes.length);
+            }else{
+                System.out.println("New Music Bank is too large : $"+Integer.toHexString(newMusicBankBytes.length)+" bytes, maximum is $8000 (32kB).");
+            }
+            String newFilePath = filePath+"_withnewmusicentry.bin";
+            File nf = new File(newFilePath);
+            Path path = Paths.get(nf.getAbsolutePath());
+            Files.write(path,data);            
+        } catch (IOException ex) {
+            Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+    }    
+    
+    
 }

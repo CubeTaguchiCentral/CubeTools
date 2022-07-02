@@ -21,12 +21,12 @@ public class SetSlide extends CubeCommand {
 
     @Override
     public byte[] produceBinaryOutput() {
-        return new byte[]{(byte)0xFC, (byte)(value+0x80)};
+        return new byte[]{(byte)0xFC, (byte)(value&0xFF)};
     }
 
     @Override
     public String produceAsmOutput() {
-        return "  setSlide "+Integer.toString(value&0xFF);
+        return "  setSlide "+Integer.toString((value&0xFF)-0x80);
     }
 
     @Override

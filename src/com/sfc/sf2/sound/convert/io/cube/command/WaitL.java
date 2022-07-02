@@ -26,7 +26,7 @@ public class WaitL extends CubeCommand {
 
     @Override
     public String produceAsmOutput() {
-        return "        waitL "+value;
+        return "        waitL "+Integer.toString(value&0xFF);
     }
 
     @Override
