@@ -14,4 +14,5 @@ public abstract class CubeCommand {
     public abstract byte[] produceBinaryOutput();
     public abstract String produceAsmOutput();
     public abstract boolean equals(CubeCommand cc);
+    
 }
