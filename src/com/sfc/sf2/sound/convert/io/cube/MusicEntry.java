@@ -93,10 +93,23 @@ public class MusicEntry {
                 + "\n"+"    db "+(ym6InDacMode?"0":"1")
                 + "\n"+"    db 0"
                 + "\n"+"    db "+Integer.toString(ymTimerBValue&0xFF));
+        outerloop:
         for(int i=0;i<10;i++){
+            for(int j=0;j<i;j++){
+                if(channels[i]==channels[j]){
+                    sb.append("\n"+"    dw "+name+"_Channel_"+j);
+                    continue outerloop;
+                }
+            }
             sb.append("\n"+"    dw "+name+"_Channel_"+i);
         }
+        outerloop:
         for(int i=0;i<10;i++){
+            for(int j=0;j<i;j++){
+                if(channels[i]==channels[j]){
+                    continue outerloop;
+                }
+            }
             sb.append("\n"+name+"_Channel_"+i+":"+channels[i].produceAsmOutput());
         }            
         return sb.toString();
@@ -114,21 +127,50 @@ public class MusicEntry {
                 channelOutputBytes[i] = channels[i].produceBinaryOutput();
             }
             int[] channelPointers = new int[10];
-            channelPointers[0] = baseOffset+1+1+1+1+2*10;
+            int cursor = baseOffset+1+1+1+1+2*10;
+            channelPointers[0] = cursor;
+            outerloop:
             for(int i=1;i<10;i++){
+                for(int j=0;j<i;j++){
+                    if(channels[i]==channels[j]){
+                        channelPointers[i] = channelPointers[j];
+                        continue outerloop;
+                    }
+                }
+                cursor += channelOutputBytes[i-1].length;
                 channelPointers[i] = channelPointers[i-1]+channelOutputBytes[i-1].length;
-            }
+            }        
             for(int i=0;i<10;i++){
                 output.write((byte)(channelPointers[i]&0xFF));
                 output.write((byte)((channelPointers[i]>>8)&0xFF));
             }
+            outerloop:
             for(int i=0;i<10;i++){
+                for(int j=0;j<i;j++){
+                    if(channels[i]==channels[j]){
+                        continue outerloop;
+                    }
+                }
                 output.write(channelOutputBytes[i]);
-            }            
+            }   
         } catch (IOException ex) {
             Logger.getLogger(MusicEntry.class.getName()).log(Level.SEVERE, null, ex);
         }
         return output.toByteArray();
     }
+    
+    
+    
+    public void factorizeIdenticalChannels(){
+        for(int i=1;i<10;i++){
+            for(int j=0;j<i;j++){
+                if(channels[i].equals(channels[j])){
+                    channels[i] = channels[j];
+                    System.out.println("Channel "+i+" is identical to channel "+j+" : channel entry "+i+" now points to channel "+j+" content");
+                }
+            }
+        }
+    }
+    
     
 }

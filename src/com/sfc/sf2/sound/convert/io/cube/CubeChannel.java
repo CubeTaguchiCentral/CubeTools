@@ -42,6 +42,16 @@ public abstract class CubeChannel {
         return output.toByteArray();
     }
     
-    
+    public boolean equals(CubeChannel cch){
+        if(this.ccs.length!=cch.getCcs().length){
+            return false;
+        }
+        for(int i=0;i<this.ccs.length;i++){
+            if(!(this.ccs[i].equals(cch.getCcs()[i]))){
+                return false;
+            }
+        }
+        return true;
+    }
     
 }
