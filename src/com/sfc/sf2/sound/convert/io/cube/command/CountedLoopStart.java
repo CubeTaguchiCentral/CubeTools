@@ -19,6 +19,14 @@ public class CountedLoopStart extends CubeCommand {
         this.value = value;
     }
 
+    public byte getValue() {
+        return value;
+    }
+
+    public void setValue(byte value) {
+        this.value = value;
+    }
+
     @Override
     public byte[] produceBinaryOutput() {
         return new byte[]{(byte)0xF8, (byte)(value+0xC0)};

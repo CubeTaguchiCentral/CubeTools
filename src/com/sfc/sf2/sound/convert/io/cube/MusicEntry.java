@@ -172,5 +172,10 @@ public class MusicEntry {
         }
     }
     
+    public void unroll(){
+        for(CubeChannel cc: channels){
+            cc.unroll();
+        }
+    }
     
 }
