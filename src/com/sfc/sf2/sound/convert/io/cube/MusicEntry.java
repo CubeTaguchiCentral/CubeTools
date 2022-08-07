@@ -178,4 +178,11 @@ public class MusicEntry {
         }
     }
     
+    public void optimize(){
+        for(int i=0;i<channels.length;i++){
+            System.out.println("Optimizing channel "+i+" ...");
+            channels[i].optimize();
+        }
+    }
+    
 }
