@@ -22,20 +22,30 @@ public class CubeConversionManager {
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.importMusicEntryFromBinaryMusicBank() - Importing ...");
         me = BinaryMusicBankManager.importMusicEntry(filePath, ptOffset, index);
         me.factorizeIdenticalChannels();
-        me.unroll();
-        me.optimize();
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.importMusicEntryFromBinaryMusicBank() - ... Done.");
     }
     
-    public void exportMusicEntryAsAsm(String filePath, String name){
+    public void exportMusicEntryAsAsm(String filePath, String name, boolean unroll, boolean optimize){
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryAsAsm() - Exporting ...");
         me.setName(name);
+        if(unroll){
+            me.unroll();
+            if(optimize){
+                me.optimize();
+            }
+        }
         AsmMusicEntryManager.exportMusicEntryAsAsm(me, filePath, name);
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryAsAsm() - ... Done.");
     }
     
-    public void exportMusicEntryAsBinary(String filePath){
+    public void exportMusicEntryAsBinary(String filePath, boolean unroll, boolean optimize){
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryAsBinary() - Exporting ...");
+        if(unroll){
+            me.unroll();
+            if(optimize){
+                me.optimize();
+            }
+        }
         BinaryMusicEntryManager.exportMusicEntryAsBinary(me, filePath);
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryAsBinary() - ... Done.");
     }
@@ -44,13 +54,17 @@ public class CubeConversionManager {
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.importMusicEntryFromBinaryFile() - Importing ...");
         me = BinaryMusicEntryManager.importMusicEntry(filePath);
         me.factorizeIdenticalChannels();
-        me.unroll();
-        me.optimize();
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.importMusicEntryFromBinaryFile() - ... Done.");
     }
     
-    public void exportMusicEntryToBinaryMusicBank(String filePath, int ptOffset, int index){
+    public void exportMusicEntryToBinaryMusicBank(String filePath, int ptOffset, int index, boolean unroll, boolean optimize){
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryToBinaryMusicBank() - Exporting ...");
+        if(unroll){
+            me.unroll();
+            if(optimize){
+                me.optimize();
+            }
+        }
         BinaryMusicBankManager.exportMusicEntry(me, filePath, ptOffset, index);
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryToBinaryMusicBank() - ... Done.");
     }
