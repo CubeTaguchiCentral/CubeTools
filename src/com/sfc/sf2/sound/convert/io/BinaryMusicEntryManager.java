@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,6 +29,16 @@ public class BinaryMusicEntryManager {
             Path path = Paths.get(file.getAbsolutePath());
             byte[] data = me.produceBinaryOutput(0);
             Files.write(path,data);
+            if(me.getYmInstruments()!=null){
+                List<Integer> instList = me.getYmInstrumentList();
+                for(Integer i : instList){
+                    String instFilePath = filePath.substring(0,filePath.length()-4)+"-yminst"+String.format("%02d", i)+".bin";
+                    File instFile = new File(instFilePath);
+                    Path instPath = Paths.get(instFile.getAbsolutePath());
+                    byte[] instData = me.getYmInstruments()[i];
+                    Files.write(instPath,instData);                    
+                }
+            }            
             System.out.println(data.length + " bytes into " + filePath);  
             System.out.println("com.sfc.sf2.sound.convert.io.BinaryMusicEntryManager.exportMusicEntryAsBinary() - File written.");
         } catch (IOException ex) {

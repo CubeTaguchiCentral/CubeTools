@@ -78,6 +78,9 @@ public class MainEditor extends javax.swing.JFrame {
         jTextField33 = new javax.swing.JTextField();
         jLabel28 = new javax.swing.JLabel();
         jLabel37 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        jLabel29 = new javax.swing.JLabel();
+        jTextField23 = new javax.swing.JTextField();
         jPanel11 = new javax.swing.JPanel();
         jLabel22 = new javax.swing.JLabel();
         jTextField22 = new javax.swing.JTextField();
@@ -169,7 +172,7 @@ public class MainEditor extends javax.swing.JFrame {
             }
         });
 
-        jLabel21.setText("Music Bank Pointer Table Offset :");
+        jLabel21.setText("Pointer Table :");
 
         jTextField21.setText("1F8000");
         jTextField21.addActionListener(new java.awt.event.ActionListener() {
@@ -191,6 +194,17 @@ public class MainEditor extends javax.swing.JFrame {
 
         jLabel37.setText("<html>Bank starts at previous multiple of 0x8000, as loaded from Z80 Cube sound driver.</html>");
 
+        jLabel23.setText("YM Instruments :");
+
+        jLabel29.setText("0x");
+
+        jTextField23.setText("1EB000");
+        jTextField23.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField23ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
         jPanel10.setLayout(jPanel10Layout);
         jPanel10Layout.setHorizontalGroup(
@@ -210,6 +224,12 @@ public class MainEditor extends javax.swing.JFrame {
                         .addComponent(jLabel28)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jTextField21, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel23)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel29)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField23, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel33)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -231,7 +251,11 @@ public class MainEditor extends javax.swing.JFrame {
                     .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jTextField21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel21)
-                        .addComponent(jLabel28))
+                        .addComponent(jLabel28)
+                        .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jTextField23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel23)
+                            .addComponent(jLabel29)))
                     .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jButton32)
                         .addComponent(jTextField33, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -689,7 +713,8 @@ public class MainEditor extends javax.swing.JFrame {
         String filePath = jTextField20.getText();
         int ptOffset = Integer.parseInt(jTextField21.getText(),16);
         int index = Integer.parseInt(jTextField33.getText(),16);
-        ccm.importMusicEntryFromBinaryMusicBank(filePath, ptOffset, index);
+        int ymInstOffset = Integer.parseInt(jTextField23.getText(),16);
+        ccm.importMusicEntryFromBinaryMusicBank(filePath, ptOffset, index, ymInstOffset);
         /*
         int huffmanTreeOffsetsBegin = Integer.parseInt(jTextField21.getText(),16);
         int huffmanTreeOffsetsEnd = Integer.parseInt(jTextField22.getText(),16);
@@ -796,6 +821,10 @@ public class MainEditor extends javax.swing.JFrame {
         ccm.exportMusicEntryToBinaryMusicBank(filePath, ptOffset, index, true, false);
     }//GEN-LAST:event_jButton38ActionPerformed
 
+    private void jTextField23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField23ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField23ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -861,9 +890,11 @@ public class MainEditor extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel28;
+    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel33;
     private javax.swing.JLabel jLabel37;
     private javax.swing.JLabel jLabel38;
@@ -886,6 +917,7 @@ public class MainEditor extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField20;
     private javax.swing.JTextField jTextField21;
     private javax.swing.JTextField jTextField22;
+    private javax.swing.JTextField jTextField23;
     private javax.swing.JTextField jTextField25;
     private javax.swing.JTextField jTextField26;
     private javax.swing.JTextField jTextField33;

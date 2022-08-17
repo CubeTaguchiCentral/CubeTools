@@ -5,9 +5,18 @@
  */
 package com.sfc.sf2.sound.convert.io.cube;
 
+import static com.sfc.sf2.sound.convert.io.BinaryMusicBankManager.YM_INSTRUMENT_NUMBER;
+import static com.sfc.sf2.sound.convert.io.BinaryMusicBankManager.YM_INSTRUMENT_SIZE;
 import com.sfc.sf2.sound.convert.io.cube.channel.*;
+import com.sfc.sf2.sound.convert.io.cube.command.Inst;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,10 +25,15 @@ import java.util.logging.Logger;
  * @author Wiz
  */
 public class MusicEntry {
+    
+    public static final int YM_INSTRUMENT_SIZE = 29;
+    public static final int YM_INSTRUMENT_NUMBER = 64;
+    
     String name;
     boolean ym6InDacMode = false;
     byte ymTimerBValue = 0;
     CubeChannel[] channels = new CubeChannel[10];
+    byte[][] ymInstruments;
 
     public String getName() {
         return name;
@@ -51,6 +65,16 @@ public class MusicEntry {
 
     public void setChannels(CubeChannel[] channels) {
         this.channels = channels;
+    }
+    
+    public MusicEntry(byte [] data, int entryOffset, int baseOffset, int ymInstOffset){
+        this(data, entryOffset, baseOffset);
+        if(ymInstOffset!=0){
+            ymInstruments = new byte[YM_INSTRUMENT_NUMBER][];
+            for(int i=0;i<YM_INSTRUMENT_NUMBER;i++){
+                ymInstruments[i] = Arrays.copyOfRange(data, ymInstOffset+i*YM_INSTRUMENT_SIZE, ymInstOffset+i*YM_INSTRUMENT_SIZE+YM_INSTRUMENT_SIZE);
+            } 
+        }       
     }
     
     public MusicEntry(byte [] data, int entryOffset, int baseOffset){
@@ -183,6 +207,28 @@ public class MusicEntry {
             System.out.println("Optimizing channel "+i+" ...");
             channels[i].optimize();
         }
+    }
+
+    public byte[][] getYmInstruments() {
+        return ymInstruments;
+    }
+
+    public void setYmInstruments(byte[][] ymInstruments) {
+        this.ymInstruments = ymInstruments;
+    }
+    
+    public List<Integer> getYmInstrumentList(){
+        Set<Integer> instSet = new HashSet();
+        for(int i=0;i<6;i++){
+            for(CubeCommand cc : channels[i].getCcs()){
+                if(cc instanceof Inst){
+                    instSet.add(((Inst) cc).getValue()&0xFF);
+                }
+            }
+        }
+        List<Integer> instList = new ArrayList(instSet);
+        Collections.sort(instList);
+        return instList;
     }
     
 }

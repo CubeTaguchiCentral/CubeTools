@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,8 +29,10 @@ import java.util.logging.Logger;
 public class BinaryMusicBankManager {
     
     public static final int BANK_SIZE = 0x8000;
+    public static final int YM_INSTRUMENT_SIZE = 29;
+    public static final int YM_INSTRUMENT_NUMBER = 64;
        
-    public static MusicEntry importMusicEntry(String filePath, int ptOffset, int index){
+    public static MusicEntry importMusicEntry(String filePath, int ptOffset, int index, int ymInstOffset){
         MusicEntry me = null;
         try{
             File f = new File(filePath);
@@ -40,11 +43,25 @@ public class BinaryMusicBankManager {
             byte offsetHigh = data[ptOffset + 2*index + 1];
             int offset = ((offsetHigh&0xFF)<<8) + (offsetLow&0xFF);
             int musicEntryOffset = bankBaseOffset + offset - BANK_SIZE;
-            me = new MusicEntry(data, musicEntryOffset, bankBaseOffset - BANK_SIZE);
+            me = new MusicEntry(data, musicEntryOffset, bankBaseOffset - BANK_SIZE, ymInstOffset);
         } catch (IOException ex) {
             Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return me;
+    }
+    
+    public static byte[][] importYmInstruments(String filePath, int ymInstOffset){
+        byte[][] ymInstruments = new byte[YM_INSTRUMENT_NUMBER][];
+        try{
+            File f = new File(filePath);
+            byte[] data = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
+            for(int i=0;i<YM_INSTRUMENT_NUMBER;i++){
+                ymInstruments[i] = Arrays.copyOfRange(data, ymInstOffset+i*YM_INSTRUMENT_SIZE, ymInstOffset+i*YM_INSTRUMENT_SIZE+YM_INSTRUMENT_SIZE);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ymInstruments;
     }
     
     public static void exportMusicEntry(MusicEntry me, String filePath, int ptOffset, int index){
@@ -59,7 +76,7 @@ public class BinaryMusicBankManager {
             System.arraycopy(data, bankBaseOffset+BANK_SIZE, dataAfterMusicBank, 0, dataAfterMusicBank.length);
             MusicEntry[] mes = new MusicEntry[32];
             for(int i=0;i<32;i++){
-                mes[i] = BinaryMusicBankManager.importMusicEntry(filePath, ptOffset, i+1);
+                mes[i] = BinaryMusicBankManager.importMusicEntry(filePath, ptOffset, i+1, 0);
             }
             mes[index-1] = me;
             byte[][] meBytes = new byte[32][];
@@ -90,7 +107,7 @@ public class BinaryMusicBankManager {
             String newFilePath = filePath+"_withnewmusicentry.bin";
             File nf = new File(newFilePath);
             Path path = Paths.get(nf.getAbsolutePath());
-            Files.write(path,data);            
+            Files.write(path,data);   
         } catch (IOException ex) {
             Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
         }
