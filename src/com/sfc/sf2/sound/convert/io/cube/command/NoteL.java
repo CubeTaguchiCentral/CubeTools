@@ -42,6 +42,22 @@ public class NoteL extends CubeCommand {
             return false;
         }
     }
+
+    public Pitch getNote() {
+        return note;
+    }
+
+    public void setNote(Pitch note) {
+        this.note = note;
+    }
+
+    public byte getLength() {
+        return length;
+    }
+
+    public void setLength(byte length) {
+        this.length = length;
+    }
     
     
     

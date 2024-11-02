@@ -39,6 +39,14 @@ public class PsgNote extends CubeCommand {
             return false;
         }
     }
+
+    public Pitch getNote() {
+        return note;
+    }
+
+    public void setNote(Pitch note) {
+        this.note = note;
+    }
     
     
     

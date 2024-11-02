@@ -8,6 +8,7 @@ package com.sfc.sf2.sound.convert;
 import com.sfc.sf2.sound.convert.io.AsmMusicEntryManager;
 import com.sfc.sf2.sound.convert.io.BinaryMusicBankManager;
 import com.sfc.sf2.sound.convert.io.BinaryMusicEntryManager;
+import com.sfc.sf2.sound.convert.io.FurnaceClipboardManager;
 import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
 
 /**
@@ -67,6 +68,13 @@ public class CubeConversionManager {
         }
         BinaryMusicBankManager.exportMusicEntry(me, filePath, ptOffset, index);
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryToBinaryMusicBank() - ... Done.");
+    }
+    
+    public void exportMusicEntryAsFurnaceClipboard(String filePath){
+        System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryAsFurnaceClipboard() - Exporting ...");
+        me.unroll();
+        FurnaceClipboardManager.exportMusicEntryAsFurnaceClipboard(me, filePath);
+        System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryAsFurnaceClipboard() - ... Done.");
     }
     
     

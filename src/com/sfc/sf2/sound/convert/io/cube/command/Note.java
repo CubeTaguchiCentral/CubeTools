@@ -39,6 +39,14 @@ public class Note extends CubeCommand {
             return false;
         }
     }
+
+    public Pitch getNote() {
+        return note;
+    }
+
+    public void setNote(Pitch note) {
+        this.note = note;
+    }
     
     
     
