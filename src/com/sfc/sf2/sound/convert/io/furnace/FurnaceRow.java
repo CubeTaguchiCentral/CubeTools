@@ -5,6 +5,9 @@
  */
 package com.sfc.sf2.sound.convert.io.furnace;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author Wiz
@@ -16,7 +19,7 @@ public class FurnaceRow {
     private FurnaceNote note;
     private FurnaceInstrument instrument;
     private FurnaceVolume volume;
-    private FurnaceEffect[] effects = new FurnaceEffect[MAX_EFFECT_SIZE];
+    private List<FurnaceEffect> effectList = new ArrayList();
 
     public FurnaceNote getNote() {
         return note;
@@ -42,12 +45,12 @@ public class FurnaceRow {
         this.volume = volume;
     }
 
-    public FurnaceEffect[] getEffects() {
-        return effects;
+    public List<FurnaceEffect> getEffectList() {
+        return effectList;
     }
 
-    public void setEffects(FurnaceEffect[] effects) {
-        this.effects = effects;
+    public void setEffectList(List<FurnaceEffect> effectList) {
+        this.effectList = effectList;
     }
     
     public String produceClipboardOutput(){
@@ -67,9 +70,9 @@ public class FurnaceRow {
         }else{
             clipboard+="..";
         }
-        for(int i=0;i<effects.length;i++){
-            if(effects[i]!=null){
-                clipboard+=effects[i].produceClipboardOutput();
+        for(int i=0;i<MAX_EFFECT_SIZE;i++){
+            if(effectList.size()>i && effectList.get(i)!=null){
+                clipboard+=effectList.get(i).produceClipboardOutput();
             }else{
                 clipboard+="....";
             }

@@ -37,6 +37,14 @@ public class Stereo extends CubeCommand {
             return false;
         }
     }
+
+    public byte getValue() {
+        return value;
+    }
+
+    public void setValue(byte value) {
+        this.value = value;
+    }
     
     
     
