@@ -23,8 +23,11 @@ public class FurnaceClipboardProducer {
     }
     
     public static String produceClipboardOutput(FurnacePattern pattern){
-        String clipboard=produceClipboardHeaderOutput();
+        String clipboard="";
         for(int i=0;i<pattern.getChannels()[0].getRows().length;i++){
+            if(i%255==0){
+                clipboard+=produceClipboardHeaderOutput();
+            }
             for(int j=0;j<pattern.getChannels().length;j++){
                 clipboard+=pattern.getChannels()[j].getRows()[i].produceClipboardOutput();
                 clipboard+="|";

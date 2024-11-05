@@ -23,6 +23,8 @@ public class CubeConversionManager {
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.importMusicEntryFromBinaryMusicBank() - Importing ...");
         me = BinaryMusicBankManager.importMusicEntry(filePath, ptOffset, index, ymInstOffset);
         me.factorizeIdenticalChannels();
+        me.hasMainLoop();
+        me.hasIntro();
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.importMusicEntryFromBinaryMusicBank() - ... Done.");
     }
     
@@ -55,6 +57,8 @@ public class CubeConversionManager {
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.importMusicEntryFromBinaryFile() - Importing ...");
         me = BinaryMusicEntryManager.importMusicEntry(filePath);
         me.factorizeIdenticalChannels();
+        me.hasMainLoop();
+        me.hasIntro();
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.importMusicEntryFromBinaryFile() - ... Done.");
     }
     

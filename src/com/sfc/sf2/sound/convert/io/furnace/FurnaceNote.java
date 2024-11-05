@@ -27,10 +27,16 @@ public class FurnaceNote {
     
     public String produceClipboardOutput(){
         String clipboard="";
-        if(value!=(byte)0xFF){
-            clipboard+=FurnacePitch.valueOf(value).getClipboardOutput();
-        }else{
-            clipboard+="===";
+        switch(value){
+            case (byte)0xFF:
+                clipboard+="===";
+                break;
+            case (byte)0xFE: 
+                clipboard+="OFF";
+                break;   
+            default:
+                clipboard+=FurnacePitch.valueOf(value).getClipboardOutput();
+                break;
         }
         return clipboard;
     }

@@ -9,6 +9,11 @@ import static com.sfc.sf2.sound.convert.io.BinaryMusicBankManager.YM_INSTRUMENT_
 import static com.sfc.sf2.sound.convert.io.BinaryMusicBankManager.YM_INSTRUMENT_SIZE;
 import com.sfc.sf2.sound.convert.io.cube.channel.*;
 import com.sfc.sf2.sound.convert.io.cube.command.Inst;
+import com.sfc.sf2.sound.convert.io.cube.command.MainLoopStart;
+import com.sfc.sf2.sound.convert.io.cube.command.Note;
+import com.sfc.sf2.sound.convert.io.cube.command.NoteL;
+import com.sfc.sf2.sound.convert.io.cube.command.Wait;
+import com.sfc.sf2.sound.convert.io.cube.command.WaitL;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -230,5 +235,47 @@ public class MusicEntry {
         Collections.sort(instList);
         return instList;
     }
+    
+    public boolean hasMainLoop(){
+        boolean hasMainLoop = false;
+        CubeCommand[] ccs = channels[0].getCcs();
+        for(int i=0;i<ccs.length;i++){
+            CubeCommand cc = ccs[i];
+            if(cc instanceof MainLoopStart){
+                hasMainLoop = true;
+            }
+        }
+        System.out.println("hasMainLoop : "+hasMainLoop);
+        return hasMainLoop;
+    }
+    
+    public boolean hasIntro(){
+        boolean hasIntro = false;
+        CubeCommand[] ccs = channels[0].getCcs();
+        boolean mainLoopMet = false;
+        boolean noteOrWaitMet = false;
+        for(int i=0;i<ccs.length;i++){
+            CubeCommand cc = ccs[i];
+            if(cc instanceof MainLoopStart){
+                if(noteOrWaitMet){
+                    hasIntro = true;
+                }else{
+                    mainLoopMet = true;
+                }
+            }else if(cc instanceof Note
+                    || cc instanceof NoteL
+                    || cc instanceof Wait
+                    || cc instanceof WaitL){
+                if(mainLoopMet){
+                    hasIntro = false;
+                }else{
+                    noteOrWaitMet = true;
+                }
+            }
+        }
+        System.out.println("hasIntro : "+hasIntro);
+        return hasIntro;
+    }   
+    
     
 }
