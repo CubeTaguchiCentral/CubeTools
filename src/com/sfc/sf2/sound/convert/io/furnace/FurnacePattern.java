@@ -23,7 +23,9 @@ import com.sfc.sf2.sound.convert.io.cube.command.Vibrato;
 import com.sfc.sf2.sound.convert.io.cube.command.Vol;
 import com.sfc.sf2.sound.convert.io.cube.command.Wait;
 import com.sfc.sf2.sound.convert.io.cube.command.WaitL;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -68,7 +70,14 @@ public class FurnacePattern {
             }
             channels[i].setRows(rows);
         }
+        
+        /*
+        if(mainLoopOnly){
+            repeatMainLoopToMaxLength();
+        }
+        
         fillChannelsToMaxLength();
+        */
     }
     
     public List<FurnaceRow> convertCubeChannel(CubeChannel cch, int channelType, boolean introOnly, boolean mainLoopOnly){
@@ -119,7 +128,6 @@ public class FurnacePattern {
                 SetRelease sr = (SetRelease) cc;
                 release = sr.getValue();
             } else if(cc instanceof Sustain){
-                Sustain s = (Sustain) cc;
                 release = 0;
             } else if(cc instanceof Vol){
                 Vol v = (Vol) cc;
@@ -275,6 +283,9 @@ public class FurnacePattern {
                 System.out.println("com.sfc.sf2.sound.convert.io.furnace.FurnacePattern.convertFmCubeChannel() - Ignoring command "+i+" : "+cc.produceAsmOutput());
             }
         }
+        if(introOnly){
+            currentRow.getEffectList().add(new FurnaceEffect(0x0D,0x00));
+        }
         return rowList;
     }
     
@@ -299,4 +310,69 @@ public class FurnacePattern {
         }
     }
     
+    public void repeatMainLoopToMaxLength(){
+        int maxLength=0;
+        for (int i=0;i<channels.length;i++){
+            if(maxLength<channels[i].getRows().length){
+                maxLength = channels[i].getRows().length;
+            }
+        }
+        for (int i=0;i<channels.length;i++){
+            if(channels[i].getRows()!=null && channels[i].getRows().length>0){
+                channels[i].setRows(repeat(channels[i].getRows(),maxLength));
+            }
+        }
+    }
+    
+    public static <T> T[] repeat(T[] arr, int newLength) {
+        T[] dup = Arrays.copyOf(arr, newLength);
+        for (int last = arr.length; last != 0 && last < newLength; last <<= 1) {
+            System.arraycopy(dup, 0, dup, last, Math.min(last << 1, newLength) - last);
+        }
+        return dup;
+    }
+    
+    public FurnacePattern(FurnacePattern intro, FurnacePattern mainLoop){
+        FurnaceChannel[] introChannels = intro.getChannels();
+        FurnaceChannel[] mainLoopChannels = mainLoop.getChannels();
+        int maxLength=0;
+        for (int i=0;i<MAX_CHANNELS_SIZE;i++){
+            FurnaceRow[] introRows = introChannels[i].getRows();
+            FurnaceRow[] mainLoopRows = mainLoopChannels[i].getRows();
+            if(maxLength<(introRows.length+mainLoopRows.length)){
+                maxLength = introRows.length+mainLoopRows.length;
+            }
+        }
+        System.out.println("maxLength : "+maxLength);
+        for (int i=0;i<MAX_CHANNELS_SIZE;i++){
+            FurnaceRow[] introRows = introChannels[i].getRows();
+            FurnaceRow[] mainLoopRows = mainLoopChannels[i].getRows();
+            int targetMainLoopLength = maxLength - introRows.length;
+            if(mainLoopRows!=null && mainLoopRows.length>0){
+               mainLoopRows = repeat(mainLoopRows,targetMainLoopLength);
+            }            
+            mainLoop.getChannels()[i].setRows(mainLoopRows);
+        }
+        for (int i=0;i<MAX_CHANNELS_SIZE;i++){
+            FurnaceRow[] introRows = introChannels[i].getRows();
+            FurnaceRow[] mainLoopRows = mainLoopChannels[i].getRows();
+            FurnaceRow[] rows = concatenate(introRows, mainLoopRows);
+            FurnaceChannel fc = new FurnaceChannel();
+            fc.setRows(rows);
+            channels[i] = fc;
+        }
+        fillChannelsToMaxLength();
+    }
+    
+    public <T> T[] concatenate(T[] a, T[] b) {
+        int aLen = a.length;
+        int bLen = b.length;
+
+        @SuppressWarnings("unchecked")
+        T[] c = (T[]) Array.newInstance(a.getClass().getComponentType(), aLen + bLen);
+        System.arraycopy(a, 0, c, 0, aLen);
+        System.arraycopy(b, 0, c, aLen, bLen);
+
+        return c;
+    }
 }
