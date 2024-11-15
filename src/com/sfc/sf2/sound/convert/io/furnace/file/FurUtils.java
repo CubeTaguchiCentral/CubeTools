@@ -5,18 +5,13 @@
  */
 package com.sfc.sf2.sound.convert.io.furnace.file;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 /**
  *
  * @author Wiz
  */
-public class Wavetable {
-    
-    private String blockId = "WAVE";
-    private int size = 0;
-    private String name = "";
-    private int width = 0;
-    private int reserved = 0;
-    private int height = 0;
-    private int[] data = null;
+public class FurUtils {
     
 }

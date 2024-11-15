@@ -5,6 +5,10 @@
  */
 package com.sfc.sf2.sound.convert.io.furnace.file;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+
 /**
  *
  * @author Wiz
@@ -12,13 +16,20 @@ package com.sfc.sf2.sound.convert.io.furnace.file;
 public class Header {
     
     private String formatMagic = "-Furnace module-";
-    private short formatVersion = 0xFFFF&219;
+    private short formatVersion = 219;
     private short reserved1 = 0;
     private int songPointer = 0;
     private long reserved2 = 0;
     
     public Header(byte[] data){
-        
+        ByteBuffer bb = ByteBuffer.allocate(data.length);
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        bb.put(data);
+        formatMagic = new String(bb.slice(0, 16).array(), StandardCharsets.UTF_8);
+        formatVersion = bb.getShort(16);
+        reserved1 = bb.getShort(18);
+        songPointer = bb.getInt(20);
+        reserved2 = bb.getLong(24);
     }
 
     public String getFormatMagic() {
