@@ -23,7 +23,7 @@ public class FurnaceFile {
     private Pattern[] patterns;
     
     public FurnaceFile(byte[] data){
-        ByteBuffer bb = ByteBuffer.allocate(data.length);
+        //ByteBuffer bb = ByteBuffer.allocate(data.length);
         header = new Header(data);
         songInfo = new SongInfo(data, header.getSongPointer());
         chipFlags = new ChipFlags(data, header.getSongPointer()+songInfo.getBlockSize());

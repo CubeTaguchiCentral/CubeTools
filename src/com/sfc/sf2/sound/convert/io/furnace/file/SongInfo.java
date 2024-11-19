@@ -33,7 +33,7 @@ public class SongInfo {
     private byte[] soundChips = new byte[32];
     private byte[] soundChipVolumes = new byte[32];
     private byte[] soundChipPanning = new byte[32];
-    private int[] soundChipFlagPointers = new int[32*4];
+    private int[] soundChipFlagPointers = new int[32];
     private String songName = "";
     private String songAuthor = "";
     private float a4Tuning = 0;
@@ -131,158 +131,170 @@ public class SongInfo {
     private int sampleDirectoriesPointer = 0;
     
     public SongInfo(byte[] data, int startPointer){
-        ByteBuffer bb = ByteBuffer.allocate(data.length-startPointer);
-        bb.put(data, startPointer, data.length-startPointer);
+        ByteBuffer bb = ByteBuffer.wrap(data, startPointer, data.length-startPointer);
         bb.order(ByteOrder.LITTLE_ENDIAN);
-        int cursor = 0;
-        blockId = new String(bb.slice(cursor+=0, 4).array(), StandardCharsets.UTF_8);
-        blockSize = bb.getInt(cursor+=4);
-        timebase = bb.get(cursor+=4);
-        speed1 = bb.get(cursor+=1);
-        speed2 = bb.get(cursor+=1);
-        initialArpeggioTime = bb.get(cursor+=1);
-        ticksPerSecond = bb.getFloat(cursor+=1);
-        patternLength = bb.getShort(cursor+=4);
-        ordersLength = bb.getShort(cursor+=2);
-        highlightA = bb.get(cursor+=2);
-        highlightB = bb.get(cursor+=1);
-        instrumentCount = bb.getShort(cursor+=1);
-        wavetableCount = bb.getShort(cursor+=2);
-        sampleCount = bb.getShort(cursor+=2);
-        patternCount = bb.get(cursor+=2);
-        soundChips = bb.slice(cursor+=1, 32).array();
-        soundChipVolumes = bb.slice(cursor+=32, 32).array();
-        soundChipPanning = bb.slice(cursor+=32, 32).array();
-        soundChipFlagPointers = toIntArray(bb.slice(cursor+=32, 32*4));
-        int songNameLength = findStringLength(bb, cursor+=32*4);
-        songName = new String(bb.slice(cursor, songNameLength).array(), StandardCharsets.UTF_8);
-        int songAuthorLength = findStringLength(bb, cursor+=songNameLength+1);
-        songAuthor = new String(bb.slice(cursor, songAuthorLength).array(), StandardCharsets.UTF_8);
-        a4Tuning = bb.getFloat(cursor+=songAuthorLength+1);
-        limitSlides = bb.get(cursor+=4);
-        linearPitch = bb.get(cursor+=1);
-        loopModality = bb.get(cursor+=1);
-        properNoiseLayout = bb.get(cursor+=1);
-        waveDutyIsVolume = bb.get(cursor+=1);
-        resetMacroOnPorta = bb.get(cursor+=1);
-        legacyVolumeSlides = bb.get(cursor+=1);
-        compatibleArpeggio = bb.get(cursor+=1);
-        noteOffResetsSlides = bb.get(cursor+=1);
-        targetResetsSlides = bb.get(cursor+=1);
-        arpeggioInhibitsPortamento = bb.get(cursor+=1);
-        wackAlgorithmMacro = bb.get(cursor+=1);
-        brokenShortcutSlides = bb.get(cursor+=1);
-        ignoreDuplicateSlides = bb.get(cursor+=1);
-        stopPortamentoOnNoteOff = bb.get(cursor+=1);
-        continuousVibrato = bb.get(cursor+=1);
-        brokenDacMode = bb.get(cursor+=1);
-        oneTickCut = bb.get(cursor+=1);
+        bb.position(startPointer);
+        byte[] workingBytes = null;
+        int workingLength = 0;
+        blockId = getString(bb, 4);
+        blockSize = bb.getInt();
+        timebase = bb.get();
+        speed1 = bb.get();
+        speed2 = bb.get();
+        initialArpeggioTime = bb.get();
+        ticksPerSecond = bb.getFloat();
+        patternLength = bb.getShort();
+        ordersLength = bb.getShort();
+        highlightA = bb.get();
+        highlightB = bb.get();
+        instrumentCount = bb.getShort();
+        wavetableCount = bb.getShort();
+        sampleCount = bb.getShort();
+        patternCount = bb.getInt();
+        soundChips = getByteArray(bb, 32);
+        soundChipVolumes = getByteArray(bb, 32);
+        soundChipPanning = getByteArray(bb, 32);
+        soundChipFlagPointers = getIntArray(bb, 32);
+        songName = getString(bb);
+        songAuthor = getString(bb);
+        a4Tuning = bb.getFloat();
+        limitSlides = bb.get();
+        linearPitch = bb.get();
+        loopModality = bb.get();
+        properNoiseLayout = bb.get();
+        waveDutyIsVolume = bb.get();
+        resetMacroOnPorta = bb.get();
+        legacyVolumeSlides = bb.get();
+        compatibleArpeggio = bb.get();
+        noteOffResetsSlides = bb.get();
+        targetResetsSlides = bb.get();
+        arpeggioInhibitsPortamento = bb.get();
+        wackAlgorithmMacro = bb.get();
+        brokenShortcutSlides = bb.get();
+        ignoreDuplicateSlides = bb.get();
+        stopPortamentoOnNoteOff = bb.get();
+        continuousVibrato = bb.get();
+        brokenDacMode = bb.get();
+        oneTickCut = bb.get();
         
-        instrumentChangeAllowedDuringPorta = bb.get(cursor+=1);
-        resetNoteBaseOnArpeggioEffectStop = bb.get(cursor+=1);
-        instrumentPointers = toIntArray(bb.slice(cursor+=1, instrumentCount*4));
+        instrumentChangeAllowedDuringPorta = bb.get();
+        resetNoteBaseOnArpeggioEffectStop = bb.get();
+        instrumentPointers = getIntArray(bb, instrumentCount);
         
-        wavetablePointers = toIntArray(bb.slice(cursor+=instrumentCount*4, wavetableCount*4));
-        samplePointers = toIntArray(bb.slice(cursor+=wavetableCount*4, sampleCount*4));
-        patternPointers = toIntArray(bb.slice(cursor+=sampleCount*4, patternCount*4));
-        orders = bb.slice(cursor+=patternCount*4, ordersLength*10).array();
-        effectColumns = bb.slice(cursor+=ordersLength*10, 10).array();
-        channelHideStatus = bb.slice(cursor+=10, 10).array();
-        channelCollapseStatus = bb.slice(cursor+=10, 10).array();
-        channelNames = toStringArray(bb, cursor+=10, 10);
-        channelShortNames = toStringArray(bb, cursor+=findStringArrayLength(bb, cursor, 10), 10);
+        wavetablePointers = getIntArray(bb, wavetableCount);
+        samplePointers = getIntArray(bb, sampleCount);
+        patternPointers = getIntArray(bb, patternCount);
         
-        int songCommentLength = findStringLength(bb, cursor+=findStringArrayLength(bb, cursor, 10));
-        songComment = new String(bb.slice(cursor, songCommentLength).array(), StandardCharsets.UTF_8);
-        masterVolume = bb.getFloat(cursor+=songCommentLength+1);
-        brokenSpeedSelection = bb.get(cursor+=4);
-        noSlidesOnFirstTick = bb.get(cursor+=1);
-        nextRowResetArpPos = bb.get(cursor+=1);
-        ignoreJumpAtEnd = bb.get(cursor+=1);
-        buggyPortamentoAfterSlide = bb.get(cursor+=1);
-        newInsAffectsEnveloppeGB = bb.get(cursor+=1);
-        extChStateIsShared = bb.get(cursor+=1);
-        ignoreDacModeChangeOutsideOfIntendedChannel = bb.get(cursor+=1);
-        e1xyAnde2xyAlsoTakePriorityOverSlide00 = bb.get(cursor+=1);
-        newSegaPcm = bb.get(cursor+=1);
-        weirdFnumBlockBasedChipPitchSlides = bb.get(cursor+=1);
-        snDutyMacroAlwaysResetsPhase = bb.get(cursor+=1);
-        pitchMacroIsLinear = bb.get(cursor+=1);
-        pitchSlideSpeedInFullLinearPitchMode = bb.get(cursor+=1);
-        oldOctaveBoundaryBehaviour = bb.get(cursor+=1);
-        disableOpn2DacVolumeControl = bb.get(cursor+=1);
-        newVolumeScalingStrategy = bb.get(cursor+=1);
-        volumeMacroStillAppliesAfterEnd = bb.get(cursor+=1);
-        brokenOutVol = bb.get(cursor+=1);
-        e1xyAnde2xyStopOnSameNote = bb.get(cursor+=1);
-        brokenInitialPositionOfPortaAfterArp = bb.get(cursor+=1);
-        snPeriodsUnder8AreTreatedAs1 = bb.get(cursor+=1);
-        cutDelayEffectPolicy = bb.get(cursor+=1);
-        effect0b0dtreatment = bb.get(cursor+=1);
-        automaticSystemNameDetection = bb.get(cursor+=1);
-        disableSampleMacro = bb.get(cursor+=1);
-        brokenOutVolEpisode2 = bb.get(cursor+=1);
-        oldArpeggioStrategy = bb.get(cursor+=1);
-        virtualTempoNumerator = bb.getShort(cursor+=1);
-        virtualTempoDenominator = bb.getShort(cursor+=2);
-        int firstSubsongNameLength = findStringLength(bb, cursor+=2);
-        firstSubsongName = new String(bb.slice(cursor, firstSubsongNameLength).array(), StandardCharsets.UTF_8);
-        int firstSubsongCommentLength = findStringLength(bb, cursor+=firstSubsongNameLength+1);
-        firstSubsongComment = new String(bb.slice(cursor, firstSubsongCommentLength).array(), StandardCharsets.UTF_8);
+        orders = getByteArray(bb, ordersLength*10);
+        effectColumns = getByteArray(bb, 10);
+        channelHideStatus = getByteArray(bb, 10);
+        channelCollapseStatus = getByteArray(bb, 10);
+        channelNames = getStringArray(bb, 10);
+        channelShortNames = getStringArray(bb, 10);
+        songComment = getString(bb);
+        masterVolume = bb.getFloat();
+        brokenSpeedSelection = bb.get();
+        noSlidesOnFirstTick = bb.get();
+        nextRowResetArpPos = bb.get();
+        ignoreJumpAtEnd = bb.get();
+        buggyPortamentoAfterSlide = bb.get();
+        newInsAffectsEnveloppeGB = bb.get();
+        extChStateIsShared = bb.get();
+        ignoreDacModeChangeOutsideOfIntendedChannel = bb.get();
+        e1xyAnde2xyAlsoTakePriorityOverSlide00 = bb.get();
+        newSegaPcm = bb.get();
+        weirdFnumBlockBasedChipPitchSlides = bb.get();
+        snDutyMacroAlwaysResetsPhase = bb.get();
+        pitchMacroIsLinear = bb.get();
+        pitchSlideSpeedInFullLinearPitchMode = bb.get();
+        oldOctaveBoundaryBehaviour = bb.get();
+        disableOpn2DacVolumeControl = bb.get();
+        newVolumeScalingStrategy = bb.get();
+        volumeMacroStillAppliesAfterEnd = bb.get();
+        brokenOutVol = bb.get();
+        e1xyAnde2xyStopOnSameNote = bb.get();
+        brokenInitialPositionOfPortaAfterArp = bb.get();
+        snPeriodsUnder8AreTreatedAs1 = bb.get();
+        cutDelayEffectPolicy = bb.get();
+        effect0b0dtreatment = bb.get();
+        automaticSystemNameDetection = bb.get();
+        disableSampleMacro = bb.get();
+        brokenOutVolEpisode2 = bb.get();
+        oldArpeggioStrategy = bb.get();
+        virtualTempoNumerator = bb.getShort();
+        virtualTempoDenominator = bb.getShort();
+        firstSubsongName = getString(bb);
+        firstSubsongComment = getString(bb);
         
-        numberOfAdditionalSubsongs = bb.get(cursor+=firstSubsongCommentLength+1);
-        additionalSubsongsReserved = bb.slice(cursor+=1, 3).array();
-        subsongDataPointers = toIntArray(bb.slice(cursor+=3, numberOfAdditionalSubsongs*4));
-        int systemNameLength = findStringLength(bb, cursor+=numberOfAdditionalSubsongs*4);
-        systemName = new String(bb.slice(cursor, systemNameLength).array(), StandardCharsets.UTF_8);
-        int albumCategoryGameNameLength = findStringLength(bb, cursor+=systemNameLength+1);
-        albumCategoryGameName = new String(bb.slice(cursor, albumCategoryGameNameLength).array(), StandardCharsets.UTF_8);
-        int songNameJapaneseLength = findStringLength(bb, cursor+=albumCategoryGameNameLength+1);
-        songNameJapanese = new String(bb.slice(cursor, songNameJapaneseLength).array(), StandardCharsets.UTF_8);
-        int songAuthorJapaneseLength = findStringLength(bb, cursor+=songNameJapaneseLength+1);
-        songAuthorJapanese = new String(bb.slice(cursor, songAuthorJapaneseLength).array(), StandardCharsets.UTF_8);
-        int systemNameJapaneseLength = findStringLength(bb, cursor+=songAuthorJapaneseLength+1);
-        systemNameJapanese = new String(bb.slice(cursor, systemNameJapaneseLength).array(), StandardCharsets.UTF_8);
-        int albumCategoryGameNameJapaneseLength = findStringLength(bb, cursor+=systemNameJapaneseLength+1);
-        albumCategoryGameNameJapanese = new String(bb.slice(cursor, albumCategoryGameNameJapaneseLength).array(), StandardCharsets.UTF_8);
+        numberOfAdditionalSubsongs = bb.get();
+        additionalSubsongsReserved = getByteArray(bb, 3);
+        subsongDataPointers = getIntArray(bb, numberOfAdditionalSubsongs);
+        systemName = getString(bb);
+        albumCategoryGameName = getString(bb);
+        songNameJapanese = getString(bb);
+        songAuthorJapanese = getString(bb);
+        systemNameJapanese = getString(bb);
+        albumCategoryGameNameJapanese = getString(bb);
         int numberofChips = findNumberOfChips();
-        extraChipOutputSettings = toFloatArray(bb.slice(cursor+=albumCategoryGameNameJapaneseLength+1, numberofChips*4));
+        extraChipOutputSettings = getFloatArray(bb, numberofChips*3);
         
-        patchbayConnectionCount = bb.get(cursor+=numberofChips*4);
-        patchbays = toIntArray(bb.slice(cursor+=1, patchbayConnectionCount*4));
-        automaticPatchbay = bb.get(cursor+=patchbayConnectionCount*4);
-        brokenPortamentoDuringLegato = bb.get(cursor+=1);
-        brokenMacroDuringNoteOffInSomeFmChips = bb.get(cursor+=1);
-        preNoteC64DoesNotCompensateForPortamentoOrLegato = bb.get(cursor+=1);
-        disableNewNesDpcmFeatures = bb.get(cursor+=1);
-        resetArpEffectPhaseOnNewNote = bb.get(cursor+=1);
-        linearVolumeScalingRoundsUp = bb.get(cursor+=1);
-        legacyAlwaysSetVolumeBehavior = bb.get(cursor+=1);
-        legacySampleOffsetEffect = bb.get(cursor+=1);
-        lengthOfSpeedPattern = bb.get(cursor+=1);
-        speedPattern = bb.slice(cursor+=1, 16).array();
-        grooveListEntryNumber = bb.get(cursor+=16);
-        grooveEntries = bb.slice(cursor+=1, grooveListEntryNumber*17).array();
-        instrumentDirectoriesPointer = bb.getInt(cursor+=grooveListEntryNumber*17);
-        wavetableDirectoriesPointer = bb.getInt(cursor+=4);
-        sampleDirectoriesPointer = bb.getInt(cursor+=4);    
+        patchbayConnectionCount = bb.getInt();
+        patchbays = getIntArray(bb, patchbayConnectionCount);
+        automaticPatchbay = bb.get();
+        brokenPortamentoDuringLegato = bb.get();
+        brokenMacroDuringNoteOffInSomeFmChips = bb.get();
+        preNoteC64DoesNotCompensateForPortamentoOrLegato = bb.get();
+        disableNewNesDpcmFeatures = bb.get();
+        resetArpEffectPhaseOnNewNote = bb.get();
+        linearVolumeScalingRoundsUp = bb.get();
+        legacyAlwaysSetVolumeBehavior = bb.get();
+        legacySampleOffsetEffect = bb.get();
+        lengthOfSpeedPattern = bb.get();
+        speedPattern = getByteArray(bb, 16);
+        grooveListEntryNumber = bb.get();
+        grooveEntries = getByteArray(bb, grooveListEntryNumber*17);
+        instrumentDirectoriesPointer = bb.getInt();
+        wavetableDirectoriesPointer = bb.getInt();
+        sampleDirectoriesPointer = bb.getInt();    
         
     }
 
-    private int[] toIntArray(ByteBuffer bb){
-        int[] ints = new int[bb.capacity()];
+    private byte[] getByteArray(ByteBuffer bb, int length){
+        byte[] bytes = new byte[length];
+        for(int i=0;i<bytes.length;i++){
+            bytes[i] = bb.get();
+        }
+        return bytes;
+    }
+
+    private int[] getIntArray(ByteBuffer bb, int length){
+        int[] ints = new int[length];
         for(int i=0;i<ints.length;i++){
-            ints[i] = bb.getInt(i*4);
+            ints[i] = bb.getInt();
         }
         return ints;
     }
 
-    private float[] toFloatArray(ByteBuffer bb){
-        float[] floats = new float[bb.capacity()];
+    private float[] getFloatArray(ByteBuffer bb, int length){
+        float[] floats = new float[length];
         for(int i=0;i<floats.length;i++){
-            floats[i] = bb.getFloat(i*4);
+            floats[i] = bb.getFloat();
         }
         return floats;
+    }
+
+    private String getString(ByteBuffer bb){
+        int length = findStringLength(bb, bb.position());
+        byte[] workingBytes = new byte[length];
+        bb.get(workingBytes, 0, length);
+        bb.position(bb.position()+1);
+        return new String(workingBytes, StandardCharsets.UTF_8);
+    }
+
+    private String getString(ByteBuffer bb, int length){
+        byte[] workingBytes = new byte[length];
+        bb.get(workingBytes, 0, length);
+        return new String(workingBytes, StandardCharsets.UTF_8);
     }
     
     private int findStringLength(ByteBuffer bb, int cursor){
@@ -292,27 +304,15 @@ public class SongInfo {
         }
         return length;
     }
-    
-    private int findStringArrayLength(ByteBuffer bb, int cursor, int length){
-        int totalLength = 0;
-        int previousLength = 0;
-        int currentLength = 0;
-        for(int i=0;i<length;i++){
-            currentLength = findStringLength(bb, cursor+=previousLength+1);
-            totalLength += currentLength+1;
-            previousLength = currentLength;
-        }
-        return totalLength;
-    }
 
-    private String[] toStringArray(ByteBuffer bb, int cursor, int length){
+    private String[] getStringArray(ByteBuffer bb, int length){
         String[] strings = new String[length];
-        int previousLength = 0;
-        int currentLength = 0;
         for(int i=0;i<length;i++){
-            currentLength = findStringLength(bb, cursor+=previousLength+1);
-            strings[i] = new String(bb.slice(cursor, currentLength).array(), StandardCharsets.UTF_8);
-            previousLength = currentLength;
+            int workingLength = findStringLength(bb, bb.position());
+            byte[] workingBytes = new byte[workingLength];
+            bb.get(workingBytes, 0, workingLength);
+            bb.position(bb.position()+1);
+            strings[i] = new String(workingBytes, StandardCharsets.UTF_8);
         }
         return strings;
     }
