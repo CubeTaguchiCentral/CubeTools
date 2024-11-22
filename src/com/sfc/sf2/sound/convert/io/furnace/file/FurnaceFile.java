@@ -6,6 +6,7 @@
 package com.sfc.sf2.sound.convert.io.furnace.file;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -27,6 +28,64 @@ public class FurnaceFile {
         header = new Header(data);
         songInfo = new SongInfo(data, header.getSongPointer());
         chipFlags = new ChipFlags(data, header.getSongPointer()+songInfo.getBlockSize());
+    }
+
+    public static byte[] getByteArray(ByteBuffer bb, int length){
+        byte[] bytes = new byte[length];
+        for(int i=0;i<bytes.length;i++){
+            bytes[i] = bb.get();
+        }
+        return bytes;
+    }
+
+    public static int[] getIntArray(ByteBuffer bb, int length){
+        int[] ints = new int[length];
+        for(int i=0;i<ints.length;i++){
+            ints[i] = bb.getInt();
+        }
+        return ints;
+    }
+
+    public static float[] getFloatArray(ByteBuffer bb, int length){
+        float[] floats = new float[length];
+        for(int i=0;i<floats.length;i++){
+            floats[i] = bb.getFloat();
+        }
+        return floats;
+    }
+
+    public static String getString(ByteBuffer bb){
+        int length = findStringLength(bb, bb.position());
+        byte[] workingBytes = new byte[length];
+        bb.get(workingBytes, 0, length);
+        bb.position(bb.position()+1);
+        return new String(workingBytes, StandardCharsets.UTF_8);
+    }
+
+    public static String getString(ByteBuffer bb, int length){
+        byte[] workingBytes = new byte[length];
+        bb.get(workingBytes, 0, length);
+        return new String(workingBytes, StandardCharsets.UTF_8);
+    }
+    
+    public static int findStringLength(ByteBuffer bb, int cursor){
+        int length = 0;
+        while(bb.get(cursor+length)!=0){
+            length++;
+        }
+        return length;
+    }
+
+    public static String[] getStringArray(ByteBuffer bb, int length){
+        String[] strings = new String[length];
+        for(int i=0;i<length;i++){
+            int workingLength = findStringLength(bb, bb.position());
+            byte[] workingBytes = new byte[workingLength];
+            bb.get(workingBytes, 0, workingLength);
+            bb.position(bb.position()+1);
+            strings[i] = new String(workingBytes, StandardCharsets.UTF_8);
+        }
+        return strings;
     }
 
     public Header getHeader() {
