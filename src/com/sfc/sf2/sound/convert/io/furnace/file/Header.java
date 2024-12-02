@@ -7,7 +7,6 @@ package com.sfc.sf2.sound.convert.io.furnace.file;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 
 /**
  *

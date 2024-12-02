@@ -134,8 +134,6 @@ public class SongInfo {
         ByteBuffer bb = ByteBuffer.wrap(data, startPointer, data.length-startPointer);
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.position(startPointer);
-        byte[] workingBytes = null;
-        int workingLength = 0;
         blockId = getString(bb, 4);
         blockSize = bb.getInt();
         timebase = bb.get();
@@ -287,7 +285,7 @@ public class SongInfo {
         return FurnaceFile.getStringArray(bb, length);
     }
 
-    private int findNumberOfChips(){
+    public int findNumberOfChips(){
         for(int i=0;i<soundChips.length;i++){
             if(soundChips[i]==0){
                 return i;

@@ -16,7 +16,7 @@ public class FurnaceFile {
     
     private Header header;
     private SongInfo songInfo;
-    private ChipFlags chipFlags;
+    private ChipFlags[] chipFlags;
     private AssetDirectory[] assetDirectories;
     private Instrument[] instruments;
     private Wavetable[] wavetables;
@@ -27,7 +27,18 @@ public class FurnaceFile {
         //ByteBuffer bb = ByteBuffer.allocate(data.length);
         header = new Header(data);
         songInfo = new SongInfo(data, header.getSongPointer());
-        chipFlags = new ChipFlags(data, header.getSongPointer()+songInfo.getBlockSize());
+        int numberOfChips = songInfo.findNumberOfChips();
+        chipFlags = new ChipFlags[32];
+        int[] chipFlagPointers = songInfo.getSoundChipFlagPointers();
+        for(int i=0;i<numberOfChips;i++){
+            if(chipFlagPointers[i]>0){
+                chipFlags[i] = new ChipFlags(data,chipFlagPointers[i]);
+            }
+        }  
+        int instrumentDirectoriesPointer = songInfo.getInstrumentDirectoriesPointer();
+        
+        int wavetableDirectoriesPointer = songInfo.getWavetableDirectoriesPointer();
+        int sampleDirectoriesPointer = songInfo.getSampleDirectoriesPointer();
     }
 
     public static byte[] getByteArray(ByteBuffer bb, int length){
@@ -104,11 +115,11 @@ public class FurnaceFile {
         this.songInfo = songInfo;
     }
 
-    public ChipFlags getChipFlags() {
+    public ChipFlags[] getChipFlags() {
         return chipFlags;
     }
 
-    public void setChipFlags(ChipFlags chipFlags) {
+    public void setChipFlags(ChipFlags[] chipFlags) {
         this.chipFlags = chipFlags;
     }
 
