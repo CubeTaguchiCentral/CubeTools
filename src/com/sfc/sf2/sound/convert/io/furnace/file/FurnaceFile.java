@@ -17,7 +17,7 @@ public class FurnaceFile {
     private Header header;
     private SongInfo songInfo;
     private ChipFlags[] chipFlags;
-    private AssetDirectory[] assetDirectories;
+    private AssetDirectories[] assetDirectoriesArray;
     private Instrument[] instruments;
     private Wavetable[] wavetables;
     private Sample[] samples;
@@ -35,10 +35,13 @@ public class FurnaceFile {
                 chipFlags[i] = new ChipFlags(data,chipFlagPointers[i]);
             }
         }  
+        assetDirectoriesArray = new AssetDirectories[3];
         int instrumentDirectoriesPointer = songInfo.getInstrumentDirectoriesPointer();
-        
+        assetDirectoriesArray[0] = new AssetDirectories(data, instrumentDirectoriesPointer);
         int wavetableDirectoriesPointer = songInfo.getWavetableDirectoriesPointer();
+        assetDirectoriesArray[1] = new AssetDirectories(data, wavetableDirectoriesPointer);
         int sampleDirectoriesPointer = songInfo.getSampleDirectoriesPointer();
+        assetDirectoriesArray[2] = new AssetDirectories(data, sampleDirectoriesPointer);
     }
 
     public static byte[] getByteArray(ByteBuffer bb, int length){
@@ -123,12 +126,12 @@ public class FurnaceFile {
         this.chipFlags = chipFlags;
     }
 
-    public AssetDirectory[] getAssetDirectories() {
-        return assetDirectories;
+    public AssetDirectories[] getAssetDirectoriesArray() {
+        return assetDirectoriesArray;
     }
 
-    public void setAssetDirectories(AssetDirectory[] assetDirectories) {
-        this.assetDirectories = assetDirectories;
+    public void setAssetDirectoriesArray(AssetDirectories[] assetDirectoriesArray) {
+        this.assetDirectoriesArray = assetDirectoriesArray;
     }
 
     public Instrument[] getInstruments() {
