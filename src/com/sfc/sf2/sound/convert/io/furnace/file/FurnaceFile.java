@@ -42,6 +42,23 @@ public class FurnaceFile {
         assetDirectoriesArray[1] = new AssetDirectories(data, wavetableDirectoriesPointer);
         int sampleDirectoriesPointer = songInfo.getSampleDirectoriesPointer();
         assetDirectoriesArray[2] = new AssetDirectories(data, sampleDirectoriesPointer);
+        int instrumentCount = songInfo.getInstrumentCount();
+        instruments = new Instrument[instrumentCount];
+        for(int i=0;i<instrumentCount;i++){
+            int instrumentPointer = songInfo.getInstrumentPointers()[i];
+            if(instrumentPointer>0){
+                instruments[i] = new Instrument(data, instrumentPointer);
+            }
+        }
+        int wavetableCount = songInfo.getWavetableCount();
+        wavetables = new Wavetable[wavetableCount];
+        for(int i=0;i<wavetableCount;i++){
+            int wavetablePointer = songInfo.getWavetablePointers()[i];
+            if(wavetablePointer>0){
+                wavetables[i] = new Wavetable(data, wavetablePointer);
+            }
+        }
+        int i = 0;
     }
 
     public static byte[] getByteArray(ByteBuffer bb, int length){

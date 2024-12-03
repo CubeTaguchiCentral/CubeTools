@@ -25,8 +25,8 @@ public class ChipFlags {
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.position(startPointer);    
         String blockId = getString(bb, 4);
-        int blockSize = bb.getInt();    
-        String dataString = getString(bb, blockSize);
+        size = bb.getInt();    
+        String dataString = getString(bb, size);
         String[] flags = dataString.split("\n");
         for(int i=0;i<flags.length;i++){
             String[] strings = flags[i].split("=");
