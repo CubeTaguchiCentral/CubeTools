@@ -58,6 +58,14 @@ public class FurnaceFile {
                 wavetables[i] = new Wavetable(data, wavetablePointer);
             }
         }
+        int sampleCount = songInfo.getSampleCount();
+        samples = new Sample[sampleCount];
+        for(int i=0;i<sampleCount;i++){
+            int samplePointer = songInfo.getSamplePointers()[i];
+            if(samplePointer>0){
+                samples[i] = new Sample(data, samplePointer);
+            }
+        }
         int i = 0;
     }
 
