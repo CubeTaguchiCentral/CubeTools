@@ -66,6 +66,14 @@ public class FurnaceFile {
                 samples[i] = new Sample(data, samplePointer);
             }
         }
+        int patternCount = songInfo.getPatternCount();
+        patterns = new Pattern[patternCount];
+        for(int i=0;i<patternCount;i++){
+            int patternPointer = songInfo.getPatternPointers()[i];
+            if(patternPointer>0){
+                patterns[i] = new Pattern(data, patternPointer);
+            }
+        }
         int i = 0;
     }
 
