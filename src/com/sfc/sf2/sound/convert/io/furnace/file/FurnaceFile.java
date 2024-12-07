@@ -32,7 +32,6 @@ public class FurnaceFile {
     private PatternBlock[] patterns;
     
     public FurnaceFile(byte[] data){
-        //ByteBuffer bb = ByteBuffer.allocate(data.length);
         header = new Header(data);
         songInfo = new SongInfoBlock(data, header.getSongPointer());
         int numberOfChips = songInfo.findNumberOfChips();
@@ -82,7 +81,6 @@ public class FurnaceFile {
                 patterns[i] = new PatternBlock(data, patternPointer);
             }
         }
-        int i = 0;
     }
 
     public static byte[] getByteArray(ByteBuffer bb, int length){
