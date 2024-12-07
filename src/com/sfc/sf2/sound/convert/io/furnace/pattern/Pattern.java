@@ -7,7 +7,6 @@ package com.sfc.sf2.sound.convert.io.furnace.pattern;
 
 import com.sfc.sf2.sound.convert.io.cube.CubeChannel;
 import com.sfc.sf2.sound.convert.io.cube.CubeCommand;
-import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
 import com.sfc.sf2.sound.convert.io.cube.command.Inst;
 import com.sfc.sf2.sound.convert.io.cube.command.MainLoopStart;
 import com.sfc.sf2.sound.convert.io.cube.command.PsgInst;
@@ -21,9 +20,7 @@ import com.sfc.sf2.sound.convert.io.cube.command.Vibrato;
 import com.sfc.sf2.sound.convert.io.cube.command.Vol;
 import com.sfc.sf2.sound.convert.io.cube.command.Wait;
 import com.sfc.sf2.sound.convert.io.cube.command.WaitL;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -32,53 +29,13 @@ import java.util.List;
  */
 public class Pattern {
     
-    private static final int TYPE_FM = 0;
-    private static final int TYPE_DAC = 1;
-    private static final int TYPE_PSGTONE = 2;
-    private static final int TYPE_PSGNOISE = 3;
+    private Row[] rows;
     
-    private static final int MAX_CHANNELS_SIZE=10;
-    
-    private Channel[] channels = new Channel[MAX_CHANNELS_SIZE];
-
-    public Channel[] getChannels() {
-        return channels;
+    public Pattern(){
+        
     }
     
-    public Pattern(MusicEntry me, boolean introOnly, boolean mainLoopOnly){
-        for(int i=0;i<channels.length;i++){
-            channels[i] = new Channel();
-            List<Row> rowList = null;
-            if(i<5){
-                rowList = convertCubeChannel(me.getChannels()[i], TYPE_FM, introOnly, mainLoopOnly);
-            }else if(i==5){
-                if(!me.isYm6InDacMode()){
-                    rowList = convertCubeChannel(me.getChannels()[i], TYPE_FM, introOnly, mainLoopOnly);
-                }else{
-                    rowList = convertCubeChannel(me.getChannels()[i], TYPE_DAC, introOnly, mainLoopOnly);
-                }
-            }else if(i<9){
-                rowList = convertCubeChannel(me.getChannels()[i], TYPE_PSGTONE, introOnly, mainLoopOnly);
-            }else{
-                rowList = convertCubeChannel(me.getChannels()[i], TYPE_PSGNOISE, introOnly, mainLoopOnly);
-            }
-            Row[] rows = new Row[rowList.size()];
-            for(int j=0;j<rows.length;j++){
-                rows[j]=rowList.get(j);
-            }
-            channels[i].setRows(rows);
-        }
-        
-        /*
-        if(mainLoopOnly){
-            repeatMainLoopToMaxLength();
-        }
-        
-        fillChannelsToMaxLength();
-        */
-    }
-    
-    public List<Row> convertCubeChannel(CubeChannel cch, int channelType, boolean introOnly, boolean mainLoopOnly){
+    public Pattern(CubeChannel cch, int channelType, boolean introOnly, boolean mainLoopOnly){
         List<Row> rowList = new ArrayList();
         CubeCommand[] ccs = cch.getCcs();
         int playLength = 0;
@@ -284,93 +241,17 @@ public class Pattern {
         if(introOnly){
             currentRow.getEffectList().add(new Effect(0x0D,0x00));
         }
-        return rowList;
-    }
-    
-    public void fillChannelsToMaxLength(){
-        int maxLength=0;
-        for (int i=0;i<channels.length;i++){
-            if(maxLength<channels[i].getRows().length){
-                maxLength = channels[i].getRows().length;
-            }
-        }
-        for (int i=0;i<channels.length;i++){
-            Row[] rows = channels[i].getRows();
-            if(rows.length<maxLength){
-                Row[] newRows = new Row[maxLength];
-                System.arraycopy(rows, 0, newRows, 0, rows.length);
-                for(int j=0;(rows.length+j)<maxLength;j++){
-                    Row voidRow = new Row();
-                    newRows[rows.length+j] = voidRow;
-                }
-                channels[i].setRows(newRows);
-            }
+        rows = new Row[rowList.size()];
+        for(int j=0;j<rows.length;j++){
+            rows[j]=rowList.get(j);
         }
     }
     
-    public void repeatMainLoopToMaxLength(){
-        int maxLength=0;
-        for (int i=0;i<channels.length;i++){
-            if(maxLength<channels[i].getRows().length){
-                maxLength = channels[i].getRows().length;
-            }
-        }
-        for (int i=0;i<channels.length;i++){
-            if(channels[i].getRows()!=null && channels[i].getRows().length>0){
-                channels[i].setRows(repeat(channels[i].getRows(),maxLength));
-            }
-        }
+    public Row[] getRows() {
+        return rows;
     }
-    
-    public static <T> T[] repeat(T[] arr, int newLength) {
-        T[] dup = Arrays.copyOf(arr, newLength);
-        for (int last = arr.length; last != 0 && last < newLength; last <<= 1) {
-            System.arraycopy(dup, 0, dup, last, Math.min(last << 1, newLength) - last);
-        }
-        return dup;
-    }
-    
-    public Pattern(Pattern intro, Pattern mainLoop){
-        Channel[] introChannels = intro.getChannels();
-        Channel[] mainLoopChannels = mainLoop.getChannels();
-        int maxLength=0;
-        for (int i=0;i<MAX_CHANNELS_SIZE;i++){
-            Row[] introRows = introChannels[i].getRows();
-            Row[] mainLoopRows = mainLoopChannels[i].getRows();
-            if(maxLength<(introRows.length+mainLoopRows.length)){
-                maxLength = introRows.length+mainLoopRows.length;
-            }
-        }
-        System.out.println("maxLength : "+maxLength);
-        for (int i=0;i<MAX_CHANNELS_SIZE;i++){
-            Row[] introRows = introChannels[i].getRows();
-            Row[] mainLoopRows = mainLoopChannels[i].getRows();
-            int targetMainLoopLength = maxLength - introRows.length;
-            if(mainLoopRows!=null && mainLoopRows.length>0){
-               mainLoopRows = repeat(mainLoopRows,targetMainLoopLength);
-            }            
-            mainLoop.getChannels()[i].setRows(mainLoopRows);
-        }
-        for (int i=0;i<MAX_CHANNELS_SIZE;i++){
-            Row[] introRows = introChannels[i].getRows();
-            Row[] mainLoopRows = mainLoopChannels[i].getRows();
-            Row[] rows = concatenate(introRows, mainLoopRows);
-            Channel fc = new Channel();
-            fc.setRows(rows);
-            channels[i] = fc;
-        }
-        fillChannelsToMaxLength();
-    }
-    
-    public <T> T[] concatenate(T[] a, T[] b) {
-        int aLen = a.length;
-        int bLen = b.length;
 
-        @SuppressWarnings("unchecked")
-        T[] c = (T[]) Array.newInstance(a.getClass().getComponentType(), aLen + bLen);
-        System.arraycopy(a, 0, c, 0, aLen);
-        System.arraycopy(b, 0, c, aLen, bLen);
-
-        return c;
+    public void setRows(Row[] rows) {
+        this.rows = rows;
     }
 }

@@ -5,7 +5,7 @@
  */
 package com.sfc.sf2.sound.convert.io;
 
-import com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern;
+import com.sfc.sf2.sound.convert.io.furnace.PatternRange;
 import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
 import com.sfc.sf2.sound.convert.io.furnace.clipboard.*;
 import java.io.IOException;
@@ -31,44 +31,28 @@ public class FurnaceClipboardManager {
             pw = new PrintWriter(path.toString(),System.getProperty("file.encoding"));
             if(!me.hasIntro()){
             //if(true){
-                Pattern fp = new Pattern(me, false, false);
+                PatternRange fp = new PatternRange(me, false, false);
                 pw.print(FurnaceClipboardProducer.produceClipboardOutput(fp));
             }else{
-                Pattern intro = new Pattern(me, true, false);
+                PatternRange intro = new PatternRange(me, true, false);
                 //pw.print(FurnaceClipboardProducer.produceClipboardOutput(intro));
-                System.out.println("intro channel sizes :\n"
-                        + intro.getChannels()[0].getRows().length+" rows\n"
-                        + intro.getChannels()[1].getRows().length+" rows\n"
-                        + intro.getChannels()[2].getRows().length+" rows\n"
-                        + intro.getChannels()[3].getRows().length+" rows\n"
-                        + intro.getChannels()[4].getRows().length+" rows\n"
-                        + intro.getChannels()[5].getRows().length+" rows\n"
-                        + intro.getChannels()[6].getRows().length+" rows\n"
-                        + intro.getChannels()[7].getRows().length+" rows\n"
-                        + intro.getChannels()[8].getRows().length+" rows\n"
-                        + intro.getChannels()[9].getRows().length+" rows"
-                        );
-                Pattern mainLoop = new Pattern(me, false, true);
+                printChannelSizes(intro);
+                PatternRange mainLoop = new PatternRange(me, false, true);
                 //pw.print(FurnaceClipboardProducer.produceClipboardOutput(mainLoop));
-                System.out.println("mainLoop channel sizes :\n"
-                        + mainLoop.getChannels()[0].getRows().length+" rows\n"
-                        + mainLoop.getChannels()[1].getRows().length+" rows\n"
-                        + mainLoop.getChannels()[2].getRows().length+" rows\n"
-                        + mainLoop.getChannels()[3].getRows().length+" rows\n"
-                        + mainLoop.getChannels()[4].getRows().length+" rows\n"
-                        + mainLoop.getChannels()[5].getRows().length+" rows\n"
-                        + mainLoop.getChannels()[6].getRows().length+" rows\n"
-                        + mainLoop.getChannels()[7].getRows().length+" rows\n"
-                        + mainLoop.getChannels()[8].getRows().length+" rows\n"
-                        + mainLoop.getChannels()[9].getRows().length+" rows"
-                        );
-                Pattern fp = new Pattern(intro, mainLoop);
+                printChannelSizes(mainLoop);
+                PatternRange fp = new PatternRange(intro, mainLoop);
                 pw.print(FurnaceClipboardProducer.produceClipboardOutput(fp));
             }
             pw.close();
             System.out.println("com.sfc.sf2.sound.convert.io.FurnaceClipboardManager() - Furnace Clipboard exported.");
         } catch (IOException ex) {
             Logger.getLogger(FurnaceClipboardManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static void printChannelSizes(PatternRange pg){
+        for(int i=0;i<pg.getPatterns()[i].getRows().length;i++){
+            System.out.println(pg.getPatterns()[0].getRows().length+" rows\n");
         }
     }
     

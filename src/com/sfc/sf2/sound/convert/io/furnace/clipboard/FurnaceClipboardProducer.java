@@ -5,8 +5,8 @@
  */
 package com.sfc.sf2.sound.convert.io.furnace.clipboard;
 
-import com.sfc.sf2.sound.convert.io.furnace.pattern.Channel;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern;
+import com.sfc.sf2.sound.convert.io.furnace.PatternRange;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Row;
 
 /**
@@ -24,14 +24,14 @@ public class FurnaceClipboardProducer {
         return clipboard;
     }
     
-    public static String produceClipboardOutput(Pattern pattern){
+    public static String produceClipboardOutput(PatternRange pattern){
         String clipboard="";
-        for(int i=0;i<pattern.getChannels()[0].getRows().length;i++){
+        for(int i=0;i<pattern.getPatterns()[0].getRows().length;i++){
             if(i%255==0){
                 clipboard+=produceClipboardHeaderOutput();
             }
-            for(int j=0;j<pattern.getChannels().length;j++){
-                clipboard+=pattern.getChannels()[j].getRows()[i].produceClipboardOutput();
+            for(int j=0;j<pattern.getPatterns().length;j++){
+                clipboard+=pattern.getPatterns()[j].getRows()[i].produceClipboardOutput();
                 clipboard+="|";
             }
             clipboard+=System.lineSeparator();
@@ -39,7 +39,7 @@ public class FurnaceClipboardProducer {
         return clipboard;
     }
     
-    public static String produceClipboardOutput(Channel channel){
+    public static String produceClipboardOutput(Pattern channel){
         String clipboard=produceClipboardHeaderOutput();
         for(int i=0;i<channel.getRows().length;i++){
             clipboard+=channel.getRows()[i].produceClipboardOutput();
