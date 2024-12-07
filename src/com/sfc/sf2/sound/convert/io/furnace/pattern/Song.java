@@ -3,21 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sfc.sf2.sound.convert.io.furnace;
+package com.sfc.sf2.sound.convert.io.furnace.pattern;
 
 /**
  *
  * @author Wiz
  */
-public class FurnaceSong {
+public class Song {
     
-    private FurnacePattern[] patterns;
+    private Pattern[] patterns;
 
-    public FurnacePattern[] getPatterns() {
+    public Pattern[] getPatterns() {
         return patterns;
     }
 
-    public void setPatterns(FurnacePattern[] patterns) {
+    public void setPatterns(Pattern[] patterns) {
         this.patterns = patterns;
     }
     

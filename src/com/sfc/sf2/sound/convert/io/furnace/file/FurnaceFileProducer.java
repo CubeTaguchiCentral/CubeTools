@@ -5,8 +5,8 @@
  */
 package com.sfc.sf2.sound.convert.io.furnace.file;
 
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Song;
 import com.sfc.sf2.sound.convert.io.furnace.clipboard.*;
-import com.sfc.sf2.sound.convert.io.furnace.*;
 
 /**
  *
@@ -14,8 +14,8 @@ import com.sfc.sf2.sound.convert.io.furnace.*;
  */
 public class FurnaceFileProducer {
     
-    public static void produceClipboardOutput(String path, FurnaceSong song){
-
+    public static byte[] produceFurnaceFile(Song song){
+        return null;
     }
     
 }

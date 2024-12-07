@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sfc.sf2.sound.convert.io.furnace.file;
+package com.sfc.sf2.sound.convert.io.furnace.file.section;
 
+import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -12,7 +13,7 @@ import java.nio.ByteOrder;
  *
  * @author Wiz
  */
-public class Wavetable {
+public class WavetableBlock {
     
     private String blockId = "WAVE";
     private int size = 0;
@@ -22,7 +23,7 @@ public class Wavetable {
     private int height = 0;
     private int[] data = null;
 
-    Wavetable(byte[] data, int wavetablePointer) {
+    public WavetableBlock(byte[] data, int wavetablePointer) {
         ByteBuffer bb = ByteBuffer.wrap(data);
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.position(wavetablePointer);  

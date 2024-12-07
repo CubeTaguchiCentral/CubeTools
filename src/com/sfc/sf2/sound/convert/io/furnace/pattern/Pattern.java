@@ -3,15 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sfc.sf2.sound.convert.io.furnace;
+package com.sfc.sf2.sound.convert.io.furnace.pattern;
 
 import com.sfc.sf2.sound.convert.io.cube.CubeChannel;
 import com.sfc.sf2.sound.convert.io.cube.CubeCommand;
 import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
 import com.sfc.sf2.sound.convert.io.cube.command.Inst;
 import com.sfc.sf2.sound.convert.io.cube.command.MainLoopStart;
-import com.sfc.sf2.sound.convert.io.cube.command.Note;
-import com.sfc.sf2.sound.convert.io.cube.command.NoteL;
 import com.sfc.sf2.sound.convert.io.cube.command.PsgInst;
 import com.sfc.sf2.sound.convert.io.cube.command.PsgNote;
 import com.sfc.sf2.sound.convert.io.cube.command.PsgNoteL;
@@ -32,7 +30,7 @@ import java.util.List;
  *
  * @author Wiz
  */
-public class FurnacePattern {
+public class Pattern {
     
     private static final int TYPE_FM = 0;
     private static final int TYPE_DAC = 1;
@@ -41,16 +39,16 @@ public class FurnacePattern {
     
     private static final int MAX_CHANNELS_SIZE=10;
     
-    private FurnaceChannel[] channels = new FurnaceChannel[MAX_CHANNELS_SIZE];
+    private Channel[] channels = new Channel[MAX_CHANNELS_SIZE];
 
-    public FurnaceChannel[] getChannels() {
+    public Channel[] getChannels() {
         return channels;
     }
     
-    public FurnacePattern(MusicEntry me, boolean introOnly, boolean mainLoopOnly){
+    public Pattern(MusicEntry me, boolean introOnly, boolean mainLoopOnly){
         for(int i=0;i<channels.length;i++){
-            channels[i] = new FurnaceChannel();
-            List<FurnaceRow> rowList = null;
+            channels[i] = new Channel();
+            List<Row> rowList = null;
             if(i<5){
                 rowList = convertCubeChannel(me.getChannels()[i], TYPE_FM, introOnly, mainLoopOnly);
             }else if(i==5){
@@ -64,7 +62,7 @@ public class FurnacePattern {
             }else{
                 rowList = convertCubeChannel(me.getChannels()[i], TYPE_PSGNOISE, introOnly, mainLoopOnly);
             }
-            FurnaceRow[] rows = new FurnaceRow[rowList.size()];
+            Row[] rows = new Row[rowList.size()];
             for(int j=0;j<rows.length;j++){
                 rows[j]=rowList.get(j);
             }
@@ -80,8 +78,8 @@ public class FurnacePattern {
         */
     }
     
-    public List<FurnaceRow> convertCubeChannel(CubeChannel cch, int channelType, boolean introOnly, boolean mainLoopOnly){
-        List<FurnaceRow> rowList = new ArrayList();
+    public List<Row> convertCubeChannel(CubeChannel cch, int channelType, boolean introOnly, boolean mainLoopOnly){
+        List<Row> rowList = new ArrayList();
         CubeCommand[] ccs = cch.getCcs();
         int playLength = 0;
         int playCounter = 0;
@@ -96,7 +94,7 @@ public class FurnacePattern {
         boolean released = false;
         boolean vibratoTriggered = false;
         boolean mainLoopStarted = false;
-        FurnaceRow currentRow = new FurnaceRow();
+        Row currentRow = new Row();
         for(int i=0;i<ccs.length;i++){
             CubeCommand cc = ccs[i];
             if(cc instanceof MainLoopStart){
@@ -139,43 +137,43 @@ public class FurnacePattern {
                 PsgInst inst = (PsgInst) cc;
                 currentInstrument = (0xF0&inst.getValue())>>4;
                 currentVolume = (0x0F&inst.getValue())/2;
-            }else if((cc instanceof Note || cc instanceof NoteL)
+            }else if((cc instanceof com.sfc.sf2.sound.convert.io.cube.command.Note || cc instanceof com.sfc.sf2.sound.convert.io.cube.command.NoteL)
                     && (  (!introOnly && !mainLoopOnly)
                        || (introOnly && !mainLoopStarted)
                        || (mainLoopOnly && mainLoopStarted)
                        )
                     ){
-                if(cc instanceof NoteL){
-                    NoteL n = (NoteL) cc;
+                if(cc instanceof com.sfc.sf2.sound.convert.io.cube.command.NoteL){
+                    com.sfc.sf2.sound.convert.io.cube.command.NoteL n = (com.sfc.sf2.sound.convert.io.cube.command.NoteL) cc;
                     playLength = 0xFF & n.getLength();
-                    currentRow.setNote(new FurnaceNote(FurnacePitch.valueFromCubeValue(n.getNote().getValue()-12).getValue()));
+                    currentRow.setNote(new Note(Pitch.valueFromCubeValue(n.getNote().getValue()-12).getValue()));
                 }else{
-                    Note n = (Note) cc;
-                    currentRow.setNote(new FurnaceNote(FurnacePitch.valueFromCubeValue(n.getNote().getValue()-12).getValue()));
+                    com.sfc.sf2.sound.convert.io.cube.command.Note n = (com.sfc.sf2.sound.convert.io.cube.command.Note) cc;
+                    currentRow.setNote(new Note(Pitch.valueFromCubeValue(n.getNote().getValue()-12).getValue()));
                 }
-                currentRow.setInstrument(new FurnaceInstrument(currentInstrument));
-                currentRow.setVolume(new FurnaceVolume(currentVolume*8));
-                currentRow.getEffectList().add(new FurnaceEffect(0x04,0x00));
+                currentRow.setInstrument(new Instrument(currentInstrument));
+                currentRow.setVolume(new Volume(currentVolume*8));
+                currentRow.getEffectList().add(new Effect(0x04,0x00));
                 if(detune>=0){
-                    currentRow.getEffectList().add(new FurnaceEffect(0x53,0x00+detune));
+                    currentRow.getEffectList().add(new Effect(0x53,0x00+detune));
                     detune=-1;
                 }
                 if(panning>=0){
-                    currentRow.getEffectList().add(new FurnaceEffect(0x80,panning));
+                    currentRow.getEffectList().add(new Effect(0x80,panning));
                     panning=-1;
                 }
                 playCounter = 0;
                 releaseCounter = 0;
                 vibratoCounter = 0;
                 rowList.add(currentRow);
-                currentRow = new FurnaceRow();
+                currentRow = new Row();
                 playCounter++;
                 releaseCounter++;
                 vibratoCounter++;
                 while(playCounter<playLength){
                     if(!vibratoTriggered && vibrato!=-1){
                         if(vibratoCounter>=(vibrato)){
-                            currentRow.getEffectList().add(new FurnaceEffect(0x04,0x22));
+                            currentRow.getEffectList().add(new Effect(0x04,0x22));
                             vibratoTriggered = true;
                             vibratoCounter = 0;
                         } else{
@@ -183,15 +181,15 @@ public class FurnacePattern {
                         }
                     }
                     if(releaseCounter>=(playLength-release)){
-                        currentRow.setNote(new FurnaceNote(0xFF));
+                        currentRow.setNote(new Note(0xFF));
                         rowList.add(currentRow);
-                        currentRow = new FurnaceRow();
+                        currentRow = new Row();
                         releaseCounter=0;
                         playCounter++;
                         released = true;
                     }else{
                         rowList.add(currentRow);
-                        currentRow = new FurnaceRow();
+                        currentRow = new Row();
                         playCounter++;
                         if(!released){
                             releaseCounter++;
@@ -210,30 +208,30 @@ public class FurnacePattern {
                 if(cc instanceof PsgNoteL){
                     PsgNoteL n = (PsgNoteL) cc;
                     playLength = 0xFF & n.getLength();
-                    currentRow.setNote(new FurnaceNote(FurnacePitch.valueFromCubeValue(n.getNote().getValue()-12).getValue()));
+                    currentRow.setNote(new Note(Pitch.valueFromCubeValue(n.getNote().getValue()-12).getValue()));
                 }else{
                     PsgNote n = (PsgNote) cc;
-                    currentRow.setNote(new FurnaceNote(FurnacePitch.valueFromCubeValue(n.getNote().getValue()-12).getValue()));
+                    currentRow.setNote(new Note(Pitch.valueFromCubeValue(n.getNote().getValue()-12).getValue()));
                 }
-                currentRow.setInstrument(new FurnaceInstrument(currentInstrument));
-                currentRow.setVolume(new FurnaceVolume(currentVolume*8));
-                currentRow.getEffectList().add(new FurnaceEffect(0x04,0x00));
+                currentRow.setInstrument(new Instrument(currentInstrument));
+                currentRow.setVolume(new Volume(currentVolume*8));
+                currentRow.getEffectList().add(new Effect(0x04,0x00));
                 if(detune>=0){
-                    currentRow.getEffectList().add(new FurnaceEffect(0x53,0x00+detune));
+                    currentRow.getEffectList().add(new Effect(0x53,0x00+detune));
                     detune=-1;
                 }
                 playCounter = 0;
                 releaseCounter = 0;
                 vibratoCounter = 0;
                 rowList.add(currentRow);
-                currentRow = new FurnaceRow();
+                currentRow = new Row();
                 playCounter++;
                 releaseCounter++;
                 vibratoCounter++;
                 while(playCounter<playLength){
                     if(!vibratoTriggered && vibrato!=-1){
                         if(vibratoCounter>=(vibrato)){
-                            currentRow.getEffectList().add(new FurnaceEffect(0x04,0x22));
+                            currentRow.getEffectList().add(new Effect(0x04,0x22));
                             vibratoTriggered = true;
                             vibratoCounter = 0;
                         } else{
@@ -241,15 +239,15 @@ public class FurnacePattern {
                         }
                     }
                     if(releaseCounter>=(playLength-release)){
-                        currentRow.setNote(new FurnaceNote(0xFE));
+                        currentRow.setNote(new Note(0xFE));
                         rowList.add(currentRow);
-                        currentRow = new FurnaceRow();
+                        currentRow = new Row();
                         releaseCounter=0;
                         playCounter++;
                         released = true;
                     }else{
                         rowList.add(currentRow);
-                        currentRow = new FurnaceRow();
+                        currentRow = new Row();
                         playCounter++;
                         if(!released){
                             releaseCounter++;
@@ -271,11 +269,11 @@ public class FurnacePattern {
                 }
                 playCounter = 0;
                 rowList.add(currentRow);
-                currentRow = new FurnaceRow();
+                currentRow = new Row();
                 playCounter++;
                 while(playCounter<playLength){
                     rowList.add(currentRow);
-                    currentRow = new FurnaceRow();
+                    currentRow = new Row();
                     playCounter++;
                 }
                 playCounter=0;
@@ -284,7 +282,7 @@ public class FurnacePattern {
             }
         }
         if(introOnly){
-            currentRow.getEffectList().add(new FurnaceEffect(0x0D,0x00));
+            currentRow.getEffectList().add(new Effect(0x0D,0x00));
         }
         return rowList;
     }
@@ -297,12 +295,12 @@ public class FurnacePattern {
             }
         }
         for (int i=0;i<channels.length;i++){
-            FurnaceRow[] rows = channels[i].getRows();
+            Row[] rows = channels[i].getRows();
             if(rows.length<maxLength){
-                FurnaceRow[] newRows = new FurnaceRow[maxLength];
+                Row[] newRows = new Row[maxLength];
                 System.arraycopy(rows, 0, newRows, 0, rows.length);
                 for(int j=0;(rows.length+j)<maxLength;j++){
-                    FurnaceRow voidRow = new FurnaceRow();
+                    Row voidRow = new Row();
                     newRows[rows.length+j] = voidRow;
                 }
                 channels[i].setRows(newRows);
@@ -332,21 +330,21 @@ public class FurnacePattern {
         return dup;
     }
     
-    public FurnacePattern(FurnacePattern intro, FurnacePattern mainLoop){
-        FurnaceChannel[] introChannels = intro.getChannels();
-        FurnaceChannel[] mainLoopChannels = mainLoop.getChannels();
+    public Pattern(Pattern intro, Pattern mainLoop){
+        Channel[] introChannels = intro.getChannels();
+        Channel[] mainLoopChannels = mainLoop.getChannels();
         int maxLength=0;
         for (int i=0;i<MAX_CHANNELS_SIZE;i++){
-            FurnaceRow[] introRows = introChannels[i].getRows();
-            FurnaceRow[] mainLoopRows = mainLoopChannels[i].getRows();
+            Row[] introRows = introChannels[i].getRows();
+            Row[] mainLoopRows = mainLoopChannels[i].getRows();
             if(maxLength<(introRows.length+mainLoopRows.length)){
                 maxLength = introRows.length+mainLoopRows.length;
             }
         }
         System.out.println("maxLength : "+maxLength);
         for (int i=0;i<MAX_CHANNELS_SIZE;i++){
-            FurnaceRow[] introRows = introChannels[i].getRows();
-            FurnaceRow[] mainLoopRows = mainLoopChannels[i].getRows();
+            Row[] introRows = introChannels[i].getRows();
+            Row[] mainLoopRows = mainLoopChannels[i].getRows();
             int targetMainLoopLength = maxLength - introRows.length;
             if(mainLoopRows!=null && mainLoopRows.length>0){
                mainLoopRows = repeat(mainLoopRows,targetMainLoopLength);
@@ -354,10 +352,10 @@ public class FurnacePattern {
             mainLoop.getChannels()[i].setRows(mainLoopRows);
         }
         for (int i=0;i<MAX_CHANNELS_SIZE;i++){
-            FurnaceRow[] introRows = introChannels[i].getRows();
-            FurnaceRow[] mainLoopRows = mainLoopChannels[i].getRows();
-            FurnaceRow[] rows = concatenate(introRows, mainLoopRows);
-            FurnaceChannel fc = new FurnaceChannel();
+            Row[] introRows = introChannels[i].getRows();
+            Row[] mainLoopRows = mainLoopChannels[i].getRows();
+            Row[] rows = concatenate(introRows, mainLoopRows);
+            Channel fc = new Channel();
             fc.setRows(rows);
             channels[i] = fc;
         }

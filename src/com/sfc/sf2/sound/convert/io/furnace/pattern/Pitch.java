@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sfc.sf2.sound.convert.io.furnace;
+package com.sfc.sf2.sound.convert.io.furnace.pattern;
 
 import com.sfc.sf2.sound.convert.io.cube.*;
 
@@ -11,7 +11,7 @@ import com.sfc.sf2.sound.convert.io.cube.*;
  *
  * @author Wiz
  */
-public enum FurnacePitch {
+public enum Pitch {
 
     C0( 0x3C,	"C-0",	0x00),
     Cs0(0x3D,	"C#0",	0x01),
@@ -138,14 +138,14 @@ public enum FurnacePitch {
         return cubeValue;
     }
     
-    private FurnacePitch(int value, String clipboardOutput, int cubeValue){
+    private Pitch(int value, String clipboardOutput, int cubeValue){
         this.value = value;
         this.clipboardOutput=clipboardOutput;
         this.cubeValue=cubeValue;
     }
     
-    public static FurnacePitch valueOf(int value) {
-        for (FurnacePitch p : values()) {
+    public static Pitch valueOf(int value) {
+        for (Pitch p : values()) {
             if (p.getValue()==value) {
                 return p;
             }
@@ -153,8 +153,8 @@ public enum FurnacePitch {
         return C0;
     }
     
-    public static FurnacePitch valueFromCubeValue(int cubeValue) {
-        for (FurnacePitch p : values()) {
+    public static Pitch valueFromCubeValue(int cubeValue) {
+        for (Pitch p : values()) {
             if (p.getCubeValue()==cubeValue) {
                 return p;
             }

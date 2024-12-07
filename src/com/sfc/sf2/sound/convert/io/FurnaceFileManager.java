@@ -6,7 +6,6 @@
 package com.sfc.sf2.sound.convert.io;
 
 import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
-import com.sfc.sf2.sound.convert.io.furnace.*;
 import com.sfc.sf2.sound.convert.io.furnace.clipboard.*;
 import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
 import java.io.File;

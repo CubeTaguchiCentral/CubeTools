@@ -5,8 +5,8 @@
  */
 package com.sfc.sf2.sound.convert.io;
 
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern;
 import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
-import com.sfc.sf2.sound.convert.io.furnace.*;
 import com.sfc.sf2.sound.convert.io.furnace.clipboard.*;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -31,10 +31,10 @@ public class FurnaceClipboardManager {
             pw = new PrintWriter(path.toString(),System.getProperty("file.encoding"));
             if(!me.hasIntro()){
             //if(true){
-                FurnacePattern fp = new FurnacePattern(me, false, false);
+                Pattern fp = new Pattern(me, false, false);
                 pw.print(FurnaceClipboardProducer.produceClipboardOutput(fp));
             }else{
-                FurnacePattern intro = new FurnacePattern(me, true, false);
+                Pattern intro = new Pattern(me, true, false);
                 //pw.print(FurnaceClipboardProducer.produceClipboardOutput(intro));
                 System.out.println("intro channel sizes :\n"
                         + intro.getChannels()[0].getRows().length+" rows\n"
@@ -48,7 +48,7 @@ public class FurnaceClipboardManager {
                         + intro.getChannels()[8].getRows().length+" rows\n"
                         + intro.getChannels()[9].getRows().length+" rows"
                         );
-                FurnacePattern mainLoop = new FurnacePattern(me, false, true);
+                Pattern mainLoop = new Pattern(me, false, true);
                 //pw.print(FurnaceClipboardProducer.produceClipboardOutput(mainLoop));
                 System.out.println("mainLoop channel sizes :\n"
                         + mainLoop.getChannels()[0].getRows().length+" rows\n"
@@ -62,7 +62,7 @@ public class FurnaceClipboardManager {
                         + mainLoop.getChannels()[8].getRows().length+" rows\n"
                         + mainLoop.getChannels()[9].getRows().length+" rows"
                         );
-                FurnacePattern fp = new FurnacePattern(intro, mainLoop);
+                Pattern fp = new Pattern(intro, mainLoop);
                 pw.print(FurnaceClipboardProducer.produceClipboardOutput(fp));
             }
             pw.close();

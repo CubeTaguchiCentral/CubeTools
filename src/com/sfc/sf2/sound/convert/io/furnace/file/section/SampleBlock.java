@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sfc.sf2.sound.convert.io.furnace.file;
+package com.sfc.sf2.sound.convert.io.furnace.file.section;
 
+import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -12,7 +13,7 @@ import java.nio.ByteOrder;
  *
  * @author Wiz
  */
-public class Sample {
+public class SampleBlock {
     
     private String blockId = "SMPL";
     private int blockSize = 0;
@@ -27,7 +28,7 @@ public class Sample {
     private int loopPoint = -1;
     private byte[] rawData = null;
 
-    Sample(byte[] data, int samplePointer) {
+    public SampleBlock(byte[] data, int samplePointer) {
         ByteBuffer bb = ByteBuffer.wrap(data);
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.position(samplePointer);  

@@ -3,37 +3,35 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sfc.sf2.sound.convert.io.furnace.file;
+package com.sfc.sf2.sound.convert.io.furnace.file.section;
 
+import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
  * @author Wiz
  */
-public class ChipFlags {
+public class AssetDirectoriesBlock {
     
-    private String blockId = "FLAG";
+    private String blockId = "ADIR";
     private int size = 0;
-    private Map<String, String> flagMap = new HashMap();
+    private int numberOfDirs = 0;
+    private AssetDirectory[] assetDirectories = null;
     
-    public ChipFlags(byte[] data, int startPointer){
+    public AssetDirectoriesBlock(byte[] data, int startPointer){
         ByteBuffer bb = ByteBuffer.wrap(data);
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.position(startPointer);    
-        String blockId = getString(bb, 4);
+        blockId = getString(bb, 4);
         size = bb.getInt();    
-        String dataString = getString(bb, size);
-        String[] flags = dataString.split("\n");
-        for(int i=0;i<flags.length;i++){
-            String[] strings = flags[i].split("=");
-            String key = strings[0];
-            String value = strings[1];
-            flagMap.put(key, value);
-        }        
+        numberOfDirs = bb.getInt();
+        assetDirectories = new AssetDirectory[numberOfDirs];
+        for(int i=0;i<numberOfDirs;i++){
+            assetDirectories[i] = new AssetDirectory(data, bb.position());
+            bb.position(bb.position()+assetDirectories[i].getNumberOfAssets()+2+assetDirectories[i].getName().length()+1);
+        }
     }
 
     private byte[] getByteArray(ByteBuffer bb, int length){
@@ -80,14 +78,20 @@ public class ChipFlags {
         this.size = size;
     }
 
-    public Map<String, String> getDataMap() {
-        return flagMap;
+    public int getNumberOfDirs() {
+        return numberOfDirs;
     }
 
-    public void setDataMap(Map<String, String> dataMap) {
-        this.flagMap = dataMap;
+    public void setNumberOfDirs(int numberOfDirs) {
+        this.numberOfDirs = numberOfDirs;
     }
-    
-    
+
+    public AssetDirectory[] getAssets() {
+        return assetDirectories;
+    }
+
+    public void setAssets(AssetDirectory[] assets) {
+        this.assetDirectories = assets;
+    }
     
 }

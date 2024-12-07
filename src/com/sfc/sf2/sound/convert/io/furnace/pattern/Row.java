@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sfc.sf2.sound.convert.io.furnace;
+package com.sfc.sf2.sound.convert.io.furnace.pattern;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,44 +12,44 @@ import java.util.List;
  *
  * @author Wiz
  */
-public class FurnaceRow {
+public class Row {
     
     private static final int MAX_EFFECT_SIZE=4;
     
-    private FurnaceNote note;
-    private FurnaceInstrument instrument;
-    private FurnaceVolume volume;
-    private List<FurnaceEffect> effectList = new ArrayList();
+    private Note note;
+    private Instrument instrument;
+    private Volume volume;
+    private List<Effect> effectList = new ArrayList();
 
-    public FurnaceNote getNote() {
+    public Note getNote() {
         return note;
     }
 
-    public void setNote(FurnaceNote note) {
+    public void setNote(Note note) {
         this.note = note;
     }
 
-    public FurnaceInstrument getInstrument() {
+    public Instrument getInstrument() {
         return instrument;
     }
 
-    public void setInstrument(FurnaceInstrument instrument) {
+    public void setInstrument(Instrument instrument) {
         this.instrument = instrument;
     }
 
-    public FurnaceVolume getVolume() {
+    public Volume getVolume() {
         return volume;
     }
 
-    public void setVolume(FurnaceVolume volume) {
+    public void setVolume(Volume volume) {
         this.volume = volume;
     }
 
-    public List<FurnaceEffect> getEffectList() {
+    public List<Effect> getEffectList() {
         return effectList;
     }
 
-    public void setEffectList(List<FurnaceEffect> effectList) {
+    public void setEffectList(List<Effect> effectList) {
         this.effectList = effectList;
     }
     

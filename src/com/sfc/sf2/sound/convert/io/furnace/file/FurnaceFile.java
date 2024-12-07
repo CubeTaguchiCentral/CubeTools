@@ -5,6 +5,14 @@
  */
 package com.sfc.sf2.sound.convert.io.furnace.file;
 
+import com.sfc.sf2.sound.convert.io.furnace.file.section.SongInfoBlock;
+import com.sfc.sf2.sound.convert.io.furnace.file.section.ChipFlagsBlock;
+import com.sfc.sf2.sound.convert.io.furnace.file.section.SampleBlock;
+import com.sfc.sf2.sound.convert.io.furnace.file.section.WavetableBlock;
+import com.sfc.sf2.sound.convert.io.furnace.file.section.InstrumentBlock;
+import com.sfc.sf2.sound.convert.io.furnace.file.section.PatternBlock;
+import com.sfc.sf2.sound.convert.io.furnace.file.section.AssetDirectoriesBlock;
+import com.sfc.sf2.sound.convert.io.furnace.file.section.Header;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
@@ -15,63 +23,63 @@ import java.nio.charset.StandardCharsets;
 public class FurnaceFile {
     
     private Header header;
-    private SongInfo songInfo;
-    private ChipFlags[] chipFlags;
-    private AssetDirectories[] assetDirectoriesArray;
-    private Instrument[] instruments;
-    private Wavetable[] wavetables;
-    private Sample[] samples;
-    private Pattern[] patterns;
+    private SongInfoBlock songInfo;
+    private ChipFlagsBlock[] chipFlags;
+    private AssetDirectoriesBlock[] assetDirectoriesArray;
+    private InstrumentBlock[] instruments;
+    private WavetableBlock[] wavetables;
+    private SampleBlock[] samples;
+    private PatternBlock[] patterns;
     
     public FurnaceFile(byte[] data){
         //ByteBuffer bb = ByteBuffer.allocate(data.length);
         header = new Header(data);
-        songInfo = new SongInfo(data, header.getSongPointer());
+        songInfo = new SongInfoBlock(data, header.getSongPointer());
         int numberOfChips = songInfo.findNumberOfChips();
-        chipFlags = new ChipFlags[32];
+        chipFlags = new ChipFlagsBlock[32];
         int[] chipFlagPointers = songInfo.getSoundChipFlagPointers();
         for(int i=0;i<numberOfChips;i++){
             if(chipFlagPointers[i]>0){
-                chipFlags[i] = new ChipFlags(data,chipFlagPointers[i]);
+                chipFlags[i] = new ChipFlagsBlock(data,chipFlagPointers[i]);
             }
         }  
-        assetDirectoriesArray = new AssetDirectories[3];
+        assetDirectoriesArray = new AssetDirectoriesBlock[3];
         int instrumentDirectoriesPointer = songInfo.getInstrumentDirectoriesPointer();
-        assetDirectoriesArray[0] = new AssetDirectories(data, instrumentDirectoriesPointer);
+        assetDirectoriesArray[0] = new AssetDirectoriesBlock(data, instrumentDirectoriesPointer);
         int wavetableDirectoriesPointer = songInfo.getWavetableDirectoriesPointer();
-        assetDirectoriesArray[1] = new AssetDirectories(data, wavetableDirectoriesPointer);
+        assetDirectoriesArray[1] = new AssetDirectoriesBlock(data, wavetableDirectoriesPointer);
         int sampleDirectoriesPointer = songInfo.getSampleDirectoriesPointer();
-        assetDirectoriesArray[2] = new AssetDirectories(data, sampleDirectoriesPointer);
+        assetDirectoriesArray[2] = new AssetDirectoriesBlock(data, sampleDirectoriesPointer);
         int instrumentCount = songInfo.getInstrumentCount();
-        instruments = new Instrument[instrumentCount];
+        instruments = new InstrumentBlock[instrumentCount];
         for(int i=0;i<instrumentCount;i++){
             int instrumentPointer = songInfo.getInstrumentPointers()[i];
             if(instrumentPointer>0){
-                instruments[i] = new Instrument(data, instrumentPointer);
+                instruments[i] = new InstrumentBlock(data, instrumentPointer);
             }
         }
         int wavetableCount = songInfo.getWavetableCount();
-        wavetables = new Wavetable[wavetableCount];
+        wavetables = new WavetableBlock[wavetableCount];
         for(int i=0;i<wavetableCount;i++){
             int wavetablePointer = songInfo.getWavetablePointers()[i];
             if(wavetablePointer>0){
-                wavetables[i] = new Wavetable(data, wavetablePointer);
+                wavetables[i] = new WavetableBlock(data, wavetablePointer);
             }
         }
         int sampleCount = songInfo.getSampleCount();
-        samples = new Sample[sampleCount];
+        samples = new SampleBlock[sampleCount];
         for(int i=0;i<sampleCount;i++){
             int samplePointer = songInfo.getSamplePointers()[i];
             if(samplePointer>0){
-                samples[i] = new Sample(data, samplePointer);
+                samples[i] = new SampleBlock(data, samplePointer);
             }
         }
         int patternCount = songInfo.getPatternCount();
-        patterns = new Pattern[patternCount];
+        patterns = new PatternBlock[patternCount];
         for(int i=0;i<patternCount;i++){
             int patternPointer = songInfo.getPatternPointers()[i];
             if(patternPointer>0){
-                patterns[i] = new Pattern(data, patternPointer);
+                patterns[i] = new PatternBlock(data, patternPointer);
             }
         }
         int i = 0;
@@ -143,59 +151,59 @@ public class FurnaceFile {
         this.header = header;
     }
 
-    public SongInfo getSongInfo() {
+    public SongInfoBlock getSongInfo() {
         return songInfo;
     }
 
-    public void setSongInfo(SongInfo songInfo) {
+    public void setSongInfo(SongInfoBlock songInfo) {
         this.songInfo = songInfo;
     }
 
-    public ChipFlags[] getChipFlags() {
+    public ChipFlagsBlock[] getChipFlags() {
         return chipFlags;
     }
 
-    public void setChipFlags(ChipFlags[] chipFlags) {
+    public void setChipFlags(ChipFlagsBlock[] chipFlags) {
         this.chipFlags = chipFlags;
     }
 
-    public AssetDirectories[] getAssetDirectoriesArray() {
+    public AssetDirectoriesBlock[] getAssetDirectoriesArray() {
         return assetDirectoriesArray;
     }
 
-    public void setAssetDirectoriesArray(AssetDirectories[] assetDirectoriesArray) {
+    public void setAssetDirectoriesArray(AssetDirectoriesBlock[] assetDirectoriesArray) {
         this.assetDirectoriesArray = assetDirectoriesArray;
     }
 
-    public Instrument[] getInstruments() {
+    public InstrumentBlock[] getInstruments() {
         return instruments;
     }
 
-    public void setInstruments(Instrument[] instruments) {
+    public void setInstruments(InstrumentBlock[] instruments) {
         this.instruments = instruments;
     }
 
-    public Wavetable[] getWavetables() {
+    public WavetableBlock[] getWavetables() {
         return wavetables;
     }
 
-    public void setWavetables(Wavetable[] wavetables) {
+    public void setWavetables(WavetableBlock[] wavetables) {
         this.wavetables = wavetables;
     }
 
-    public Sample[] getSamples() {
+    public SampleBlock[] getSamples() {
         return samples;
     }
 
-    public void setSamples(Sample[] samples) {
+    public void setSamples(SampleBlock[] samples) {
         this.samples = samples;
     }
 
-    public Pattern[] getPatterns() {
+    public PatternBlock[] getPatterns() {
         return patterns;
     }
 
-    public void setPatterns(Pattern[] patterns) {
+    public void setPatterns(PatternBlock[] patterns) {
         this.patterns = patterns;
     }
     

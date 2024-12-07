@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sfc.sf2.sound.convert.io.furnace.file;
+package com.sfc.sf2.sound.convert.io.furnace.file.section;
 
+import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -12,7 +13,7 @@ import java.nio.ByteOrder;
  *
  * @author Wiz
  */
-public class Pattern {
+public class PatternBlock {
     
     private String blockId = "PATN";
     private int blockSize = 0;
@@ -22,7 +23,7 @@ public class Pattern {
     private String name = "";
     private byte[] rawData = null;
 
-    Pattern(byte[] data, int startPointer) {
+    public PatternBlock(byte[] data, int startPointer) {
         ByteBuffer bb = ByteBuffer.wrap(data, startPointer, data.length-startPointer);
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.position(startPointer);

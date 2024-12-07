@@ -3,17 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sfc.sf2.sound.convert.io.furnace;
+package com.sfc.sf2.sound.convert.io.furnace.pattern;
 
 /**
  *
  * @author Wiz
  */
-public class FurnaceVolume {
+public class Note {
     
     private byte value;
     
-    public FurnaceVolume(int value){
+    public Note(int value){
         this.value=(byte)(0xFF&value);
     }
 
@@ -27,7 +27,17 @@ public class FurnaceVolume {
     
     public String produceClipboardOutput(){
         String clipboard="";
-        clipboard+=String.format("%02x", value).toUpperCase();
+        switch(value){
+            case (byte)0xFF:
+                clipboard+="===";
+                break;
+            case (byte)0xFE: 
+                clipboard+="OFF";
+                break;   
+            default:
+                clipboard+=Pitch.valueOf(value).getClipboardOutput();
+                break;
+        }
         return clipboard;
     }
     

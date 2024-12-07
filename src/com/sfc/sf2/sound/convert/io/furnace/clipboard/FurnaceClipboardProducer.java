@@ -5,7 +5,9 @@
  */
 package com.sfc.sf2.sound.convert.io.furnace.clipboard;
 
-import com.sfc.sf2.sound.convert.io.furnace.*;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Channel;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Row;
 
 /**
  *
@@ -22,7 +24,7 @@ public class FurnaceClipboardProducer {
         return clipboard;
     }
     
-    public static String produceClipboardOutput(FurnacePattern pattern){
+    public static String produceClipboardOutput(Pattern pattern){
         String clipboard="";
         for(int i=0;i<pattern.getChannels()[0].getRows().length;i++){
             if(i%255==0){
@@ -37,7 +39,7 @@ public class FurnaceClipboardProducer {
         return clipboard;
     }
     
-    public static String produceClipboardOutput(FurnaceChannel channel){
+    public static String produceClipboardOutput(Channel channel){
         String clipboard=produceClipboardHeaderOutput();
         for(int i=0;i<channel.getRows().length;i++){
             clipboard+=channel.getRows()[i].produceClipboardOutput();
@@ -46,7 +48,7 @@ public class FurnaceClipboardProducer {
         return clipboard;
     }
     
-    public static String produceClipboardOutput(FurnaceRow row){
+    public static String produceClipboardOutput(Row row){
         String clipboard=row.produceClipboardOutput();        
         return clipboard;
     }

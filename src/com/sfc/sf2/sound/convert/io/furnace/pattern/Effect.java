@@ -3,18 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sfc.sf2.sound.convert.io.furnace;
+package com.sfc.sf2.sound.convert.io.furnace.pattern;
 
 /**
  *
  * @author Wiz
  */
-public class FurnaceEffect {
+public class Effect {
     
     private byte type;
     private Byte value;
     
-    public FurnaceEffect(int type, int value){
+    public Effect(int type, int value){
         this.type=(byte)(0xFF&type);
         this.value=(byte)(0xFF&value);
     }

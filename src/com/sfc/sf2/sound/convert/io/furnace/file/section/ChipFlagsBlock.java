@@ -3,28 +3,38 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sfc.sf2.sound.convert.io.furnace.file;
+package com.sfc.sf2.sound.convert.io.furnace.file.section;
 
+import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  * @author Wiz
  */
-public class AssetDirectory {
+public class ChipFlagsBlock {
     
-    private String name = "";
-    private short numberOfAssets = 0;
-    private byte[] assets = null;
+    private String blockId = "FLAG";
+    private int size = 0;
+    private Map<String, String> flagMap = new HashMap();
     
-    public AssetDirectory(byte[] data, int startPointer){
+    public ChipFlagsBlock(byte[] data, int startPointer){
         ByteBuffer bb = ByteBuffer.wrap(data);
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.position(startPointer);    
-        name = getString(bb);
-        numberOfAssets = bb.getShort();    
-        assets = getByteArray(bb, numberOfAssets);
+        String blockId = getString(bb, 4);
+        size = bb.getInt();    
+        String dataString = getString(bb, size);
+        String[] flags = dataString.split("\n");
+        for(int i=0;i<flags.length;i++){
+            String[] strings = flags[i].split("=");
+            String key = strings[0];
+            String value = strings[1];
+            flagMap.put(key, value);
+        }        
     }
 
     private byte[] getByteArray(ByteBuffer bb, int length){
@@ -55,28 +65,30 @@ public class AssetDirectory {
         return FurnaceFile.getStringArray(bb, length);
     }
 
-    public String getName() {
-        return name;
+    public String getBlockId() {
+        return blockId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setBlockId(String blockId) {
+        this.blockId = blockId;
     }
 
-    public short getNumberOfAssets() {
-        return numberOfAssets;
+    public int getSize() {
+        return size;
     }
 
-    public void setNumberOfAssets(short numberOfAssets) {
-        this.numberOfAssets = numberOfAssets;
+    public void setSize(int size) {
+        this.size = size;
     }
 
-    public byte[] getAssets() {
-        return assets;
+    public Map<String, String> getDataMap() {
+        return flagMap;
     }
 
-    public void setAssets(byte[] assets) {
-        this.assets = assets;
+    public void setDataMap(Map<String, String> dataMap) {
+        this.flagMap = dataMap;
     }
+    
+    
     
 }

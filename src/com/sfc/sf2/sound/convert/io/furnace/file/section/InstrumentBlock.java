@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sfc.sf2.sound.convert.io.furnace.file;
+package com.sfc.sf2.sound.convert.io.furnace.file.section;
 
+import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -12,25 +13,24 @@ import java.nio.ByteOrder;
  *
  * @author Wiz
  */
-public class AssetDirectories {
+public class InstrumentBlock {
     
-    private String blockId = "ADIR";
+    private String blockId = "INS2";
     private int size = 0;
-    private int numberOfDirs = 0;
-    private AssetDirectory[] assetDirectories = null;
-    
-    public AssetDirectories(byte[] data, int startPointer){
+    private short formatVersion = 219;
+    private short instrumentType = 0;
+    private byte[] rawData = null;
+    private Feature[] features = null;
+
+    public InstrumentBlock(byte[] data, int instrumentPointer) {
         ByteBuffer bb = ByteBuffer.wrap(data);
         bb.order(ByteOrder.LITTLE_ENDIAN);
-        bb.position(startPointer);    
-        blockId = getString(bb, 4);
-        size = bb.getInt();    
-        numberOfDirs = bb.getInt();
-        assetDirectories = new AssetDirectory[numberOfDirs];
-        for(int i=0;i<numberOfDirs;i++){
-            assetDirectories[i] = new AssetDirectory(data, bb.position());
-            bb.position(bb.position()+assetDirectories[i].getNumberOfAssets()+2+assetDirectories[i].getName().length()+1);
-        }
+        bb.position(instrumentPointer);  
+        String blockId = getString(bb, 4);
+        size = bb.getInt();      
+        formatVersion = bb.getShort();
+        instrumentType = bb.getShort();
+        rawData = getByteArray(bb, size-2-2);
     }
 
     private byte[] getByteArray(ByteBuffer bb, int length){
@@ -77,20 +77,36 @@ public class AssetDirectories {
         this.size = size;
     }
 
-    public int getNumberOfDirs() {
-        return numberOfDirs;
+    public short getFormatVersion() {
+        return formatVersion;
     }
 
-    public void setNumberOfDirs(int numberOfDirs) {
-        this.numberOfDirs = numberOfDirs;
+    public void setFormatVersion(short formatVersion) {
+        this.formatVersion = formatVersion;
     }
 
-    public AssetDirectory[] getAssets() {
-        return assetDirectories;
+    public short getInstrumentType() {
+        return instrumentType;
     }
 
-    public void setAssets(AssetDirectory[] assets) {
-        this.assetDirectories = assets;
+    public void setInstrumentType(short instrumentType) {
+        this.instrumentType = instrumentType;
+    }
+
+    public byte[] getRawData() {
+        return rawData;
+    }
+
+    public void setRawData(byte[] rawData) {
+        this.rawData = rawData;
+    }
+
+    public Feature[] getFeatures() {
+        return features;
+    }
+
+    public void setFeatures(Feature[] features) {
+        this.features = features;
     }
     
 }
