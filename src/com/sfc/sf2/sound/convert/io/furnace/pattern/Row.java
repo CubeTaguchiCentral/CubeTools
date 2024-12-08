@@ -80,4 +80,15 @@ public class Row {
         return clipboard;
     }
     
+    public boolean isEmpty(){
+        if(note==null
+                && instrument==null
+                && volume==null
+                && effectList.size()==0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
 }

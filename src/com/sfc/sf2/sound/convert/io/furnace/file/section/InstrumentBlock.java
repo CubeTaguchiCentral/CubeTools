@@ -8,6 +8,7 @@ package com.sfc.sf2.sound.convert.io.furnace.file.section;
 import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -16,7 +17,7 @@ import java.nio.ByteOrder;
 public class InstrumentBlock {
     
     private String blockId = "INS2";
-    private int size = 0;
+    private int blockSize = 0;
     private short formatVersion = 219;
     private short instrumentType = 0;
     private byte[] rawData = null;
@@ -27,10 +28,10 @@ public class InstrumentBlock {
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.position(instrumentPointer);  
         String blockId = getString(bb, 4);
-        size = bb.getInt();      
+        blockSize = bb.getInt();      
         formatVersion = bb.getShort();
         instrumentType = bb.getShort();
-        rawData = getByteArray(bb, size-2-2);
+        rawData = getByteArray(bb, blockSize-2-2);
     }
 
     private byte[] getByteArray(ByteBuffer bb, int length){
@@ -70,11 +71,11 @@ public class InstrumentBlock {
     }
 
     public int getSize() {
-        return size;
+        return blockSize;
     }
 
     public void setSize(int size) {
-        this.size = size;
+        this.blockSize = size;
     }
 
     public short getFormatVersion() {
@@ -107,6 +108,22 @@ public class InstrumentBlock {
 
     public void setFeatures(Feature[] features) {
         this.features = features;
+    }
+    
+    public byte[] toByteArray(){
+        ByteBuffer bb = ByteBuffer.allocate(findLength());
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        bb.position(0);
+        bb.put(blockId.getBytes(StandardCharsets.UTF_8));
+        bb.putInt(blockSize);
+        bb.putShort(formatVersion);
+        bb.putShort(instrumentType);
+        bb.put(rawData);
+        return bb.array();
+    }
+    
+    public int findLength(){
+        return 4+4+2+2+rawData.length;
     }
     
 }

@@ -41,14 +41,18 @@ public class FurnaceFileManager {
     
     public static void exportMusicEntryAsFurnaceFile(MusicEntry me, String templateFilePath, String outputFilePath){
         try {
-            System.out.println("com.sfc.sf2.sound.convert.io.FurnaceClipboardManager() - Exporting Furnace File ...");
+            System.out.println("com.sfc.sf2.sound.convert.io.FurnaceFileManager() - Exporting Furnace File ...");
             
             File f = new File(templateFilePath);
-            byte[] data = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
-            FurnaceFile ff = new FurnaceFile(data);
+            byte[] inputData = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
+            FurnaceFile ff = new FurnaceFile(inputData);
             
+            File file = new File(outputFilePath);
+            Path path = Paths.get(file.getAbsolutePath());
+            byte[] outputData = ff.toByteArray();
+            Files.write(path,outputData);
             
-            System.out.println("com.sfc.sf2.sound.convert.io.FurnaceClipboardManager() - Furnace File exported.");
+            System.out.println("com.sfc.sf2.sound.convert.io.FurnaceFileManager() - Furnace File exported.");
         } catch (IOException ex) {
             Logger.getLogger(FurnaceFileManager.class.getName()).log(Level.SEVERE, null, ex);
         }

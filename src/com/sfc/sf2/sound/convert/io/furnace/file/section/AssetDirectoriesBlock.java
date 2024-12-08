@@ -8,6 +8,7 @@ package com.sfc.sf2.sound.convert.io.furnace.file.section;
 import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -16,7 +17,7 @@ import java.nio.ByteOrder;
 public class AssetDirectoriesBlock {
     
     private String blockId = "ADIR";
-    private int size = 0;
+    private int blockSize = 0;
     private int numberOfDirs = 0;
     private AssetDirectory[] assetDirectories = null;
     
@@ -25,7 +26,7 @@ public class AssetDirectoriesBlock {
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.position(startPointer);    
         blockId = getString(bb, 4);
-        size = bb.getInt();    
+        blockSize = bb.getInt();    
         numberOfDirs = bb.getInt();
         assetDirectories = new AssetDirectory[numberOfDirs];
         for(int i=0;i<numberOfDirs;i++){
@@ -71,11 +72,11 @@ public class AssetDirectoriesBlock {
     }
 
     public int getSize() {
-        return size;
+        return blockSize;
     }
 
     public void setSize(int size) {
-        this.size = size;
+        this.blockSize = size;
     }
 
     public int getNumberOfDirs() {
@@ -92,6 +93,45 @@ public class AssetDirectoriesBlock {
 
     public void setAssets(AssetDirectory[] assets) {
         this.assetDirectories = assets;
+    }
+    
+    public byte[] toByteArray(){
+        ByteBuffer bb = ByteBuffer.allocate(findLength());
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        bb.position(0);
+        bb.put(blockId.getBytes(StandardCharsets.UTF_8));
+        bb.putInt(blockSize);
+        bb.putInt(numberOfDirs);
+        for(int i=0;i<assetDirectories.length;i++){
+            bb.put(assetDirectories[i].toByteArray());
+        }
+        return bb.array();
+    }
+    
+    private int getStringArrayLength(String[] stringArray){
+        return FurnaceFile.getStringArrayLength(stringArray);
+    }
+    
+    private byte[] toByteArray(int[] intArray){
+        return FurnaceFile.toByteArray(intArray);
+    }
+    
+    private byte[] toByteArray(String[] stringArray){
+        return FurnaceFile.toByteArray(stringArray);
+    }
+    
+    public int findLength(){
+        return 4+4+4+getAssetDirectoriesLength();
+    }
+    
+    private int getAssetDirectoriesLength(){
+        int totalLength = 0;
+        for(int i=0;i<assetDirectories.length;i++){
+            totalLength += assetDirectories[i].getName().length()+1;
+            totalLength += 2;
+            totalLength += assetDirectories[i].getNumberOfAssets();
+        }
+        return totalLength;
     }
     
 }

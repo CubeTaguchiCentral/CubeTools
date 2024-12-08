@@ -31,7 +31,7 @@ public class Effect {
         this.type = type;
     }
 
-    public byte getValue() {
+    public Byte getValue() {
         return value;
     }
 

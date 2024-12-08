@@ -8,6 +8,7 @@ package com.sfc.sf2.sound.convert.io.furnace.file.section;
 import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -16,7 +17,7 @@ import java.nio.ByteOrder;
 public class WavetableBlock {
     
     private String blockId = "WAVE";
-    private int size = 0;
+    private int blockSize = 0;
     private String name = "";
     private int width = 0;
     private int reserved = 0;
@@ -28,12 +29,12 @@ public class WavetableBlock {
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.position(wavetablePointer);  
         String blockId = getString(bb, 4);
-        size = bb.getInt();      
+        blockSize = bb.getInt();      
         name = getString(bb);
         width = bb.getInt();
         reserved = bb.getInt();
         height = bb.getInt();
-        data = getByteArray(bb, size-name.length()-1-4-4-4);
+        data = getByteArray(bb, blockSize-name.length()-1-4-4-4);
     }
 
     private byte[] getByteArray(ByteBuffer bb, int length){
@@ -73,11 +74,11 @@ public class WavetableBlock {
     }
 
     public int getSize() {
-        return size;
+        return blockSize;
     }
 
     public void setSize(int size) {
-        this.size = size;
+        this.blockSize = size;
     }
 
     public String getName() {
@@ -118,6 +119,29 @@ public class WavetableBlock {
 
     public void setData(int[] data) {
         this.data = data;
+    }
+    
+    public byte[] toByteArray(){
+        ByteBuffer bb = ByteBuffer.allocate(findLength());
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        bb.position(0);
+        bb.put(blockId.getBytes(StandardCharsets.UTF_8));
+        bb.putInt(blockSize);
+        bb.put(name.getBytes(StandardCharsets.UTF_8));
+        bb.put((byte)0);
+        bb.putInt(width);
+        bb.putInt(reserved);
+        bb.putInt(height);
+        bb.put(toByteArray(data));
+        return bb.array();
+    }
+    
+    private byte[] toByteArray(int[] intArray){
+        return FurnaceFile.toByteArray(intArray);
+    }
+    
+    public int findLength(){
+        return 4+4+name.length()+1+4+4+4+data.length*4;
     }
     
     

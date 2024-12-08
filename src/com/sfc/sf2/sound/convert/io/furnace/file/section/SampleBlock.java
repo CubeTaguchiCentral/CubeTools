@@ -8,6 +8,7 @@ package com.sfc.sf2.sound.convert.io.furnace.file.section;
 import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -15,35 +16,39 @@ import java.nio.ByteOrder;
  */
 public class SampleBlock {
     
-    private String blockId = "SMPL";
+    private String blockId = "SMP2";
     private int blockSize = 0;
     private String name = "";
     private int length = 0;
     private int compatibilityRate = 0;
-    private short reserved1 = 0;
-    private short reserved2 = 0;
+    private int c4Rate = 0;
     private byte depth = 8;
-    private byte reserved3;
-    private short c4Rate = 0;
-    private int loopPoint = -1;
+    private byte reserved1 = 0;
+    private byte reserved2 = 0;
+    private byte reserved3 = 0;
+    private int loopStart = -1;
+    private int loopEnd = -1;
+    private byte[] samplePresenceBitfield = null;
     private byte[] rawData = null;
 
     public SampleBlock(byte[] data, int samplePointer) {
         ByteBuffer bb = ByteBuffer.wrap(data);
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.position(samplePointer);  
-        String blockId = getString(bb, 4);
+        blockId = getString(bb, 4);
         blockSize = bb.getInt();      
         name = getString(bb);
         length = bb.getInt();
         compatibilityRate = bb.getInt();
-        reserved1 = bb.getShort();
-        reserved2 = bb.getShort();
+        c4Rate = bb.getInt();
         depth = bb.get();
+        reserved1 = bb.get();
+        reserved2 = bb.get();
         reserved3 = bb.get();
-        c4Rate = bb.getShort();
-        loopPoint = bb.getInt();
-        rawData = getByteArray(bb, length);
+        loopStart = bb.getInt();
+        loopEnd = bb.getInt();
+        samplePresenceBitfield = getByteArray(bb, 16);
+        rawData = getByteArray(bb, length*2);
     }
 
     private byte[] getByteArray(ByteBuffer bb, int length){
@@ -114,19 +119,19 @@ public class SampleBlock {
         this.compatibilityRate = compatibilityRate;
     }
 
-    public short getReserved1() {
+    public byte getReserved1() {
         return reserved1;
     }
 
-    public void setReserved1(short reserved1) {
+    public void setReserved1(byte reserved1) {
         this.reserved1 = reserved1;
     }
 
-    public short getReserved2() {
+    public byte getReserved2() {
         return reserved2;
     }
 
-    public void setReserved2(short reserved2) {
+    public void setReserved2(byte reserved2) {
         this.reserved2 = reserved2;
     }
 
@@ -146,20 +151,44 @@ public class SampleBlock {
         this.reserved3 = reserved3;
     }
 
-    public short getC4Rate() {
+    public int getC4Rate() {
         return c4Rate;
     }
 
-    public void setC4Rate(short c4Rate) {
+    public void setC4Rate(int c4Rate) {
         this.c4Rate = c4Rate;
     }
 
-    public int getLoopPoint() {
-        return loopPoint;
+    public int getLoopStart() {
+        return loopStart;
     }
 
-    public void setLoopPoint(int loopPoint) {
-        this.loopPoint = loopPoint;
+    public void setLoopStart(int loopStart) {
+        this.loopStart = loopStart;
+    }
+
+    public int getLoopEnd() {
+        return loopEnd;
+    }
+
+    public void setLoopEnd(int loopEnd) {
+        this.loopEnd = loopEnd;
+    }
+
+    public byte[] getRawData() {
+        return rawData;
+    }
+
+    public void setRawData(byte[] rawData) {
+        this.rawData = rawData;
+    }
+
+    public byte[] getSamplePresenceBitfield() {
+        return samplePresenceBitfield;
+    }
+
+    public void setSamplePresenceBitfield(byte[] samplePresenceBitfield) {
+        this.samplePresenceBitfield = samplePresenceBitfield;
     }
 
     public byte[] getData() {
@@ -168,6 +197,32 @@ public class SampleBlock {
 
     public void setData(byte[] data) {
         this.rawData = data;
+    }
+    
+    public byte[] toByteArray(){
+        ByteBuffer bb = ByteBuffer.allocate(findLength());
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        bb.position(0);
+        bb.put(blockId.getBytes(StandardCharsets.UTF_8));
+        bb.putInt(blockSize);
+        bb.put(name.getBytes(StandardCharsets.UTF_8));
+        bb.put((byte)0);
+        bb.putInt(length);
+        bb.putInt(compatibilityRate);
+        bb.putInt(c4Rate);
+        bb.put(depth);
+        bb.put(reserved1);
+        bb.put(reserved2);
+        bb.put(reserved3);
+        bb.putInt(loopStart);
+        bb.putInt(loopEnd);
+        bb.put(samplePresenceBitfield);
+        bb.put(rawData);
+        return bb.array();
+    }
+    
+    public int findLength(){
+        return 4+4+name.length()+1+4+4+4+1+1+1+1+4+4+16+rawData.length;
     }
     
 }

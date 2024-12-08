@@ -43,10 +43,6 @@ public class PatternRange {
     
     private Pattern[] patterns = new Pattern[MAX_CHANNELS_SIZE];
 
-    public PatternRange(byte[] rawData) {
-        
-    }
-
     public Pattern[] getPatterns() {
         return patterns;
     }

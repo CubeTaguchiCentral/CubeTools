@@ -8,6 +8,7 @@ package com.sfc.sf2.sound.convert.io.furnace.file.section;
 import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -78,6 +79,21 @@ public class AssetDirectory {
 
     public void setAssets(byte[] assets) {
         this.assets = assets;
+    }
+
+    public byte[] toByteArray() {
+        ByteBuffer bb = ByteBuffer.allocate(findLength());
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        bb.position(0);
+        bb.put(name.getBytes(StandardCharsets.UTF_8));
+        bb.put((byte)0);
+        bb.putShort(numberOfAssets);
+        bb.put(assets);
+        return bb.array();
+    }
+    
+    public int findLength(){
+        return name.length()+1+2+numberOfAssets;
     }
     
 }

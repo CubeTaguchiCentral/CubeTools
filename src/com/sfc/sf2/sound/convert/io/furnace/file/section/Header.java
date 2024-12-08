@@ -8,6 +8,7 @@ package com.sfc.sf2.sound.convert.io.furnace.file.section;
 import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -18,7 +19,7 @@ public class Header {
     private String formatMagic = "-Furnace module-";
     private short formatVersion = 219;
     private short reserved1 = 0;
-    private int songPointer = 0;
+    private int songInfoPointer = 0;
     private long reserved2 = 0;
     
     public Header(byte[] data){
@@ -27,7 +28,7 @@ public class Header {
         formatMagic = getString(bb, 16);
         formatVersion = bb.getShort();
         reserved1 = bb.getShort();
-        songPointer = bb.getInt();
+        songInfoPointer = bb.getInt();
         reserved2 = bb.getLong();
     }
 
@@ -83,12 +84,12 @@ public class Header {
         this.reserved1 = reserved1;
     }
 
-    public int getSongPointer() {
-        return songPointer;
+    public int getSongInfoPointer() {
+        return songInfoPointer;
     }
 
-    public void setSongPointer(int songPointer) {
-        this.songPointer = songPointer;
+    public void setSongInfoPointer(int songPointer) {
+        this.songInfoPointer = songPointer;
     }
 
     public long getReserved2() {
@@ -97,6 +98,22 @@ public class Header {
 
     public void setReserved2(long reserved2) {
         this.reserved2 = reserved2;
+    }
+    
+    public byte[] toByteArray(){
+        ByteBuffer bb = ByteBuffer.allocate(findLength());
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        bb.position(0);
+        bb.put(formatMagic.getBytes(StandardCharsets.UTF_8));
+        bb.putShort(formatVersion);
+        bb.putShort(reserved1);
+        bb.putInt(songInfoPointer);
+        bb.putLong(reserved2);
+        return bb.array();
+    }
+    
+    public int findLength(){
+        return 16+2+2+4+8;
     }
     
 }

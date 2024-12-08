@@ -6,10 +6,22 @@
 package com.sfc.sf2.sound.convert.io.furnace.file.section;
 
 import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Effect;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Instrument;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Note;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Row;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Volume;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.HashMap;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -18,17 +30,18 @@ import java.util.Map;
 public class ChipFlagsBlock {
     
     private String blockId = "FLAG";
-    private int size = 0;
-    private Map<String, String> flagMap = new HashMap();
+    private int blockSize = 0;
+    private byte[] rawData = null;
+    private Map<String, String> flagMap = new TreeMap();
     
     public ChipFlagsBlock(byte[] data, int startPointer){
         ByteBuffer bb = ByteBuffer.wrap(data);
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.position(startPointer);    
         String blockId = getString(bb, 4);
-        size = bb.getInt();    
-        String dataString = getString(bb, size);
-        String[] flags = dataString.split("\n");
+        blockSize = bb.getInt();    
+        rawData = getByteArray(bb, blockSize);
+        String[] flags =  new String(rawData, StandardCharsets.UTF_8).split("\n");
         for(int i=0;i<flags.length;i++){
             String[] strings = flags[i].split("=");
             String key = strings[0];
@@ -74,11 +87,11 @@ public class ChipFlagsBlock {
     }
 
     public int getSize() {
-        return size;
+        return blockSize;
     }
 
     public void setSize(int size) {
-        this.size = size;
+        this.blockSize = size;
     }
 
     public Map<String, String> getDataMap() {
@@ -87,6 +100,56 @@ public class ChipFlagsBlock {
 
     public void setDataMap(Map<String, String> dataMap) {
         this.flagMap = dataMap;
+    }
+    
+    public byte[] toByteArray(){
+        if(rawData==null){
+            rawData = produceRawData();
+        }
+        ByteBuffer bb = ByteBuffer.allocate(findLength());
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        bb.position(0);
+        bb.put(blockId.getBytes(StandardCharsets.UTF_8));
+        bb.putInt(blockSize);  
+        bb.put(rawData);
+        return bb.array();
+    }
+    
+    private int getStringArrayLength(String[] stringArray){
+        return FurnaceFile.getStringArrayLength(stringArray);
+    }
+    
+    private byte[] toByteArray(int[] intArray){
+        return FurnaceFile.toByteArray(intArray);
+    }
+    
+    private byte[] toByteArray(String[] stringArray){
+        return FurnaceFile.toByteArray(stringArray);
+    }
+    
+    public byte[] produceRawData(){
+        byte[] bytes = null;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        boolean firstEntry = true;
+        for(Entry e: flagMap.entrySet()){
+            try {
+                if(!firstEntry){
+                    baos.write("\n".getBytes(StandardCharsets.UTF_8));
+                }
+                baos.write(((String)e.getKey()).getBytes(StandardCharsets.UTF_8));
+                baos.write("=".getBytes(StandardCharsets.UTF_8));
+                baos.write(((String)e.getValue()).getBytes(StandardCharsets.UTF_8));
+            } catch (IOException ex) {
+                Logger.getLogger(ChipFlagsBlock.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        baos.write((byte)0);
+        bytes = baos.toByteArray();
+        return bytes;
+    }
+    
+    public int findLength(){
+        return 4+4+rawData.length+1;
     }
     
     
