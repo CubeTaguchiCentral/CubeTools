@@ -20,6 +20,8 @@ import com.sfc.sf2.sound.convert.io.cube.command.Vibrato;
 import com.sfc.sf2.sound.convert.io.cube.command.Vol;
 import com.sfc.sf2.sound.convert.io.cube.command.Wait;
 import com.sfc.sf2.sound.convert.io.cube.command.WaitL;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,177 @@ public class Pattern {
     
     public Pattern(){
         
+    }
+    
+    public Pattern(byte[] data){
+        ByteBuffer bb = ByteBuffer.wrap(data);
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        bb.position(0);
+        byte b = 0;
+        boolean notePresent = false;
+        boolean instrumentPresent = false;
+        boolean volumePresent = false;
+        boolean effect00TypePresent = false;
+        boolean effect00ValuePresent = false;
+        boolean otherEffects03Present = false;
+        boolean otherEffects47Present = false;
+        boolean effect0TypePresent = false;
+        boolean effect0ValuePresent = false;
+        boolean effect1TypePresent = false;
+        boolean effect1ValuePresent = false;
+        boolean effect2TypePresent = false;
+        boolean effect2ValuePresent = false;
+        boolean effect3TypePresent = false;
+        boolean effect3ValuePresent = false;
+        boolean effect4TypePresent = false;
+        boolean effect4ValuePresent = false;
+        boolean effect5TypePresent = false;
+        boolean effect5ValuePresent = false;
+        boolean effect6TypePresent = false;
+        boolean effect6ValuePresent = false;
+        boolean effect7TypePresent = false;
+        boolean effect7ValuePresent = false;
+        List<Row> rowList = new ArrayList();
+        while(bb.position()<bb.capacity()){
+            b = bb.get();
+            if((b&0xFF)==0xFF){
+                break;
+            }
+            if(b==0){
+                rowList.add(new Row());
+            }else if((b&0x80)!=0){
+                int skipLength = (b&0x7F)+2;
+                for(int i=0;i<skipLength;i++){
+                    rowList.add(new Row());
+                }
+            }else{
+                Row r = new Row();
+                notePresent = (b&0x01)!=0;
+                instrumentPresent = (b&0x02)!=0;
+                volumePresent = (b&0x04)!=0;
+                effect00TypePresent = (b&0x08)!=0;
+                effect00ValuePresent = (b&0x10)!=0;
+                otherEffects03Present = (b&0x20)!=0;
+                otherEffects47Present = (b&0x40)!=0;
+                if(otherEffects03Present){
+                    b = bb.get();
+                    effect0TypePresent = (b&0x01)!=0;
+                    effect0ValuePresent = (b&0x02)!=0;
+                    effect1TypePresent = (b&0x04)!=0;
+                    effect1ValuePresent = (b&0x08)!=0;
+                    effect2TypePresent = (b&0x10)!=0;
+                    effect2ValuePresent = (b&0x20)!=0;
+                    effect3TypePresent = (b&0x40)!=0;
+                    effect3ValuePresent = (b&0x80)!=0;
+                }else{
+                    effect0TypePresent = false;
+                    effect0ValuePresent = false;
+                    effect1TypePresent = false;
+                    effect1ValuePresent = false;
+                    effect2TypePresent = false;
+                    effect2ValuePresent = false;
+                    effect3TypePresent = false;
+                    effect3ValuePresent = false;
+                }
+                if(otherEffects47Present){
+                    b = bb.get();
+                    effect4TypePresent = (b&0x01)!=0;
+                    effect4ValuePresent = (b&0x02)!=0;
+                    effect5TypePresent = (b&0x04)!=0;
+                    effect5ValuePresent = (b&0x08)!=0;
+                    effect6TypePresent = (b&0x10)!=0;
+                    effect6ValuePresent = (b&0x20)!=0;
+                    effect7TypePresent = (b&0x40)!=0;
+                    effect7ValuePresent = (b&0x80)!=0;
+                }else{
+                    effect4TypePresent = false;
+                    effect4ValuePresent = false;
+                    effect5TypePresent = false;
+                    effect5ValuePresent = false;
+                    effect6TypePresent = false;
+                    effect6ValuePresent = false;
+                    effect7TypePresent = false;
+                    effect7ValuePresent = false;
+                }
+                if(notePresent){
+                    r.setNote(new Note(bb.get()));
+                }
+                if(instrumentPresent){
+                    r.setInstrument(new Instrument(bb.get()));
+                }
+                if(volumePresent){
+                    r.setVolume(new Volume(bb.get()));
+                }
+                if(effect00TypePresent){
+                    Effect e = new Effect(bb.get());
+                    if(effect00ValuePresent){
+                        e.setValue(bb.get());
+                    }
+                    r.getEffectList().add(e);
+                }
+                if(effect0TypePresent){
+                    Effect e = new Effect(bb.get());
+                    if(effect0ValuePresent){
+                        e.setValue(bb.get());
+                    }
+                    r.getEffectList().add(e);
+                }
+                if(effect1TypePresent){
+                    Effect e = new Effect(bb.get());
+                    if(effect1ValuePresent){
+                        e.setValue(bb.get());
+                    }
+                    r.getEffectList().add(e);
+                }
+                if(effect2TypePresent){
+                    Effect e = new Effect(bb.get());
+                    if(effect2ValuePresent){
+                        e.setValue(bb.get());
+                    }
+                    r.getEffectList().add(e);
+                }
+                if(effect3TypePresent){
+                    Effect e = new Effect(bb.get());
+                    if(effect3ValuePresent){
+                        e.setValue(bb.get());
+                    }
+                    r.getEffectList().add(e);
+                }
+                if(effect4TypePresent){
+                    Effect e = new Effect(bb.get());
+                    if(effect4ValuePresent){
+                        e.setValue(bb.get());
+                    }
+                    r.getEffectList().add(e);
+                }
+                if(effect5TypePresent){
+                    Effect e = new Effect(bb.get());
+                    if(effect5ValuePresent){
+                        e.setValue(bb.get());
+                    }
+                    r.getEffectList().add(e);
+                }
+                if(effect6TypePresent){
+                    Effect e = new Effect(bb.get());
+                    if(effect6ValuePresent){
+                        e.setValue(bb.get());
+                    }
+                    r.getEffectList().add(e);
+                }
+                if(effect7TypePresent){
+                    Effect e = new Effect(bb.get());
+                    if(effect7ValuePresent){
+                        e.setValue(bb.get());
+                    }
+                    r.getEffectList().add(e);
+                }
+                rowList.add(r);
+            }
+        }
+        rows = new Row[rowList.size()];
+        for(int j=0;j<rows.length;j++){
+            rows[j]=rowList.get(j);
+        }
     }
     
     public Pattern(CubeChannel cch, int channelType, boolean introOnly, boolean mainLoopOnly){

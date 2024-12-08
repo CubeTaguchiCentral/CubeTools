@@ -81,6 +81,7 @@ public class FurnaceFile {
                 patterns[i] = new PatternBlock(data, patternPointer);
             }
         }
+        int i=0;
     }
 
     public static byte[] getByteArray(ByteBuffer bb, int length){

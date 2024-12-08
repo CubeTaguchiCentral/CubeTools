@@ -14,6 +14,10 @@ public class Effect {
     private byte type;
     private Byte value;
     
+    public Effect(int type){
+        this.type=(byte)(0xFF&type);
+    }
+    
     public Effect(int type, int value){
         this.type=(byte)(0xFF&type);
         this.value=(byte)(0xFF&value);

@@ -7,6 +7,7 @@ package com.sfc.sf2.sound.convert.io.furnace.file.section;
 
 import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
 import com.sfc.sf2.sound.convert.io.furnace.PatternRange;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -23,7 +24,7 @@ public class PatternBlock {
     private short patternIndex = 0;
     private String name = "";
     private byte[] rawData = null;
-    private PatternRange pattern = null;
+    private Pattern pattern = null;
 
     public PatternBlock(byte[] data, int startPointer) {
         ByteBuffer bb = ByteBuffer.wrap(data, startPointer, data.length-startPointer);
@@ -36,7 +37,7 @@ public class PatternBlock {
         patternIndex = bb.getShort();
         name = getString(bb);
         rawData = getByteArray(bb, blockSize-1-1-2-name.length()-1);
-        pattern = new PatternRange(rawData);
+        pattern = new Pattern(rawData);
     }
 
     private byte[] getByteArray(ByteBuffer bb, int length){
@@ -123,11 +124,11 @@ public class PatternBlock {
         this.rawData = rawData;
     }
 
-    public PatternRange getPattern() {
+    public Pattern getPattern() {
         return pattern;
     }
 
-    public void setPattern(PatternRange pattern) {
+    public void setPattern(Pattern pattern) {
         this.pattern = pattern;
     }
     
