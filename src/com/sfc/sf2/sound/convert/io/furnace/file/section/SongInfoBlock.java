@@ -179,7 +179,6 @@ public class SongInfoBlock {
         instrumentChangeAllowedDuringPorta = bb.get();
         resetNoteBaseOnArpeggioEffectStop = bb.get();
         instrumentPointers = getIntArray(bb, instrumentCount);
-        
         wavetablePointers = getIntArray(bb, wavetableCount);
         samplePointers = getIntArray(bb, sampleCount);
         patternPointers = getIntArray(bb, patternCount);

@@ -323,7 +323,7 @@ public class FurnaceFile {
         } 
         for(int i=0;i<patternBlocks.length;i++){
             if(patternBlocks[i]!=null){
-                songInfo.getSamplePointers()[i] = nextPointer;
+                songInfo.getPatternPointers()[i] = nextPointer;
                 nextPointer += patternBlocks[i].findLength();
             }
         }     
