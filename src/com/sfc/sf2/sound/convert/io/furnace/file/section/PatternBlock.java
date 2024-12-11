@@ -36,6 +36,12 @@ public class PatternBlock {
     private byte[] rawData = null;
     private Pattern pattern = null;
 
+    public PatternBlock(Pattern pattern, int channel, int patternIndex) {
+        this.pattern = pattern;
+        this.channel = (byte)(0xFF&channel);
+        this.patternIndex = (byte)(0xFF&patternIndex);
+    }
+
     public PatternBlock(byte[] data, int startPointer) {
         ByteBuffer bb = ByteBuffer.wrap(data, startPointer, data.length-startPointer);
         bb.order(ByteOrder.LITTLE_ENDIAN);
@@ -48,6 +54,10 @@ public class PatternBlock {
         name = getString(bb);
         rawData = getByteArray(bb, blockSize-1-1-2-name.length()-1);
         pattern = new Pattern(rawData);
+    }
+
+    public PatternBlock() {
+
     }
 
     private byte[] getByteArray(ByteBuffer bb, int length){
@@ -145,12 +155,13 @@ public class PatternBlock {
     public byte[] toByteArray(){
         if(rawData==null){
             rawData = produceRawData();
+            blockSize = findLength()-4;
         }
         ByteBuffer bb = ByteBuffer.allocate(findLength());
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.position(0);
         bb.put(blockId.getBytes(StandardCharsets.UTF_8));
-        bb.putInt(blockSize);
+        bb.putInt(findLength()-4-4);
         bb.put(subsong);
         bb.put(channel);
         bb.putShort(patternIndex);
@@ -171,11 +182,11 @@ public class PatternBlock {
             if(r.isEmpty()){
                 int skipLength = 1;
                 cursor++;
-                while(rows[cursor].isEmpty() && cursor<rows.length){
+                while(cursor<rows.length && rows[cursor].isEmpty()){
                     skipLength++;
                     cursor++;
                 }
-                while(skipLength>128){
+                while(skipLength>=128){
                     baos.write((byte)0xFE);
                     skipLength-=128;
                 }
@@ -311,6 +322,7 @@ public class PatternBlock {
                         baos.write((byte)effectList.get(8).getValue());
                     }
                 }
+                cursor++;
             }
         }
         baos.write((byte)0xFF);
@@ -319,6 +331,10 @@ public class PatternBlock {
     }
     
     public int findLength(){
+        if(rawData==null){
+            rawData = produceRawData();
+            blockSize = findLength()-4;
+        }
         return 4+4+1+1+2+name.length()+1+rawData.length;
     }
 }

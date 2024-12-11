@@ -43,6 +43,10 @@ public class PatternRange {
     
     private Pattern[] patterns = new Pattern[MAX_CHANNELS_SIZE];
 
+    private PatternRange() {
+
+    }
+
     public Pattern[] getPatterns() {
         return patterns;
     }
@@ -68,9 +72,9 @@ public class PatternRange {
         if(mainLoopOnly){
             repeatMainLoopToMaxLength();
         }
+        */
         
         fillChannelsToMaxLength();
-        */
     }
     
     public void fillChannelsToMaxLength(){
@@ -82,15 +86,21 @@ public class PatternRange {
         }
         for (int i=0;i<patterns.length;i++){
             Row[] rows = patterns[i].getRows();
-            if(rows.length<maxLength){
-                Row[] newRows = new Row[maxLength];
-                System.arraycopy(rows, 0, newRows, 0, rows.length);
-                for(int j=0;(rows.length+j)<maxLength;j++){
-                    Row voidRow = new Row();
-                    newRows[rows.length+j] = voidRow;
-                }
-                patterns[i].setRows(newRows);
+            patterns[i].setRows(fillToMaxLength(rows, maxLength));
+        }
+    }
+    
+    public static Row[] fillToMaxLength(Row[] rows, int maxLength){
+        if(rows.length<maxLength){
+            Row[] newRows = new Row[maxLength];
+            System.arraycopy(rows, 0, newRows, 0, rows.length);
+            for(int j=0;(rows.length+j)<maxLength;j++){
+                Row voidRow = new Row();
+                newRows[rows.length+j] = voidRow;
             }
+            return newRows;
+        }else{
+            return rows;
         }
     }
     
@@ -158,5 +168,36 @@ public class PatternRange {
         System.arraycopy(b, 0, c, aLen, bLen);
 
         return c;
+    }
+
+    public static PatternRange[] split(PatternRange pr, int patternLength) {
+        Pattern[] patterns = pr.getPatterns();
+        
+        int maxLength=0;
+        for (int i=0;i<patterns.length;i++){
+            if(maxLength<(patterns[i].getRows().length)){
+                maxLength = patterns[i].getRows().length;
+            }
+        }
+        
+        int splitPatternNumber = (maxLength/patternLength)+1;
+        
+        PatternRange[] prs = new PatternRange[splitPatternNumber];
+        
+        for(int i=0;i<prs.length;i++){
+            prs[i] = new PatternRange();
+        }
+        
+        for(int i=0;i<patterns.length;i++){
+            Row[] rows = patterns[i].getRows();
+            for(int j=0;j*patternLength<rows.length;j++){
+                prs[j].getPatterns()[i] = new Pattern();
+                prs[j].getPatterns()[i].setRows(fillToMaxLength(Arrays.copyOfRange(rows, j*patternLength, Math.min(rows.length,j*patternLength+patternLength)),patternLength));
+            }     
+        }
+        
+        
+        
+        return prs;
     }
 }

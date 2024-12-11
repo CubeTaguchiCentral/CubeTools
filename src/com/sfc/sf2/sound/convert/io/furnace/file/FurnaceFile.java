@@ -237,8 +237,6 @@ public class FurnaceFile {
         this.patternBlocks = patterns;
     }
     
-    
-    
     public byte[] toByteArray(){
         
         updatePointers();
@@ -290,6 +288,8 @@ public class FurnaceFile {
         int nextPointer = header.findLength();
         header.setSongInfoPointer(nextPointer);
         int numberOfChips = songInfo.findNumberOfChips();
+        songInfo.setPatternCount(patternBlocks.length);
+        songInfo.setOrdersLength((short)(patternBlocks.length/10));
         nextPointer += songInfo.findLength();
         for(int i=0;i<numberOfChips;i++){
             if(chipFlagsBlocks[i]!=null){
@@ -321,12 +321,16 @@ public class FurnaceFile {
                 nextPointer += sampleBlocks[i].findLength();
             }
         } 
+        
+        int[] newPatternPointers = new int[patternBlocks.length];
         for(int i=0;i<patternBlocks.length;i++){
             if(patternBlocks[i]!=null){
-                songInfo.getPatternPointers()[i] = nextPointer;
+                newPatternPointers[i] = nextPointer;
                 nextPointer += patternBlocks[i].findLength();
             }
-        }     
+        }
+        songInfo.setPatternPointers(newPatternPointers);
+        
     }
     
 }

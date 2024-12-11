@@ -5,15 +5,20 @@
  */
 package com.sfc.sf2.sound.convert.io;
 
+import static com.sfc.sf2.sound.convert.io.FurnaceClipboardManager.printChannelSizes;
 import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
+import com.sfc.sf2.sound.convert.io.furnace.PatternRange;
 import com.sfc.sf2.sound.convert.io.furnace.clipboard.*;
 import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
+import com.sfc.sf2.sound.convert.io.furnace.file.section.PatternBlock;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,6 +51,38 @@ public class FurnaceFileManager {
             File f = new File(templateFilePath);
             byte[] inputData = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
             FurnaceFile ff = new FurnaceFile(inputData);
+            
+            PatternRange[] prs = null;
+            
+            if(!me.hasIntro()){
+            //if(true){
+                PatternRange pr = new PatternRange(me, false, false);
+                prs = PatternRange.split(pr, 256);
+            }else{
+                PatternRange intro = new PatternRange(me, true, false);
+                PatternRange mainLoop = new PatternRange(me, false, true);
+                PatternRange pr = new PatternRange(intro, mainLoop);
+                prs = PatternRange.split(pr, 256);
+            }            
+            
+            List<PatternBlock> pbList = new ArrayList();
+            List<Byte> orderList = new ArrayList();
+            int orderLength = 1;
+            for(int i=0;i<prs[0].getPatterns().length;i++){
+                for(int j=0;j<1;j++){
+                    pbList.add(new PatternBlock(prs[j].getPatterns()[i],i,j));
+                    orderList.add((byte)(0xFF&j));
+                }
+            }
+            
+            PatternBlock[] pbs = new PatternBlock[pbList.size()];
+            ff.setPatterns(pbList.toArray(pbs));
+            byte[] orders = new byte[orderList.size()];
+            for(int i=0;i<orderList.size();i++){
+                orders[i] = (byte)orderList.get(i);
+            }
+            ff.getSongInfo().setOrders(orders);
+            ff.getSongInfo().setOrdersLength((short)(0xFFFF&orderLength));
             
             File file = new File(outputFilePath);
             Path path = Paths.get(file.getAbsolutePath());

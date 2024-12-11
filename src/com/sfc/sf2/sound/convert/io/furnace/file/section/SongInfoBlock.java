@@ -1211,7 +1211,7 @@ public class SongInfoBlock {
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.position(0);
         bb.put(blockId.getBytes(StandardCharsets.UTF_8));
-        bb.putInt(blockSize);
+        bb.putInt(findLength()-4-4);
         bb.put(timebase);
         bb.put(speed1);
         bb.put(speed2);

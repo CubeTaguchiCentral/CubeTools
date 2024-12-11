@@ -688,7 +688,7 @@ public class MainEditor extends javax.swing.JFrame {
 
         jLabel18.setText("Output Furnace File : ");
 
-        jTextField18.setText("C:\\SEGADEV\\AUDIO\\data\\sf2\\templates\\furnace\\test-output-uncompressed.fur");
+        jTextField18.setText("C:\\SEGADEV\\AUDIO\\data\\sf2\\templates\\furnace\\test-pattern-output-uncompressed.fur");
         jTextField18.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField18ActionPerformed(evt);

@@ -204,7 +204,7 @@ public class SampleBlock {
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.position(0);
         bb.put(blockId.getBytes(StandardCharsets.UTF_8));
-        bb.putInt(blockSize);
+        bb.putInt(findLength()-4-4);
         bb.put(name.getBytes(StandardCharsets.UTF_8));
         bb.put((byte)0);
         bb.putInt(length);

@@ -100,7 +100,7 @@ public class AssetDirectoriesBlock {
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.position(0);
         bb.put(blockId.getBytes(StandardCharsets.UTF_8));
-        bb.putInt(blockSize);
+        bb.putInt(findLength()-4-4);
         bb.putInt(numberOfDirs);
         for(int i=0;i<assetDirectories.length;i++){
             bb.put(assetDirectories[i].toByteArray());
