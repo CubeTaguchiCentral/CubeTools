@@ -67,9 +67,9 @@ public class FurnaceFileManager {
             
             List<PatternBlock> pbList = new ArrayList();
             List<Byte> orderList = new ArrayList();
-            int orderLength = 1;
+            int orderLength = prs.length;
             for(int i=0;i<prs[0].getPatterns().length;i++){
-                for(int j=0;j<1;j++){
+                for(int j=0;j<orderLength;j++){
                     pbList.add(new PatternBlock(prs[j].getPatterns()[i],i,j));
                     orderList.add((byte)(0xFF&j));
                 }
