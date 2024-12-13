@@ -193,7 +193,7 @@ public class PatternBlock {
                 if(skipLength==1){
                     baos.write((byte)0);
                 }else if(skipLength>1){
-                    baos.write((byte)(skipLength-2));
+                    baos.write((byte)(0x80+(skipLength-2)));
                 }
             }else{
                 Note note = r.getNote();
@@ -205,22 +205,22 @@ public class PatternBlock {
                 boolean volumePresent = volume!=null;
                 boolean effect0TypePresent = effectList.size()>0;
                 boolean effect0ValuePresent = effectList.size()>0 && effectList.get(0).getValue()!=null;
-                boolean otherEffect0TypePresent = effectList.size()>1;
-                boolean otherEffect0ValuePresent = effectList.size()>1 && effectList.get(1).getValue()!=null;
-                boolean otherEffect1TypePresent = effectList.size()>2;
-                boolean otherEffect1ValuePresent = effectList.size()>2 && effectList.get(2).getValue()!=null;
-                boolean otherEffect2TypePresent = effectList.size()>3;
-                boolean otherEffect2ValuePresent = effectList.size()>3 && effectList.get(3).getValue()!=null;
-                boolean otherEffect3TypePresent = effectList.size()>4;
-                boolean otherEffect3ValuePresent = effectList.size()>4 && effectList.get(4).getValue()!=null;
-                boolean otherEffect4TypePresent = effectList.size()>5;
-                boolean otherEffect4ValuePresent = effectList.size()>5 && effectList.get(5).getValue()!=null;
-                boolean otherEffect5TypePresent = effectList.size()>6;
-                boolean otherEffect5ValuePresent = effectList.size()>6 && effectList.get(6).getValue()!=null;
-                boolean otherEffect6TypePresent = effectList.size()>7;
-                boolean otherEffect6ValuePresent = effectList.size()>7 && effectList.get(7).getValue()!=null;
-                boolean otherEffect7TypePresent = effectList.size()>8;
-                boolean otherEffect7ValuePresent = effectList.size()>8 && effectList.get(8).getValue()!=null;
+                boolean otherEffect0TypePresent = effectList.size()>0;
+                boolean otherEffect0ValuePresent = effectList.size()>0 && effectList.get(0).getValue()!=null;
+                boolean otherEffect1TypePresent = effectList.size()>1;
+                boolean otherEffect1ValuePresent = effectList.size()>1 && effectList.get(1).getValue()!=null;
+                boolean otherEffect2TypePresent = effectList.size()>2;
+                boolean otherEffect2ValuePresent = effectList.size()>2 && effectList.get(2).getValue()!=null;
+                boolean otherEffect3TypePresent = effectList.size()>3;
+                boolean otherEffect3ValuePresent = effectList.size()>3 && effectList.get(3).getValue()!=null;
+                boolean otherEffect4TypePresent = effectList.size()>4;
+                boolean otherEffect4ValuePresent = effectList.size()>4 && effectList.get(4).getValue()!=null;
+                boolean otherEffect5TypePresent = effectList.size()>5;
+                boolean otherEffect5ValuePresent = effectList.size()>5 && effectList.get(5).getValue()!=null;
+                boolean otherEffect6TypePresent = effectList.size()>6;
+                boolean otherEffect6ValuePresent = effectList.size()>6 && effectList.get(6).getValue()!=null;
+                boolean otherEffect7TypePresent = effectList.size()>7;
+                boolean otherEffect7ValuePresent = effectList.size()>7 && effectList.get(7).getValue()!=null;
                 boolean otherEffects03Present = otherEffect0TypePresent || otherEffect1TypePresent || otherEffect2TypePresent || otherEffect3TypePresent;
                 boolean otherEffects47Present = otherEffect4TypePresent || otherEffect5TypePresent || otherEffect6TypePresent || otherEffect7TypePresent;
                 byte nextByte = (byte)(
@@ -268,58 +268,58 @@ public class PatternBlock {
                 if(volumePresent){
                     baos.write(volume.getValue());
                 }
-                if(effect0TypePresent){
+                /*if(effect0TypePresent){
                     baos.write(effectList.get(0).getType());
                     if(effect0ValuePresent){
                         baos.write((byte)effectList.get(0).getValue());
                     }
-                }
+                }*/
                 if(otherEffect0TypePresent){
-                    baos.write(effectList.get(1).getType());
+                    baos.write(effectList.get(0).getType());
                     if(otherEffect0ValuePresent){
-                        baos.write((byte)effectList.get(1).getValue());
+                        baos.write((byte)effectList.get(0).getValue());
                     }
                 }
                 if(otherEffect1TypePresent){
-                    baos.write(effectList.get(2).getType());
+                    baos.write(effectList.get(1).getType());
                     if(otherEffect1ValuePresent){
-                        baos.write((byte)effectList.get(2).getValue());
+                        baos.write((byte)effectList.get(1).getValue());
                     }
                 }
                 if(otherEffect2TypePresent){
-                    baos.write(effectList.get(3).getType());
+                    baos.write(effectList.get(2).getType());
                     if(otherEffect2ValuePresent){
-                        baos.write((byte)effectList.get(3).getValue());
+                        baos.write((byte)effectList.get(2).getValue());
                     }
                 }
                 if(otherEffect3TypePresent){
-                    baos.write(effectList.get(14).getType());
+                    baos.write(effectList.get(3).getType());
                     if(otherEffect3ValuePresent){
-                        baos.write((byte)effectList.get(4).getValue());
+                        baos.write((byte)effectList.get(3).getValue());
                     }
                 }
                 if(otherEffect4TypePresent){
-                    baos.write(effectList.get(5).getType());
+                    baos.write(effectList.get(4).getType());
                     if(otherEffect4ValuePresent){
-                        baos.write((byte)effectList.get(5).getValue());
+                        baos.write((byte)effectList.get(4).getValue());
                     }
                 }
                 if(otherEffect5TypePresent){
-                    baos.write(effectList.get(6).getType());
+                    baos.write(effectList.get(5).getType());
                     if(otherEffect5ValuePresent){
-                        baos.write((byte)effectList.get(6).getValue());
+                        baos.write((byte)effectList.get(5).getValue());
                     }
                 }
                 if(otherEffect6TypePresent){
-                    baos.write(effectList.get(7).getType());
+                    baos.write(effectList.get(6).getType());
                     if(otherEffect6ValuePresent){
-                        baos.write((byte)effectList.get(7).getValue());
+                        baos.write((byte)effectList.get(6).getValue());
                     }
                 }
                 if(otherEffect7TypePresent){
-                    baos.write(effectList.get(8).getType());
+                    baos.write(effectList.get(7).getType());
                     if(otherEffect7ValuePresent){
-                        baos.write((byte)effectList.get(8).getValue());
+                        baos.write((byte)effectList.get(7).getValue());
                     }
                 }
                 cursor++;
