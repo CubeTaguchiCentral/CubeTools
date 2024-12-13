@@ -7,6 +7,7 @@ package com.sfc.sf2.sound.convert.io.furnace.pattern;
 
 import com.sfc.sf2.sound.convert.io.cube.CubeChannel;
 import com.sfc.sf2.sound.convert.io.cube.CubeCommand;
+import com.sfc.sf2.sound.convert.io.cube.command.ChannelEnd;
 import com.sfc.sf2.sound.convert.io.cube.command.Inst;
 import com.sfc.sf2.sound.convert.io.cube.command.MainLoopStart;
 import com.sfc.sf2.sound.convert.io.cube.command.PsgInst;
@@ -407,6 +408,8 @@ public class Pattern {
                     playCounter++;
                 }
                 playCounter=0;
+            }else if(cc instanceof ChannelEnd){
+                
             }else {
                 System.out.println("com.sfc.sf2.sound.convert.io.furnace.FurnacePattern.convertFmCubeChannel() - Ignoring command "+i+" : "+cc.produceAsmOutput());
             }

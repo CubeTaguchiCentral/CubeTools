@@ -223,40 +223,40 @@ public class PatternBlock {
                 boolean otherEffect7ValuePresent = effectList.size()>8 && effectList.get(8).getValue()!=null;
                 boolean otherEffects03Present = otherEffect0TypePresent || otherEffect1TypePresent || otherEffect2TypePresent || otherEffect3TypePresent;
                 boolean otherEffects47Present = otherEffect4TypePresent || otherEffect5TypePresent || otherEffect6TypePresent || otherEffect7TypePresent;
-                baos.write((byte)(
-                        (notePresent?1:0)<<0
-                        + (instrumentPresent?1:0)<<1
-                        + (volumePresent?1:0)<<2
-                        + (effect0TypePresent?1:0)<<3
-                        + (effect0ValuePresent?1:0)<<4
-                        + (otherEffects03Present?1:0)<<5
-                        + (otherEffects47Present?1:0)<<6
-                    )
-                );
+                byte nextByte = (byte)(
+                        ((notePresent?1:0)<<0)
+                        + ((instrumentPresent?1:0)<<1)
+                        + ((volumePresent?1:0)<<2)
+                        + ((effect0TypePresent?1:0)<<3)
+                        + ((effect0ValuePresent?1:0)<<4)
+                        + ((otherEffects03Present?1:0)<<5)
+                        + ((otherEffects47Present?1:0)<<6)
+                    );
+                baos.write(nextByte);
                 if(otherEffects03Present){
-                    baos.write((byte)(
-                            (otherEffect0TypePresent?1:0)<<0
-                            + (otherEffect0ValuePresent?1:0)<<1
-                            + (otherEffect1TypePresent?1:0)<<2
-                            + (otherEffect1ValuePresent?1:0)<<3
-                            + (otherEffect2TypePresent?1:0)<<4
-                            + (otherEffect2ValuePresent?1:0)<<5
-                            + (otherEffect3TypePresent?1:0)<<6
-                            + (otherEffect3ValuePresent?1:0)<<7
-                        )
-                    );  
+                    nextByte = (byte)(
+                            ((otherEffect0TypePresent?1:0)<<0)
+                            + ((otherEffect0ValuePresent?1:0)<<1)
+                            + ((otherEffect1TypePresent?1:0)<<2)
+                            + ((otherEffect1ValuePresent?1:0)<<3)
+                            + ((otherEffect2TypePresent?1:0)<<4)
+                            + ((otherEffect2ValuePresent?1:0)<<5)
+                            + ((otherEffect3TypePresent?1:0)<<6)
+                            + ((otherEffect3ValuePresent?1:0)<<7)
+                        );
+                    baos.write(nextByte);  
                     if(otherEffects47Present){
-                        baos.write((byte)(
-                                (otherEffect4TypePresent?1:0)<<0
-                                + (otherEffect4ValuePresent?1:0)<<1
-                                + (otherEffect5TypePresent?1:0)<<2
-                                + (otherEffect5ValuePresent?1:0)<<3
-                                + (otherEffect6TypePresent?1:0)<<4
-                                + (otherEffect6ValuePresent?1:0)<<5
-                                + (otherEffect7TypePresent?1:0)<<6
-                                + (otherEffect7ValuePresent?1:0)<<7
-                            )
-                        );  
+                        nextByte = (byte)(
+                                ((otherEffect4TypePresent?1:0)<<0)
+                                + ((otherEffect4ValuePresent?1:0)<<1)
+                                + ((otherEffect5TypePresent?1:0)<<2)
+                                + ((otherEffect5ValuePresent?1:0)<<3)
+                                + ((otherEffect6TypePresent?1:0)<<4)
+                                + ((otherEffect6ValuePresent?1:0)<<5)
+                                + ((otherEffect7TypePresent?1:0)<<6)
+                                + ((otherEffect7ValuePresent?1:0)<<7)
+                            );
+                        baos.write(nextByte);  
                     }
                 }
                 if(notePresent){
