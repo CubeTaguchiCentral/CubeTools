@@ -32,6 +32,10 @@ import java.util.List;
  */
 public class Pattern {
     
+    public static final byte NOTE_OFF = (byte)180;
+    public static final byte NOTE_RELEASE = (byte)181;
+    public static final byte MACRO_RELEASE = (byte)182;
+    
     private Row[] rows;
     
     public Pattern(){
@@ -312,7 +316,7 @@ public class Pattern {
                         }
                     }
                     if(releaseCounter>=(playLength-release)){
-                        currentRow.setNote(new Note(0xFF));
+                        currentRow.setNote(new Note(NOTE_RELEASE));
                         rowList.add(currentRow);
                         currentRow = new Row();
                         releaseCounter=0;
@@ -370,7 +374,7 @@ public class Pattern {
                         }
                     }
                     if(releaseCounter>=(playLength-release)){
-                        currentRow.setNote(new Note(0xFE));
+                        currentRow.setNote(new Note(NOTE_OFF));
                         rowList.add(currentRow);
                         currentRow = new Row();
                         releaseCounter=0;
