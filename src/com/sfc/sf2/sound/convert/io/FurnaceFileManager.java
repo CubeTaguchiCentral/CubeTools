@@ -28,6 +28,11 @@ import java.util.logging.Logger;
  */
 public class FurnaceFileManager {
     
+    public static final int MD_CRYSTAL_FREQUENCY = 53693175;
+    public static final float YM2612_INPUT_FREQUENCY = MD_CRYSTAL_FREQUENCY / 7;
+    public static final int YM2612_CHANNEL_SAMPLE_CYCLES = 6*24;
+    public static final float YM2612_OUTPUT_RATE = YM2612_INPUT_FREQUENCY / YM2612_CHANNEL_SAMPLE_CYCLES;
+    
     private static FurnaceFile currentFile = null;   
        
     public static MusicEntry importFurnaceFile(String filePath){
@@ -84,6 +89,10 @@ public class FurnaceFileManager {
             ff.getSongInfo().setOrders(orders);
             ff.getSongInfo().setOrdersLength((short)(0xFFFF&orderLength));
             
+            int ticksPerSecond = calculateTicksPersSecond(me.getYmTimerBValue(), ff.getSongInfo().getSpeed1());
+            System.out.println("Timer B value "+Integer.toString(0xFF&me.getYmTimerBValue())+" -> "+ticksPerSecond+" ticks per second");
+            ff.getSongInfo().setTicksPerSecond(ticksPerSecond);
+            
             File file = new File(outputFilePath);
             Path path = Paths.get(file.getAbsolutePath());
             byte[] outputData = ff.toByteArray();
@@ -93,6 +102,12 @@ public class FurnaceFileManager {
         } catch (IOException ex) {
             Logger.getLogger(FurnaceFileManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public static int calculateTicksPersSecond(byte ymTimerB, int speed){  
+        float timerPeriod = (8*144) * (256 - (0xFF&ymTimerB)) / (YM2612_INPUT_FREQUENCY/2);
+        float timerFrequency = 1/timerPeriod * speed;
+        return Math.round(timerFrequency);
     }
     
 }
