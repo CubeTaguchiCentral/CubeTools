@@ -38,6 +38,14 @@ public class Sample extends CubeCommand {
             return false;
         }
     }
+
+    public byte getSample() {
+        return sample;
+    }
+
+    public void setSample(byte sample) {
+        this.sample = sample;
+    }
     
     
     

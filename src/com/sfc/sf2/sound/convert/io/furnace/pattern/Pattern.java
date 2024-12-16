@@ -36,6 +36,8 @@ public class Pattern {
     public static final byte NOTE_RELEASE = (byte)181;
     public static final byte MACRO_RELEASE = (byte)182;
     
+    public static final int SAMPLE_INSTRUMENT_OFFSET = 0x50;
+    
     private Row[] rows;
     
     public Pattern(){
@@ -272,7 +274,8 @@ public class Pattern {
                 PsgInst inst = (PsgInst) cc;
                 currentInstrument = (0xF0&inst.getValue())>>4;
                 currentVolume = (0x0F&inst.getValue())/2;
-            }else if((cc instanceof com.sfc.sf2.sound.convert.io.cube.command.Note || cc instanceof com.sfc.sf2.sound.convert.io.cube.command.NoteL)
+            }else if((cc instanceof com.sfc.sf2.sound.convert.io.cube.command.Note || cc instanceof com.sfc.sf2.sound.convert.io.cube.command.NoteL
+                    ||cc instanceof com.sfc.sf2.sound.convert.io.cube.command.Sample || cc instanceof com.sfc.sf2.sound.convert.io.cube.command.SampleL)
                     && (  (!introOnly && !mainLoopOnly)
                        || (introOnly && !mainLoopStarted)
                        || (mainLoopOnly && mainLoopStarted)
@@ -282,9 +285,18 @@ public class Pattern {
                     com.sfc.sf2.sound.convert.io.cube.command.NoteL n = (com.sfc.sf2.sound.convert.io.cube.command.NoteL) cc;
                     playLength = 0xFF & n.getLength();
                     currentRow.setNote(new Note(Pitch.valueFromCubeValue(n.getNote().getValue()-12).getValue()));
-                }else{
+                }else if(cc instanceof com.sfc.sf2.sound.convert.io.cube.command.SampleL){
+                    com.sfc.sf2.sound.convert.io.cube.command.SampleL s = (com.sfc.sf2.sound.convert.io.cube.command.SampleL) cc;
+                    currentInstrument = s.getSample()+SAMPLE_INSTRUMENT_OFFSET;
+                    playLength = 0xFF & s.getLength();
+                    currentRow.setNote(new Note(Pitch.C4.getValue()));
+                }else if(cc instanceof com.sfc.sf2.sound.convert.io.cube.command.Note){
                     com.sfc.sf2.sound.convert.io.cube.command.Note n = (com.sfc.sf2.sound.convert.io.cube.command.Note) cc;
                     currentRow.setNote(new Note(Pitch.valueFromCubeValue(n.getNote().getValue()-12).getValue()));
+                }else{
+                    com.sfc.sf2.sound.convert.io.cube.command.Sample s = (com.sfc.sf2.sound.convert.io.cube.command.Sample) cc;
+                    currentInstrument = s.getSample()+SAMPLE_INSTRUMENT_OFFSET;
+                    currentRow.setNote(new Note(Pitch.C4.getValue()));
                 }
                 currentRow.setInstrument(new Instrument(currentInstrument));
                 currentRow.setVolume(new Volume(currentVolume*8));

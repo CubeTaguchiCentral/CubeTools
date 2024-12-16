@@ -41,6 +41,22 @@ public class SampleL extends CubeCommand {
             return false;
         }
     }
+
+    public byte getSample() {
+        return sample;
+    }
+
+    public void setSample(byte sample) {
+        this.sample = sample;
+    }
+
+    public byte getLength() {
+        return length;
+    }
+
+    public void setLength(byte length) {
+        this.length = length;
+    }
     
     
     
