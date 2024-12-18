@@ -10,6 +10,7 @@ import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
 import com.sfc.sf2.sound.convert.io.furnace.PatternRange;
 import com.sfc.sf2.sound.convert.io.furnace.clipboard.*;
 import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
+import com.sfc.sf2.sound.convert.io.furnace.file.section.Feature;
 import com.sfc.sf2.sound.convert.io.furnace.file.section.PatternBlock;
 import java.io.File;
 import java.io.IOException;
@@ -93,6 +94,8 @@ public class FurnaceFileManager {
             System.out.println("Timer B value "+Integer.toString(0xFF&me.getYmTimerBValue())+" -> "+ticksPerSecond+" ticks per second");
             ff.getSongInfo().setTicksPerSecond(ticksPerSecond);
             
+            convertYmInstruments(me, ff);
+            
             File file = new File(outputFilePath);
             Path path = Paths.get(file.getAbsolutePath());
             byte[] outputData = ff.toByteArray();
@@ -108,6 +111,17 @@ public class FurnaceFileManager {
         float timerPeriod = (8*144) * (256 - (0xFF&ymTimerB)) / (YM2612_INPUT_FREQUENCY/2);
         float timerFrequency = 1/timerPeriod * speed;
         return Math.round(timerFrequency);
+    }
+    
+    public static void convertYmInstruments(MusicEntry me, FurnaceFile ff){
+        byte[][] cubeInstruments = me.getYmInstruments();
+        for(int i=0;i<cubeInstruments.length;i++){
+            Feature[] newFeatures = new Feature[2];
+            newFeatures[0] = new Feature("yminst"+String.format("%02d", i));
+            newFeatures[1] = new Feature(cubeInstruments[i]);
+            ff.getInstruments()[i].setRawData(null);
+            ff.getInstruments()[i].setFeatures(newFeatures);
+        }
     }
     
 }

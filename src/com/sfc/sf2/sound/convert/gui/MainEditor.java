@@ -196,7 +196,7 @@ public class MainEditor extends javax.swing.JFrame {
 
         jLabel33.setText("Entry index : $");
 
-        jTextField33.setText("16");
+        jTextField33.setText("1C");
         jTextField33.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField33ActionPerformed(evt);

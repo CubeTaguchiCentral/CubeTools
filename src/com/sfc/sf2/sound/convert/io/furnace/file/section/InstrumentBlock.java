@@ -6,9 +6,13 @@
 package com.sfc.sf2.sound.convert.io.furnace.file.section;
 
 import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,7 +23,7 @@ public class InstrumentBlock {
     private String blockId = "INS2";
     private int blockSize = 0;
     private short formatVersion = 219;
-    private short instrumentType = 0;
+    private short instrumentType = 1;
     private byte[] rawData = null;
     private Feature[] features = null;
 
@@ -33,6 +37,22 @@ public class InstrumentBlock {
         instrumentType = bb.getShort();
         rawData = getByteArray(bb, blockSize-2-2);
     }
+    
+    public byte[] produceRawData(){
+        byte[] bytes = null;
+        byte b = 0;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();    
+        for(int i=0;i<features.length;i++){
+            try {
+                baos.write(features[i].toByteArray());
+            } catch (IOException ex) {
+                Logger.getLogger(InstrumentBlock.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        baos.write((byte)0xFF);
+        bytes = baos.toByteArray();
+        return bytes;
+    }        
 
     private byte[] getByteArray(ByteBuffer bb, int length){
         return FurnaceFile.getByteArray(bb, length);
@@ -123,6 +143,10 @@ public class InstrumentBlock {
     }
     
     public int findLength(){
+        if(rawData==null){
+            rawData = produceRawData();
+            blockSize = findLength()-4;
+        }
         return 4+4+2+2+rawData.length;
     }
     

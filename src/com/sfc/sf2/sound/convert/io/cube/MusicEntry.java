@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 public class MusicEntry {
     
     public static final int YM_INSTRUMENT_SIZE = 29;
-    public static final int YM_INSTRUMENT_NUMBER = 64;
+    public static final int YM_INSTRUMENT_NUMBER = 80;
     
     String name;
     boolean ym6InDacMode = false;
