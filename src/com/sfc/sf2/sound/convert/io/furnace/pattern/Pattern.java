@@ -264,6 +264,8 @@ public class Pattern {
             } else if(cc instanceof SetRelease){
                 SetRelease sr = (SetRelease) cc;
                 release = sr.getValue();
+                sustain = false;
+                sustainedNotePlayed = false;
             } else if(cc instanceof Sustain){
                 sustain = true;
                 sustainedNotePlayed = false;
