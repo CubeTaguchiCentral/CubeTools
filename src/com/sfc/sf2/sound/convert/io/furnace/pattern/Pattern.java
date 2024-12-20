@@ -221,19 +221,21 @@ public class Pattern {
         CubeCommand[] ccs = cch.getCcs();
         int playLength = 0;
         int playCounter = 0;
-        int release = 0;
-        int releaseCounter = 0;
+        int newVolume = 0;
+        int currentVolume = 0;
+        int newInstrument = 0;
+        int currentInstrument = 0;
         int vibrato = -1;
         int vibratoCounter = 0;
-        int currentInstrument = 0;
-        int currentVolume = 0;
+        boolean vibratoTriggered = false;
+        int release = 0;
+        int releaseCounter = 0;
+        boolean released = false;
+        boolean sustain = false;
+        boolean sustainedNotePlayed = false;
         int detune = -1;
         int panning = -1;
         int slide = 0;
-        boolean sustain = false;
-        boolean sustainedNotePlayed = false;
-        boolean released = false;
-        boolean vibratoTriggered = false;
         boolean mainLoopStarted = false;
         Row currentRow = new Row();
         for(int i=0;i<ccs.length;i++){
@@ -282,14 +284,14 @@ public class Pattern {
                 release = 0;
             } else if(cc instanceof Vol){
                 Vol v = (Vol) cc;
-                currentVolume = v.getValue();
+                newVolume = v.getValue();
             } else if(cc instanceof Inst){
                 Inst inst = (Inst) cc;
-                currentInstrument = inst.getValue();
+                newInstrument = inst.getValue();
             }else if(cc instanceof PsgInst){
                 PsgInst inst = (PsgInst) cc;
-                currentInstrument = (0xF0&inst.getValue())>>4;
-                currentVolume = ((0x0F&inst.getValue())/2);
+                newInstrument = (0xF0&inst.getValue())>>4;
+                newVolume = ((0x0F&inst.getValue())/2);
             }else if((cc instanceof com.sfc.sf2.sound.convert.io.cube.command.Note || cc instanceof com.sfc.sf2.sound.convert.io.cube.command.NoteL
                     ||cc instanceof com.sfc.sf2.sound.convert.io.cube.command.Sample || cc instanceof com.sfc.sf2.sound.convert.io.cube.command.SampleL)
                     && (  (!introOnly && !mainLoopOnly)
@@ -308,7 +310,8 @@ public class Pattern {
                     }
                 }else if(cc instanceof com.sfc.sf2.sound.convert.io.cube.command.SampleL){
                     com.sfc.sf2.sound.convert.io.cube.command.SampleL s = (com.sfc.sf2.sound.convert.io.cube.command.SampleL) cc;
-                    currentInstrument = s.getSample()+SAMPLE_INSTRUMENT_OFFSET;
+                    newInstrument = s.getSample()+SAMPLE_INSTRUMENT_OFFSET;
+                    currentInstrument = -1;
                     playLength = 0xFF & s.getLength();
                     currentRow.setNote(new Note(Pitch.C4.getValue()));
                 }else if(cc instanceof com.sfc.sf2.sound.convert.io.cube.command.Note){
@@ -322,11 +325,21 @@ public class Pattern {
                 }else{
                     com.sfc.sf2.sound.convert.io.cube.command.Sample s = (com.sfc.sf2.sound.convert.io.cube.command.Sample) cc;
                     currentInstrument = s.getSample()+SAMPLE_INSTRUMENT_OFFSET;
+                    currentInstrument = -1;
                     currentRow.setNote(new Note(Pitch.C4.getValue()));
                 }
-                currentRow.setInstrument(new Instrument(currentInstrument));
-                currentRow.setVolume(new Volume(Math.min((currentVolume+1)*8,0x7F)));
-                currentRow.getEffectList().add(new Effect(0x04,0x00));
+                if(newInstrument!=currentInstrument){
+                    currentRow.setInstrument(new Instrument(newInstrument));
+                    currentInstrument = newInstrument;
+                }
+                if(newVolume!=currentVolume){
+                    currentRow.setVolume(new Volume(Math.min((newVolume+1)*8,0x7F)));
+                    currentVolume = newVolume;
+                }
+                if(vibratoTriggered){
+                    currentRow.getEffectList().add(new Effect(0x04,0x00));
+                    vibratoTriggered = false;
+                }
                 if(detune>=0){
                     currentRow.getEffectList().add(new Effect(0x53,0x00+detune));
                     detune=-1;
@@ -344,7 +357,7 @@ public class Pattern {
                 releaseCounter++;
                 vibratoCounter++;
                 while(playCounter<playLength){
-                    if(!vibratoTriggered && vibrato!=-1){
+                    if(!vibratoTriggered && vibrato>0){
                         if(vibratoCounter>=(vibrato)){
                             currentRow.getEffectList().add(new Effect(0x04,0x52));
                             vibratoTriggered = true;
@@ -371,7 +384,6 @@ public class Pattern {
                 }
                 playCounter=0;
                 released = false;
-                vibratoTriggered = false;
             }else if((cc instanceof PsgNote || cc instanceof PsgNoteL)
                     && (  (!introOnly && !mainLoopOnly)
                        || (introOnly && !mainLoopStarted)
@@ -386,9 +398,18 @@ public class Pattern {
                     PsgNote n = (PsgNote) cc;
                     currentRow.setNote(new Note(Pitch.valueFromCubeValue(n.getNote().getValue()-12).getValue()));
                 }
-                currentRow.setInstrument(new Instrument(currentInstrument));
-                currentRow.setVolume(new Volume(currentVolume));
-                currentRow.getEffectList().add(new Effect(0x04,0x00));
+                if(newInstrument!=currentInstrument){
+                    currentRow.setInstrument(new Instrument(newInstrument));
+                    currentInstrument = newInstrument;
+                }
+                if(newVolume!=currentVolume){
+                    currentRow.setVolume(new Volume(newVolume));
+                    currentVolume = newVolume;
+                }
+                if(vibratoTriggered){
+                    currentRow.getEffectList().add(new Effect(0x04,0x00));
+                    vibratoTriggered = false;
+                }
                 if(detune>=0){
                     currentRow.getEffectList().add(new Effect(0x53,0x00+detune));
                     detune=-1;
@@ -429,7 +450,6 @@ public class Pattern {
                 }
                 playCounter=0;
                 released = false;
-                vibratoTriggered = false;
             }else if((cc instanceof Wait || cc instanceof WaitL)
                     && (  (!introOnly && !mainLoopOnly)
                        || (introOnly && !mainLoopStarted)
