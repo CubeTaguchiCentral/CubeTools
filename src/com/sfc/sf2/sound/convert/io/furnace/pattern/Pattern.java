@@ -14,6 +14,7 @@ import com.sfc.sf2.sound.convert.io.cube.command.PsgInst;
 import com.sfc.sf2.sound.convert.io.cube.command.PsgNote;
 import com.sfc.sf2.sound.convert.io.cube.command.PsgNoteL;
 import com.sfc.sf2.sound.convert.io.cube.command.SetRelease;
+import com.sfc.sf2.sound.convert.io.cube.command.SetSlide;
 import com.sfc.sf2.sound.convert.io.cube.command.Shifting;
 import com.sfc.sf2.sound.convert.io.cube.command.Stereo;
 import com.sfc.sf2.sound.convert.io.cube.command.Sustain;
@@ -228,6 +229,7 @@ public class Pattern {
         int currentVolume = 0;
         int detune = -1;
         int panning = -1;
+        int slide = 0;
         boolean sustain = false;
         boolean sustainedNotePlayed = false;
         boolean released = false;
@@ -261,6 +263,14 @@ public class Pattern {
             } else if(cc instanceof Vibrato){
                 Vibrato v = (Vibrato) cc;
                 vibrato = (v.getValue()&0xF)*2;
+            } else if(cc instanceof SetSlide){
+                SetSlide ss = (SetSlide) cc;
+                byte value = ss.getValue();
+                if((value&0xFF)==0xFF){
+                    slide = 0;
+                }else{
+                    slide = value&0x7F;
+                }
             } else if(cc instanceof SetRelease){
                 SetRelease sr = (SetRelease) cc;
                 release = sr.getValue();
