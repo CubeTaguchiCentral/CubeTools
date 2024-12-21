@@ -219,6 +219,7 @@ public class Pattern {
     public Pattern(CubeChannel cch, int channelType, boolean introOnly, boolean mainLoopOnly){
         List<Row> rowList = new ArrayList();
         CubeCommand[] ccs = cch.getCcs();
+        int newNoteValue = 0;
         int playLength = 0;
         int playCounter = 0;
         int newVolume = 0;
@@ -301,9 +302,10 @@ public class Pattern {
                     ){
                 if(cc instanceof com.sfc.sf2.sound.convert.io.cube.command.NoteL){
                     com.sfc.sf2.sound.convert.io.cube.command.NoteL n = (com.sfc.sf2.sound.convert.io.cube.command.NoteL) cc;
+                    newNoteValue = Pitch.valueFromCubeValue(n.getNote().getValue()-12).getValue();
                     playLength = 0xFF & n.getLength();
                     if(!sustain || (sustain && !sustainedNotePlayed)){
-                        currentRow.setNote(new Note(Pitch.valueFromCubeValue(n.getNote().getValue()-12).getValue()));
+                        currentRow.setNote(new Note(newNoteValue));
                         if(sustain && !sustainedNotePlayed){
                             sustainedNotePlayed = true;
                         }
@@ -316,8 +318,9 @@ public class Pattern {
                     currentRow.setNote(new Note(Pitch.C4.getValue()));
                 }else if(cc instanceof com.sfc.sf2.sound.convert.io.cube.command.Note){
                     com.sfc.sf2.sound.convert.io.cube.command.Note n = (com.sfc.sf2.sound.convert.io.cube.command.Note) cc;
+                    newNoteValue = Pitch.valueFromCubeValue(n.getNote().getValue()-12).getValue();
                     if(!sustain || (sustain && !sustainedNotePlayed)){
-                        currentRow.setNote(new Note(Pitch.valueFromCubeValue(n.getNote().getValue()-12).getValue()));
+                        currentRow.setNote(new Note(newNoteValue));
                         if(sustain && !sustainedNotePlayed){
                             sustainedNotePlayed = true;
                         }
@@ -347,6 +350,11 @@ public class Pattern {
                 if(panning>=0){
                     currentRow.getEffectList().add(new Effect(0x80,panning));
                     panning=-1;
+                }
+                if(slide>0){
+                    currentRow.setNote(new Note(newNoteValue));
+                    currentRow.getEffectList().add(new Effect(0x03,slide));
+                    slide=0;
                 }
                 playCounter = 0;
                 releaseCounter = 0;
