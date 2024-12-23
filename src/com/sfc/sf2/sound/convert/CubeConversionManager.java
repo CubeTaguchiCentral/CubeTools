@@ -82,10 +82,10 @@ public class CubeConversionManager {
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryAsFurnaceClipboard() - ... Done.");
     }
     
-    public void exportMusicEntryAsFurnaceFile(String templateFilePath, String outputFilePath){
+    public void exportMusicEntryAsFurnaceFile(String templateFilePath, String outputFilePath, boolean singleLoop){
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryAsFurnaceClipboard() - Exporting ...");
         me.unroll();
-        FurnaceFileManager.exportMusicEntryAsFurnaceFile(me, templateFilePath, outputFilePath);
+        FurnaceFileManager.exportMusicEntryAsFurnaceFile(me, templateFilePath, outputFilePath, singleLoop);
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryAsFurnaceClipboard() - ... Done.");
     }
     
