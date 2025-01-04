@@ -433,7 +433,7 @@ public class Pattern {
                 while(playCounter<playLength){
                     if(!vibratoTriggered && vibrato!=-1){
                         if(vibratoCounter>=(vibrato)){
-                            currentRow.getEffectList().add(new Effect(0x04,0x22));
+                            currentRow.getEffectList().add(new Effect(0x04,0x52));
                             vibratoTriggered = true;
                             vibratoCounter = 0;
                         } else{
