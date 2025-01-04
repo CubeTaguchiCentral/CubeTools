@@ -195,7 +195,7 @@ public class MusicEntry {
             for(int j=0;j<i;j++){
                 if(channels[i].equals(channels[j])){
                     channels[i] = channels[j];
-                    System.out.println("Channel "+i+" is identical to channel "+j+" : channel entry "+i+" now points to channel "+j+" content");
+                    //System.out.println("Channel "+i+" is identical to channel "+j+" : channel entry "+i+" now points to channel "+j+" content");
                 }
             }
         }

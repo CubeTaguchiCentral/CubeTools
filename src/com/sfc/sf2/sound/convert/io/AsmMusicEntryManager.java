@@ -21,7 +21,7 @@ public class AsmMusicEntryManager {
     
     
     
-    public static void exportMusicEntryAsAsm(MusicEntry me, String filePath, String name){
+    public static void exportMusicEntryAsAsm(MusicEntry me, String filePath){
         try {
             System.out.println("com.sfc.sf2.sound.convert.io.AsmMusicEntryManager() - Exporting ASM ...");
             Path path = Paths.get(filePath);
