@@ -33,6 +33,11 @@ import java.util.List;
  */
 public class Pattern {
     
+    public static final int TYPE_FM = 0;
+    public static final int TYPE_DAC = 1;
+    public static final int TYPE_PSGTONE = 2;
+    public static final int TYPE_PSGNOISE = 3;
+    
     public static final byte NOTE_OFF = (byte)180;
     public static final byte NOTE_RELEASE = (byte)181;
     public static final byte MACRO_RELEASE = (byte)182;

@@ -125,23 +125,23 @@ public class CubeConversionManager {
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryAsFurnaceClipboard() - ... Done.");
     }
     
-    public void exportMusicEntryAsFurnaceFile(String templateFilePath, String outputFilePath, boolean singleLoop){
+    public void exportMusicEntryAsFurnaceFile(String templateFilePath, String outputFilePath){
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryAsFurnaceClipboard() - Exporting ...");
         mes[0].unroll();
-        FurnaceFileManager.exportMusicEntryAsFurnaceFile(mes[0], templateFilePath, outputFilePath, singleLoop);
+        FurnaceFileManager.exportMusicEntryAsFurnaceFile(mes[0], templateFilePath, outputFilePath);
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryAsFurnaceClipboard() - ... Done.");
     }
     
-    public void exportMusicEntriesAsFurnaceFiles(String templateFilePath, String outputFilePath, boolean singleLoop){
+    public void exportMusicEntriesAsFurnaceFiles(String templateFilePath, String outputFilePath){
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryAsFurnaceClipboard() - Exporting ...");
         for(int i=0;i<32;i++){        
             try{
                 String completePath = outputFilePath + String.format("%02d", i+1) + ".fur";
                 mes[i].unroll();
-                FurnaceFileManager.exportMusicEntryAsFurnaceFile(mes[i], templateFilePath, completePath, singleLoop);
+                FurnaceFileManager.exportMusicEntryAsFurnaceFile(mes[i], templateFilePath, completePath);
                 System.out.println("Exported entry "+(i+1));
             }catch(Exception e){
-                System.out.println("Error for entry "+(i+1)+" : "+e.getMessage());
+                System.out.println("Error while exporting entry "+(i+1)+" : "+e.getMessage());
             }
         }        
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryAsFurnaceClipboard() - ... Done.");

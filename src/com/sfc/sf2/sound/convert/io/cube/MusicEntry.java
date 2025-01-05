@@ -251,24 +251,22 @@ public class MusicEntry {
     
     public boolean hasIntro(){
         boolean hasIntro = false;
-        CubeCommand[] ccs = channels[0].getCcs();
-        boolean mainLoopMet = false;
-        boolean noteOrWaitMet = false;
-        for(int i=0;i<ccs.length;i++){
-            CubeCommand cc = ccs[i];
-            if(cc instanceof MainLoopStart){
-                if(noteOrWaitMet){
-                    hasIntro = true;
-                }else{
-                    mainLoopMet = true;
-                }
-            }else if(cc instanceof Note
-                    || cc instanceof NoteL
-                    || cc instanceof Wait
-                    || cc instanceof WaitL){
-                if(mainLoopMet){
-                    hasIntro = false;
-                }else{
+        for(int c=0;c<channels.length;c++){
+            CubeCommand[] ccs = channels[c].getCcs();
+            boolean noteOrWaitMet = false;
+            for(int i=0;i<ccs.length;i++){
+                CubeCommand cc = ccs[i];
+                if(cc instanceof MainLoopStart){
+                    if(noteOrWaitMet){
+                        hasIntro = true;
+                        break;
+                    }else{
+                        break;
+                    }
+                }else if(cc instanceof Note
+                        || cc instanceof NoteL
+                        || cc instanceof Wait
+                        || cc instanceof WaitL){
                     noteOrWaitMet = true;
                 }
             }

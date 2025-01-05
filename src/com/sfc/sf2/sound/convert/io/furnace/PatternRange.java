@@ -34,11 +34,6 @@ import java.util.List;
  */
 public class PatternRange {
     
-    private static final int TYPE_FM = 0;
-    private static final int TYPE_DAC = 1;
-    private static final int TYPE_PSGTONE = 2;
-    private static final int TYPE_PSGNOISE = 3;
-    
     private static final int MAX_CHANNELS_SIZE=10;
     
     private Pattern[] patterns = new Pattern[MAX_CHANNELS_SIZE];
@@ -54,27 +49,19 @@ public class PatternRange {
     public PatternRange(MusicEntry me, boolean introOnly, boolean mainLoopOnly){
         for(int i=0;i<patterns.length;i++){
             if(i<5){
-                patterns[i] = new Pattern(me.getChannels()[i], TYPE_FM, introOnly, mainLoopOnly);
+                patterns[i] = new Pattern(me.getChannels()[i], Pattern.TYPE_FM, introOnly, mainLoopOnly);
             }else if(i==5){
                 if(!me.isYm6InDacMode()){
-                    patterns[i] = new Pattern(me.getChannels()[i], TYPE_FM, introOnly, mainLoopOnly);
+                    patterns[i] = new Pattern(me.getChannels()[i], Pattern.TYPE_FM, introOnly, mainLoopOnly);
                 }else{
-                    patterns[i] = new Pattern(me.getChannels()[i], TYPE_DAC, introOnly, mainLoopOnly);
+                    patterns[i] = new Pattern(me.getChannels()[i], Pattern.TYPE_DAC, introOnly, mainLoopOnly);
                 }
             }else if(i<9){
-                patterns[i] = new Pattern(me.getChannels()[i], TYPE_PSGTONE, introOnly, mainLoopOnly);
+                patterns[i] = new Pattern(me.getChannels()[i], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
             }else{
-                patterns[i] = new Pattern(me.getChannels()[i], TYPE_PSGNOISE, introOnly, mainLoopOnly);
+                patterns[i] = new Pattern(me.getChannels()[i], Pattern.TYPE_PSGNOISE, introOnly, mainLoopOnly);
             }
         }
-        
-        /*
-        if(mainLoopOnly){
-            repeatMainLoopToMaxLength();
-        }
-        */
-        
-        fillChannelsToMaxLength();
     }
     
     public void fillChannelsToMaxLength(){
@@ -192,7 +179,7 @@ public class PatternRange {
             Row[] rows = patterns[i].getRows();
             for(int j=0;j*patternLength<rows.length;j++){
                 prs[j].getPatterns()[i] = new Pattern();
-                prs[j].getPatterns()[i].setRows(fillToMaxLength(Arrays.copyOfRange(rows, j*patternLength, Math.min(rows.length,j*patternLength+patternLength)),patternLength));
+                prs[j].getPatterns()[i].setRows(Arrays.copyOfRange(rows, j*patternLength, Math.min(rows.length,j*patternLength+patternLength)));
             }     
         }
         

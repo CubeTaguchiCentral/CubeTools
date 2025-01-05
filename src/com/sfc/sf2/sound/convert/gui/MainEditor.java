@@ -131,7 +131,6 @@ public class MainEditor extends javax.swing.JFrame {
         jLabel19 = new javax.swing.JLabel();
         jTextField19 = new javax.swing.JTextField();
         jButton39 = new javax.swing.JButton();
-        jCheckBox1 = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jTabbedPane4 = new javax.swing.JTabbedPane();
@@ -185,7 +184,6 @@ public class MainEditor extends javax.swing.JFrame {
         jLabel50 = new javax.swing.JLabel();
         jTextField42 = new javax.swing.JTextField();
         jButton54 = new javax.swing.JButton();
-        jCheckBox2 = new javax.swing.JCheckBox();
 
         jFileChooser2.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
 
@@ -779,8 +777,6 @@ public class MainEditor extends javax.swing.JFrame {
             }
         });
 
-        jCheckBox1.setText("Single Loop");
-
         javax.swing.GroupLayout jPanel18Layout = new javax.swing.GroupLayout(jPanel18);
         jPanel18.setLayout(jPanel18Layout);
         jPanel18Layout.setHorizontalGroup(
@@ -790,8 +786,6 @@ public class MainEditor extends javax.swing.JFrame {
                 .addGroup(jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel18Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jCheckBox1)
-                        .addGap(18, 18, 18)
                         .addComponent(jButton20))
                     .addGroup(jPanel18Layout.createSequentialGroup()
                         .addGap(2, 2, 2)
@@ -803,7 +797,7 @@ public class MainEditor extends javax.swing.JFrame {
                     .addGroup(jPanel18Layout.createSequentialGroup()
                         .addComponent(jLabel19)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField19)
+                        .addComponent(jTextField19, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton39)))
                 .addContainerGap())
@@ -821,9 +815,7 @@ public class MainEditor extends javax.swing.JFrame {
                     .addComponent(jLabel18)
                     .addComponent(jButton30))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton20)
-                    .addComponent(jCheckBox1)))
+                .addComponent(jButton20))
         );
 
         jTabbedPane2.addTab("Furnace File", jPanel18);
@@ -1296,8 +1288,6 @@ public class MainEditor extends javax.swing.JFrame {
                         }
                     });
 
-                    jCheckBox2.setText("Single Loop");
-
                     javax.swing.GroupLayout jPanel23Layout = new javax.swing.GroupLayout(jPanel23);
                     jPanel23.setLayout(jPanel23Layout);
                     jPanel23Layout.setHorizontalGroup(
@@ -1307,8 +1297,6 @@ public class MainEditor extends javax.swing.JFrame {
                             .addGroup(jPanel23Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel23Layout.createSequentialGroup()
                                     .addGap(0, 0, Short.MAX_VALUE)
-                                    .addComponent(jCheckBox2)
-                                    .addGap(18, 18, 18)
                                     .addComponent(jButton53))
                                 .addGroup(jPanel23Layout.createSequentialGroup()
                                     .addGap(2, 2, 2)
@@ -1320,7 +1308,7 @@ public class MainEditor extends javax.swing.JFrame {
                                 .addGroup(jPanel23Layout.createSequentialGroup()
                                     .addComponent(jLabel50)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jTextField42)
+                                    .addComponent(jTextField42, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jButton54)))
                             .addContainerGap())
@@ -1338,9 +1326,7 @@ public class MainEditor extends javax.swing.JFrame {
                                 .addComponent(jLabel49)
                                 .addComponent(jButton52))
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(jPanel23Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jButton53)
-                                .addComponent(jCheckBox2)))
+                            .addComponent(jButton53))
                     );
 
                     jTabbedPane5.addTab("Furnace Files", jPanel23);
@@ -1576,7 +1562,7 @@ public class MainEditor extends javax.swing.JFrame {
     private void jButton20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton20ActionPerformed
         String templateFilePath = jTextField19.getText();
         String outputFilePath = jTextField18.getText();        
-        ccm.exportMusicEntryAsFurnaceFile(templateFilePath, outputFilePath, jCheckBox1.isSelected());
+        ccm.exportMusicEntryAsFurnaceFile(templateFilePath, outputFilePath);
     }//GEN-LAST:event_jButton20ActionPerformed
 
     private void jTextField19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField19ActionPerformed
@@ -1693,7 +1679,7 @@ public class MainEditor extends javax.swing.JFrame {
     private void jButton53ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton53ActionPerformed
         String templateFilePath = jTextField42.getText();
         String outputFilePath = jTextField41.getText();        
-        ccm.exportMusicEntriesAsFurnaceFiles(templateFilePath, outputFilePath, jCheckBox1.isSelected());
+        ccm.exportMusicEntriesAsFurnaceFiles(templateFilePath, outputFilePath);
     }//GEN-LAST:event_jButton53ActionPerformed
 
     private void jTextField42ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField42ActionPerformed
@@ -1815,8 +1801,6 @@ public class MainEditor extends javax.swing.JFrame {
     private javax.swing.JButton jButton52;
     private javax.swing.JButton jButton53;
     private javax.swing.JButton jButton54;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JFileChooser jFileChooser2;
     private javax.swing.JLabel jLabel15;

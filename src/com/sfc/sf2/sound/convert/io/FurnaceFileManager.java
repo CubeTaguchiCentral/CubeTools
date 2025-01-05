@@ -12,6 +12,8 @@ import com.sfc.sf2.sound.convert.io.furnace.clipboard.*;
 import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
 import com.sfc.sf2.sound.convert.io.furnace.file.section.Feature;
 import com.sfc.sf2.sound.convert.io.furnace.file.section.PatternBlock;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Effect;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Row;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,7 +53,7 @@ public class FurnaceFileManager {
     
     
     
-    public static void exportMusicEntryAsFurnaceFile(MusicEntry me, String templateFilePath, String outputFilePath, boolean singleLoop){
+    public static void exportMusicEntryAsFurnaceFile(MusicEntry me, String templateFilePath, String outputFilePath){
         try {
             System.out.println("com.sfc.sf2.sound.convert.io.FurnaceFileManager() - Exporting Furnace File ...");
             
@@ -59,18 +62,80 @@ public class FurnaceFileManager {
             FurnaceFile ff = new FurnaceFile(inputData);
             
             PatternRange[] prs = null;
+            List<PatternRange> prList = new ArrayList();
+            /*
+              - MusicEntry -> PatternRange[]
+              - PatternRange[] -> PatternBlock[]
+                               -> orders
+            */
             
-            if(!me.hasIntro()){
-            //if(true){
+            /* 
+              - no loop
+              - loop
+              - intro + loop
+            */
+
+            if(!me.hasMainLoop()){
                 PatternRange pr = new PatternRange(me, false, false);
+                pr.fillChannelsToMaxLength();
                 prs = PatternRange.split(pr, 256);
+                
+                Row[] rows = prs[prs.length-1].getPatterns()[0].getRows();
+                List<Row> rowList = new ArrayList();
+                rowList.addAll(Arrays.asList(rows));
+                Row row = new Row();
+                row.getEffectList().add(new Effect(0xFF,0x00));
+                rowList.add(row);
+                prs[prs.length-1].getPatterns()[0].setRows(rowList.toArray(new Row[0]));
             }else{
+                
+                /*
+                Row[] rows = null;
+                List<Row> rowList = null;
+                Row row = null;
+                int introPatternCount = 0;
+                */
+                
                 PatternRange intro = new PatternRange(me, true, false);
+                
+                /*
+                rows = intro.getPatterns()[0].getRows();
+                introPatternCount = (rows.length / 256) + 1;
+                rowList = new ArrayList();
+                rowList.addAll(Arrays.asList(rows));
+                row = new Row();
+                row.getEffectList().add(new Effect(0x0B,introPatternCount));
+                rowList.add(row);
+                intro.getPatterns()[0].setRows(rowList.toArray(new Row[0]));
+                */
+
+                // intro.fillChannelsToMaxLength();
+
+                // prList.addAll(Arrays.asList(PatternRange.split(intro, 256)));
+                
                 PatternRange mainLoop = new PatternRange(me, false, true);
+                mainLoop.repeatMainLoopToMaxLength();
+                
                 PatternRange pr = new PatternRange(intro, mainLoop);
+                
+                pr.fillChannelsToMaxLength();
+                
+                /*
+                rows = mainLoop.getPatterns()[0].getRows();
+                rowList = new ArrayList();
+                rowList.addAll(Arrays.asList(rows));
+                row = new Row();
+                row.getEffectList().add(new Effect(0x0B,introPatternCount));
+                rowList.add(row);
+                mainLoop.getPatterns()[0].setRows(rowList.toArray(new Row[0]));
+                */
+                
+                // prList.addAll(Arrays.asList(PatternRange.split(pr, 256)));
+                
+                // prs = prList.toArray(new PatternRange[0]);
                 prs = PatternRange.split(pr, 256);
             }            
-            
+
             List<PatternBlock> pbList = new ArrayList();
             List<Byte> orderList = new ArrayList();
             int orderLength = prs.length;
@@ -80,7 +145,7 @@ public class FurnaceFileManager {
                     orderList.add((byte)(0xFF&j));
                 }
             }
-            
+
             PatternBlock[] pbs = new PatternBlock[pbList.size()];
             ff.setPatterns(pbList.toArray(pbs));
             byte[] orders = new byte[orderList.size()];
@@ -89,7 +154,7 @@ public class FurnaceFileManager {
             }
             ff.getSongInfo().setOrders(orders);
             ff.getSongInfo().setOrdersLength((short)(0xFFFF&orderLength));
-            
+             
             int ticksPerSecond = calculateTicksPersSecond(me.getYmTimerBValue(), ff.getSongInfo().getSpeed1());
             System.out.println("Timer B value "+Integer.toString(0xFF&me.getYmTimerBValue())+" -> "+ticksPerSecond+" ticks per second");
             ff.getSongInfo().setTicksPerSecond(ticksPerSecond);
