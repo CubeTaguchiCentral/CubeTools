@@ -26,6 +26,10 @@ public class InstrumentBlock {
     private short instrumentType = 1;
     private byte[] rawData = null;
     private Feature[] features = null;
+    
+    public InstrumentBlock(){
+        
+    }
 
     public InstrumentBlock(byte[] data, int instrumentPointer) {
         ByteBuffer bb = ByteBuffer.wrap(data);

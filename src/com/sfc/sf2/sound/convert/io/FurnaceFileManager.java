@@ -11,6 +11,7 @@ import com.sfc.sf2.sound.convert.io.furnace.PatternRange;
 import com.sfc.sf2.sound.convert.io.furnace.clipboard.*;
 import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
 import com.sfc.sf2.sound.convert.io.furnace.file.section.Feature;
+import com.sfc.sf2.sound.convert.io.furnace.file.section.InstrumentBlock;
 import com.sfc.sf2.sound.convert.io.furnace.file.section.PatternBlock;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Effect;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Row;
@@ -31,6 +32,8 @@ import java.util.logging.Logger;
  * @author Wiz
  */
 public class FurnaceFileManager {
+    
+    public static final int PATTERN_LENGTH = 256;
     
     public static final int MD_CRYSTAL_FREQUENCY = 53693175;
     public static final float YM2612_INPUT_FREQUENCY = MD_CRYSTAL_FREQUENCY / 7;
@@ -61,6 +64,8 @@ public class FurnaceFileManager {
             byte[] inputData = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
             FurnaceFile ff = new FurnaceFile(inputData);
             
+            ff.getSongInfo().setPatternLength((short)PATTERN_LENGTH);
+            
             PatternRange[] prs = null;
             List<PatternRange> prList = new ArrayList();
             /*
@@ -78,7 +83,7 @@ public class FurnaceFileManager {
             if(!me.hasMainLoop()){
                 PatternRange pr = new PatternRange(me, false, false);
                 pr.fillChannelsToMaxLength();
-                prs = PatternRange.split(pr, 256);
+                prs = PatternRange.split(pr, PATTERN_LENGTH);
                 
                 Row[] rows = prs[prs.length-1].getPatterns()[0].getRows();
                 List<Row> rowList = new ArrayList();
@@ -100,7 +105,7 @@ public class FurnaceFileManager {
                 
                 /*
                 rows = intro.getPatterns()[0].getRows();
-                introPatternCount = (rows.length / 256) + 1;
+                introPatternCount = (rows.length / PATTERN_LENGTH) + 1;
                 rowList = new ArrayList();
                 rowList.addAll(Arrays.asList(rows));
                 row = new Row();
@@ -111,7 +116,7 @@ public class FurnaceFileManager {
 
                 // intro.fillChannelsToMaxLength();
 
-                // prList.addAll(Arrays.asList(PatternRange.split(intro, 256)));
+                // prList.addAll(Arrays.asList(PatternRange.split(intro, PATTERN_LENGTH)));
                 
                 PatternRange mainLoop = new PatternRange(me, false, true);
                 mainLoop.repeatMainLoopToMaxLength();
@@ -130,10 +135,10 @@ public class FurnaceFileManager {
                 mainLoop.getPatterns()[0].setRows(rowList.toArray(new Row[0]));
                 */
                 
-                // prList.addAll(Arrays.asList(PatternRange.split(pr, 256)));
+                // prList.addAll(Arrays.asList(PatternRange.split(pr, PATTERN_LENGTH)));
                 
                 // prs = prList.toArray(new PatternRange[0]);
-                prs = PatternRange.split(pr, 256);
+                prs = PatternRange.split(pr, PATTERN_LENGTH);
             }            
 
             List<PatternBlock> pbList = new ArrayList();
@@ -173,17 +178,21 @@ public class FurnaceFileManager {
     }
     
     public static int calculateTicksPersSecond(byte ymTimerB, int speed){  
-        float timerPeriod = (8*144) * (256 - (0xFF&ymTimerB)) / (YM2612_INPUT_FREQUENCY/2);
+        float timerPeriod = (8*144) * (PATTERN_LENGTH - (0xFF&ymTimerB)) / (YM2612_INPUT_FREQUENCY/2);
         float timerFrequency = 1/timerPeriod * speed;
         return Math.round(timerFrequency);
     }
     
     public static void convertYmInstruments(MusicEntry me, FurnaceFile ff){
         byte[][] cubeInstruments = me.getYmInstruments();
+        //ff.setInstruments(new InstrumentBlock[cubeInstruments.length]);
         for(int i=0;i<cubeInstruments.length;i++){
             Feature[] newFeatures = new Feature[2];
             newFeatures[0] = new Feature("yminst"+String.format("%02d", i));
             newFeatures[1] = new Feature(cubeInstruments[i]);
+            /*if(ff.getInstruments()[i]==null){
+                ff.getInstruments()[i] = new InstrumentBlock();
+            }*/
             ff.getInstruments()[i].setRawData(null);
             ff.getInstruments()[i].setFeatures(newFeatures);
         }
