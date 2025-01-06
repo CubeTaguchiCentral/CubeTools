@@ -91,4 +91,17 @@ public class Row {
         }
     }
     
+    public Row clone(){
+        Row newRow = new Row();
+        newRow.setNote(this.note);
+        newRow.setInstrument(this.instrument);
+        newRow.setVolume(this.volume);
+        List<Effect> newEffectList = new ArrayList(0);
+        for(Effect e:this.effectList){
+            newEffectList.add(e);
+        }
+        newRow.setEffectList(newEffectList);
+        return newRow;
+    }
+    
 }

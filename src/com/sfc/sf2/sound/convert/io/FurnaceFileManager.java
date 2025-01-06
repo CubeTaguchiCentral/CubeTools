@@ -67,18 +67,6 @@ public class FurnaceFileManager {
             ff.getSongInfo().setPatternLength((short)PATTERN_LENGTH);
             
             PatternRange[] prs = null;
-            List<PatternRange> prList = new ArrayList();
-            /*
-              - MusicEntry -> PatternRange[]
-              - PatternRange[] -> PatternBlock[]
-                               -> orders
-            */
-            
-            /* 
-              - no loop
-              - loop
-              - intro + loop
-            */
 
             if(!me.hasMainLoop()){
                 PatternRange pr = new PatternRange(me, false, false);
@@ -92,52 +80,35 @@ public class FurnaceFileManager {
                 row.getEffectList().add(new Effect(0xFF,0x00));
                 rowList.add(row);
                 prs[prs.length-1].getPatterns()[0].setRows(rowList.toArray(new Row[0]));
-            }else{
-                
-                /*
-                Row[] rows = null;
-                List<Row> rowList = null;
-                Row row = null;
-                int introPatternCount = 0;
-                */
-                
+            }else{                
                 PatternRange intro = new PatternRange(me, true, false);
-                
-                /*
-                rows = intro.getPatterns()[0].getRows();
-                introPatternCount = (rows.length / PATTERN_LENGTH) + 1;
-                rowList = new ArrayList();
-                rowList.addAll(Arrays.asList(rows));
-                row = new Row();
-                row.getEffectList().add(new Effect(0x0B,introPatternCount));
-                rowList.add(row);
-                intro.getPatterns()[0].setRows(rowList.toArray(new Row[0]));
-                */
-
-                // intro.fillChannelsToMaxLength();
-
-                // prList.addAll(Arrays.asList(PatternRange.split(intro, PATTERN_LENGTH)));
+                int longestIntroChannel = 0;
+                int longestIntroChannelLength = 0;
+                for (int i=0;i<intro.getPatterns().length;i++){
+                    if(longestIntroChannelLength<intro.getPatterns()[i].getRows().length){
+                        longestIntroChannelLength = intro.getPatterns()[i].getRows().length;
+                        longestIntroChannel = i;
+                    }
+                }
+                int longestIntroChannelMainLoopStartPattern = (longestIntroChannelLength+1) / PATTERN_LENGTH;
+                int longestIntroChannelMainLoopStartPosition = (longestIntroChannelLength+1) % PATTERN_LENGTH;
                 
                 PatternRange mainLoop = new PatternRange(me, false, true);
                 mainLoop.repeatMainLoopToMaxLength();
+                
+                Row[] rows = mainLoop.getPatterns()[longestIntroChannel].getRows();
+                List<Row> rowList = new ArrayList();
+                rowList.addAll(Arrays.asList(rows));
+                Row row = new Row();
+                row.getEffectList().add(new Effect(0x0B,longestIntroChannelMainLoopStartPattern));
+                row.getEffectList().add(new Effect(0x0D,longestIntroChannelMainLoopStartPosition));
+                rowList.add(row);
+                mainLoop.getPatterns()[longestIntroChannel].setRows(rowList.toArray(new Row[0]));
                 
                 PatternRange pr = new PatternRange(intro, mainLoop);
                 
                 pr.fillChannelsToMaxLength();
                 
-                /*
-                rows = mainLoop.getPatterns()[0].getRows();
-                rowList = new ArrayList();
-                rowList.addAll(Arrays.asList(rows));
-                row = new Row();
-                row.getEffectList().add(new Effect(0x0B,introPatternCount));
-                rowList.add(row);
-                mainLoop.getPatterns()[0].setRows(rowList.toArray(new Row[0]));
-                */
-                
-                // prList.addAll(Arrays.asList(PatternRange.split(pr, PATTERN_LENGTH)));
-                
-                // prs = prList.toArray(new PatternRange[0]);
                 prs = PatternRange.split(pr, PATTERN_LENGTH);
             }            
 

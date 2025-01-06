@@ -64,13 +64,30 @@ public class PatternRange {
         }
     }
     
-    public void fillChannelsToMaxLength(){
-        int maxLength=0;
+    public int getMaxLength(){
+        int maxLength = 0;
         for (int i=0;i<patterns.length;i++){
             if(maxLength<patterns[i].getRows().length){
                 maxLength = patterns[i].getRows().length;
             }
         }
+        return maxLength;
+    }
+    
+    public int getLongestChannel(){
+        int maxLength = 0;
+        int channel = 0;
+        for (int i=0;i<patterns.length;i++){
+            if(maxLength<patterns[i].getRows().length){
+                maxLength = patterns[i].getRows().length;
+                channel = i;
+            }
+        }
+        return channel;
+    }
+    
+    public void fillChannelsToMaxLength(){
+        int maxLength = getMaxLength();
         for (int i=0;i<patterns.length;i++){
             Row[] rows = patterns[i].getRows();
             patterns[i].setRows(fillToMaxLength(rows, maxLength));
@@ -92,12 +109,7 @@ public class PatternRange {
     }
     
     public void repeatMainLoopToMaxLength(){
-        int maxLength=0;
-        for (int i=0;i<patterns.length;i++){
-            if(maxLength<patterns[i].getRows().length){
-                maxLength = patterns[i].getRows().length;
-            }
-        }
+        int maxLength = getMaxLength();
         for (int i=0;i<patterns.length;i++){
             if(patterns[i].getRows()!=null && patterns[i].getRows().length>0){
                 patterns[i].setRows(repeat(patterns[i].getRows(),maxLength));

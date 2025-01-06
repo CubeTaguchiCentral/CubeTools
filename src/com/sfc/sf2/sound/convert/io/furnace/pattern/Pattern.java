@@ -233,7 +233,7 @@ public class Pattern {
         int currentInstrument = 0;
         int vibrato = -1;
         int vibratoCounter = 0;
-        boolean vibratoTriggered = false;
+        boolean vibratoTriggered = mainLoopOnly?true:false;
         int release = 0;
         int releaseCounter = 0;
         boolean released = false;

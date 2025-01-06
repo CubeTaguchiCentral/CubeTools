@@ -763,7 +763,7 @@ public class MainEditor extends javax.swing.JFrame {
 
         jLabel19.setText("Template Furnace File : ");
 
-        jTextField19.setText("C:\\SEGADEV\\AUDIO\\data\\sf2\\templates\\furnace\\template-decompressed.fur");
+        jTextField19.setText("C:\\SEGADEV\\AUDIO\\data\\sf2\\templates\\furnace\\new-template-decompressed.fur");
         jTextField19.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField19ActionPerformed(evt);
@@ -1274,7 +1274,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel50.setText("Template Furnace File : ");
 
-                    jTextField42.setText("C:\\SEGADEV\\AUDIO\\data\\sf2\\templates\\furnace\\template-decompressed.fur");
+                    jTextField42.setText("C:\\SEGADEV\\AUDIO\\data\\sf2\\templates\\furnace\\new-template-decompressed.fur");
                     jTextField42.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField42ActionPerformed(evt);
