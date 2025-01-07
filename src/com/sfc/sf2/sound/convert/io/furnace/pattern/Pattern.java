@@ -239,6 +239,9 @@ public class Pattern {
         boolean released = false;
         boolean sustain = false;
         boolean sustainedNotePlayed = false;
+        boolean legatoActivated = false;
+        boolean legatoToDeactivate = mainLoopOnly?true:false;
+        boolean legatoDeactivated = mainLoopOnly?false:true;
         int detune = -1;
         int panning = -1;
         int slide = 0;
@@ -277,16 +280,22 @@ public class Pattern {
                 if((value&0xFF)==0xFF){
                     slide = 0;
                 }else{
-                    slide = value&0x7F;
+                    slide = (value&0x7F) / 2;
                 }
             } else if(cc instanceof SetRelease){
                 SetRelease sr = (SetRelease) cc;
                 release = sr.getValue();
                 sustain = false;
                 sustainedNotePlayed = false;
+                if(legatoActivated){
+                    legatoToDeactivate = true;
+                }
             } else if(cc instanceof Sustain){
                 sustain = true;
                 sustainedNotePlayed = false;
+                legatoActivated = false;
+                legatoToDeactivate = false;
+                legatoDeactivated = true;
                 release = 0;
             } else if(cc instanceof Vol){
                 Vol v = (Vol) cc;
@@ -309,11 +318,20 @@ public class Pattern {
                     com.sfc.sf2.sound.convert.io.cube.command.NoteL n = (com.sfc.sf2.sound.convert.io.cube.command.NoteL) cc;
                     newNoteValue = Pitch.valueFromCubeValue(n.getNote().getValue()-12).getValue();
                     playLength = 0xFF & n.getLength();
-                    if(!sustain || (sustain && !sustainedNotePlayed)){
-                        currentRow.setNote(new Note(newNoteValue));
-                        if(sustain && !sustainedNotePlayed){
-                            sustainedNotePlayed = true;
-                        }
+                    currentRow.setNote(new Note(newNoteValue));
+                    if(sustain && !sustainedNotePlayed){
+                        sustainedNotePlayed = true;
+                    }else if(sustain && !legatoActivated){
+                        currentRow.getEffectList().add(new Effect(0xEA,0xFF));
+                        legatoActivated = true;
+                    }
+                    if(legatoToDeactivate && legatoDeactivated){
+                        legatoDeactivated = false;
+                    }else if(legatoToDeactivate && !legatoDeactivated){
+                        currentRow.getEffectList().add(new Effect(0xEA,0x00));
+                        legatoToDeactivate = false;
+                        legatoDeactivated = true;
+                        legatoActivated = false;
                     }
                 }else if(cc instanceof com.sfc.sf2.sound.convert.io.cube.command.SampleL){
                     com.sfc.sf2.sound.convert.io.cube.command.SampleL s = (com.sfc.sf2.sound.convert.io.cube.command.SampleL) cc;
@@ -324,11 +342,20 @@ public class Pattern {
                 }else if(cc instanceof com.sfc.sf2.sound.convert.io.cube.command.Note){
                     com.sfc.sf2.sound.convert.io.cube.command.Note n = (com.sfc.sf2.sound.convert.io.cube.command.Note) cc;
                     newNoteValue = Pitch.valueFromCubeValue(n.getNote().getValue()-12).getValue();
-                    if(!sustain || (sustain && !sustainedNotePlayed)){
-                        currentRow.setNote(new Note(newNoteValue));
-                        if(sustain && !sustainedNotePlayed){
-                            sustainedNotePlayed = true;
-                        }
+                    currentRow.setNote(new Note(newNoteValue));
+                    if(sustain && !sustainedNotePlayed){
+                        sustainedNotePlayed = true;
+                    }else if(sustain && !legatoActivated){
+                        currentRow.getEffectList().add(new Effect(0xEA,0xFF));
+                        legatoActivated = true;
+                    }
+                    if(legatoToDeactivate && legatoDeactivated){
+                        legatoDeactivated = false;
+                    }else if(legatoToDeactivate){
+                        currentRow.getEffectList().add(new Effect(0xEA,0x00));
+                        legatoToDeactivate = false;
+                        legatoDeactivated = true;
+                        legatoActivated = false;
                     }
                 }else{
                     com.sfc.sf2.sound.convert.io.cube.command.Sample s = (com.sfc.sf2.sound.convert.io.cube.command.Sample) cc;
