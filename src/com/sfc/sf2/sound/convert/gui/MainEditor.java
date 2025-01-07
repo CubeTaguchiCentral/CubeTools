@@ -877,7 +877,7 @@ public class MainEditor extends javax.swing.JFrame {
 
         jLabel27.setText("Pointer Table :");
 
-        jTextField27.setText("1F8000");
+        jTextField27.setText("1F0000");
         jTextField27.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField27ActionPerformed(evt);
@@ -1251,7 +1251,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                 jLabel49.setText("Output Furnace File : ");
 
-                jTextField41.setText("C:\\SEGADEV\\AUDIO\\data\\sf2\\templates\\furnace\\bank\\fur\\");
+                jTextField41.setText("C:\\SEGADEV\\AUDIO\\data\\sf2\\templates\\furnace\\bank1\\fur\\");
                     jTextField41.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField41ActionPerformed(evt);

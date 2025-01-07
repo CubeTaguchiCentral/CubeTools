@@ -228,7 +228,7 @@ public class Pattern {
         int playLength = 0;
         int playCounter = 0;
         int newVolume = 0;
-        int currentVolume = 0;
+        int currentVolume = -1;
         int newInstrument = 0;
         int currentInstrument = 0;
         int vibrato = -1;
@@ -237,11 +237,11 @@ public class Pattern {
         int release = 0;
         int releaseCounter = 0;
         boolean released = false;
-        boolean sustain = false;
+        boolean legatoToActivate = false;
         boolean sustainedNotePlayed = false;
         boolean legatoActivated = false;
-        boolean legatoToDeactivate = mainLoopOnly?true:false;
-        boolean legatoDeactivated = mainLoopOnly?false:true;
+        boolean legatoToDeactivate = true;
+        boolean releasePlayed = true;
         int detune = -1;
         int panning = -1;
         int slide = 0;
@@ -285,18 +285,12 @@ public class Pattern {
             } else if(cc instanceof SetRelease){
                 SetRelease sr = (SetRelease) cc;
                 release = sr.getValue();
-                sustain = false;
-                sustainedNotePlayed = false;
-                if(legatoActivated){
-                    legatoToDeactivate = true;
-                }
+                legatoToDeactivate = true;
             } else if(cc instanceof Sustain){
-                sustain = true;
+                release = 0;
                 sustainedNotePlayed = false;
                 legatoActivated = false;
-                legatoToDeactivate = false;
-                legatoDeactivated = true;
-                release = 0;
+                legatoToActivate = true;
             } else if(cc instanceof Vol){
                 Vol v = (Vol) cc;
                 newVolume = v.getValue();
@@ -319,19 +313,17 @@ public class Pattern {
                     newNoteValue = Pitch.valueFromCubeValue(n.getNote().getValue()-12).getValue();
                     playLength = 0xFF & n.getLength();
                     currentRow.setNote(new Note(newNoteValue));
-                    if(sustain && !sustainedNotePlayed){
+                    if(legatoToActivate && !sustainedNotePlayed){
                         sustainedNotePlayed = true;
-                    }else if(sustain && !legatoActivated){
+                    }else if(legatoToActivate && !legatoActivated){
                         currentRow.getEffectList().add(new Effect(0xEA,0xFF));
                         legatoActivated = true;
+                        legatoToActivate = false;
                     }
-                    if(legatoToDeactivate && legatoDeactivated){
-                        legatoDeactivated = false;
-                    }else if(legatoToDeactivate && !legatoDeactivated){
+                    if(legatoToDeactivate && releasePlayed){
                         currentRow.getEffectList().add(new Effect(0xEA,0x00));
                         legatoToDeactivate = false;
-                        legatoDeactivated = true;
-                        legatoActivated = false;
+                        releasePlayed = false;
                     }
                 }else if(cc instanceof com.sfc.sf2.sound.convert.io.cube.command.SampleL){
                     com.sfc.sf2.sound.convert.io.cube.command.SampleL s = (com.sfc.sf2.sound.convert.io.cube.command.SampleL) cc;
@@ -343,19 +335,16 @@ public class Pattern {
                     com.sfc.sf2.sound.convert.io.cube.command.Note n = (com.sfc.sf2.sound.convert.io.cube.command.Note) cc;
                     newNoteValue = Pitch.valueFromCubeValue(n.getNote().getValue()-12).getValue();
                     currentRow.setNote(new Note(newNoteValue));
-                    if(sustain && !sustainedNotePlayed){
+                    if(legatoToActivate && !sustainedNotePlayed){
                         sustainedNotePlayed = true;
-                    }else if(sustain && !legatoActivated){
+                    }else if(legatoToActivate && !legatoActivated){
                         currentRow.getEffectList().add(new Effect(0xEA,0xFF));
                         legatoActivated = true;
+                        legatoToActivate = false;
                     }
-                    if(legatoToDeactivate && legatoDeactivated){
-                        legatoDeactivated = false;
-                    }else if(legatoToDeactivate){
+                    if(legatoToDeactivate && releasePlayed){
                         currentRow.getEffectList().add(new Effect(0xEA,0x00));
                         legatoToDeactivate = false;
-                        legatoDeactivated = true;
-                        legatoActivated = false;
                     }
                 }else{
                     com.sfc.sf2.sound.convert.io.cube.command.Sample s = (com.sfc.sf2.sound.convert.io.cube.command.Sample) cc;
@@ -367,7 +356,7 @@ public class Pattern {
                     currentRow.setInstrument(new Instrument(newInstrument));
                     currentInstrument = newInstrument;
                 }
-                if(newVolume!=currentVolume){
+                if(channelType!=TYPE_DAC && newVolume!=currentVolume){
                     currentRow.setVolume(new Volume(Math.min((newVolume+1)*8,0x7F)));
                     currentVolume = newVolume;
                 }
@@ -413,6 +402,7 @@ public class Pattern {
                         releaseCounter=0;
                         playCounter++;
                         released = true;
+                        releasePlayed = true;
                     }else{
                         rowList.add(currentRow);
                         currentRow = new Row();

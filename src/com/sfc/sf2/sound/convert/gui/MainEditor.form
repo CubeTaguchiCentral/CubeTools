@@ -1176,7 +1176,7 @@
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField27">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="1F8000"/>
+                            <Property name="text" type="java.lang.String" value="1F0000"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField27ActionPerformed"/>
@@ -1693,7 +1693,7 @@
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField41">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="C:\u005cSEGADEV\u005cAUDIO\u005cdata\u005csf2\u005ctemplates\u005cfurnace\u005cbank\u005cfur\u005c" containsInvalidXMLChars="true"/>
+                            <Property name="text" type="java.lang.String" value="C:\u005cSEGADEV\u005cAUDIO\u005cdata\u005csf2\u005ctemplates\u005cfurnace\u005cbank1\u005cfur\u005c" containsInvalidXMLChars="true"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField41ActionPerformed"/>
