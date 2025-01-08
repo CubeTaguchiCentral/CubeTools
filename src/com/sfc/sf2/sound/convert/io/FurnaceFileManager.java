@@ -14,6 +14,7 @@ import com.sfc.sf2.sound.convert.io.furnace.file.section.Feature;
 import com.sfc.sf2.sound.convert.io.furnace.file.section.InstrumentBlock;
 import com.sfc.sf2.sound.convert.io.furnace.file.section.PatternBlock;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Effect;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Row;
 import java.io.File;
 import java.io.IOException;
@@ -32,13 +33,6 @@ import java.util.logging.Logger;
  * @author Wiz
  */
 public class FurnaceFileManager {
-    
-    public static final int PATTERN_LENGTH = 256;
-    
-    public static final int MD_CRYSTAL_FREQUENCY = 53693175;
-    public static final float YM2612_INPUT_FREQUENCY = MD_CRYSTAL_FREQUENCY / 7;
-    public static final int YM2612_CHANNEL_SAMPLE_CYCLES = 6*24;
-    public static final float YM2612_OUTPUT_RATE = YM2612_INPUT_FREQUENCY / YM2612_CHANNEL_SAMPLE_CYCLES;
     
     private static FurnaceFile currentFile = null;   
        
@@ -64,14 +58,14 @@ public class FurnaceFileManager {
             byte[] inputData = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
             FurnaceFile ff = new FurnaceFile(inputData);
             
-            ff.getSongInfo().setPatternLength((short)PATTERN_LENGTH);
+            ff.getSongInfo().setPatternLength((short)Pattern.PATTERN_LENGTH);
             
             PatternRange[] prs = null;
 
             if(!me.hasMainLoop()){
                 PatternRange pr = new PatternRange(me, false, false);
                 pr.fillChannelsToMaxLength();
-                prs = PatternRange.split(pr, PATTERN_LENGTH);
+                prs = PatternRange.split(pr, Pattern.PATTERN_LENGTH);
                 
                 Row[] rows = prs[prs.length-1].getPatterns()[0].getRows();
                 List<Row> rowList = new ArrayList();
@@ -90,8 +84,8 @@ public class FurnaceFileManager {
                         longestIntroChannel = i;
                     }
                 }
-                int longestIntroChannelMainLoopStartPattern = (longestIntroChannelLength+1) / PATTERN_LENGTH;
-                int longestIntroChannelMainLoopStartPosition = (longestIntroChannelLength+1) % PATTERN_LENGTH;
+                int longestIntroChannelMainLoopStartPattern = (longestIntroChannelLength+1) / Pattern.PATTERN_LENGTH;
+                int longestIntroChannelMainLoopStartPosition = (longestIntroChannelLength+1) % Pattern.PATTERN_LENGTH;
                 
                 PatternRange mainLoop = new PatternRange(me, false, true);
                 mainLoop.repeatMainLoopToMaxLength();
@@ -109,7 +103,7 @@ public class FurnaceFileManager {
                 
                 pr.fillChannelsToMaxLength();
                 
-                prs = PatternRange.split(pr, PATTERN_LENGTH);
+                prs = PatternRange.split(pr, Pattern.PATTERN_LENGTH);
             }            
 
             List<PatternBlock> pbList = new ArrayList();
@@ -131,7 +125,7 @@ public class FurnaceFileManager {
             ff.getSongInfo().setOrders(orders);
             ff.getSongInfo().setOrdersLength((short)(0xFFFF&orderLength));
              
-            int ticksPerSecond = calculateTicksPersSecond(me.getYmTimerBValue(), ff.getSongInfo().getSpeed1());
+            int ticksPerSecond = Pattern.calculateTicksPersSecond(me.getYmTimerBValue(), ff.getSongInfo().getSpeed1());
             System.out.println("Timer B value "+Integer.toString(0xFF&me.getYmTimerBValue())+" -> "+ticksPerSecond+" ticks per second");
             ff.getSongInfo().setTicksPerSecond(ticksPerSecond);
             
@@ -146,12 +140,6 @@ public class FurnaceFileManager {
         } catch (IOException ex) {
             Logger.getLogger(FurnaceFileManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-    
-    public static int calculateTicksPersSecond(byte ymTimerB, int speed){  
-        float timerPeriod = (8*144) * (PATTERN_LENGTH - (0xFF&ymTimerB)) / (YM2612_INPUT_FREQUENCY/2);
-        float timerFrequency = 1/timerPeriod * speed;
-        return Math.round(timerFrequency);
     }
     
     public static void convertYmInstruments(MusicEntry me, FurnaceFile ff){

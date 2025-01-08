@@ -22,6 +22,7 @@ import com.sfc.sf2.sound.convert.io.cube.command.Vibrato;
 import com.sfc.sf2.sound.convert.io.cube.command.Vol;
 import com.sfc.sf2.sound.convert.io.cube.command.Wait;
 import com.sfc.sf2.sound.convert.io.cube.command.WaitL;
+import com.sfc.sf2.sound.convert.io.cube.command.YmTimer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -32,6 +33,13 @@ import java.util.List;
  * @author Wiz
  */
 public class Pattern {
+    
+    public static final int MD_CRYSTAL_FREQUENCY = 53693175;
+    public static final float YM2612_INPUT_FREQUENCY = MD_CRYSTAL_FREQUENCY / 7;
+    public static final int YM2612_CHANNEL_SAMPLE_CYCLES = 6*24;
+    public static final float YM2612_OUTPUT_RATE = YM2612_INPUT_FREQUENCY / YM2612_CHANNEL_SAMPLE_CYCLES;
+    
+    public static final int PATTERN_LENGTH = 256;
     
     public static final int TYPE_FM = 0;
     public static final int TYPE_DAC = 1;
@@ -500,6 +508,9 @@ public class Pattern {
                     playCounter++;
                 }
                 playCounter=0;
+            }else if(cc instanceof YmTimer){
+                YmTimer yt = (YmTimer) cc;
+                currentRow.getEffectList().add(new Effect(0xC0,calculateTicksPersSecond(yt.getValue(),1)));
             }else if(cc instanceof ChannelEnd){
                 
             }else {
@@ -521,5 +532,11 @@ public class Pattern {
 
     public void setRows(Row[] rows) {
         this.rows = rows;
+    }
+    
+    public static int calculateTicksPersSecond(byte ymTimerB, int speed){  
+        float timerPeriod = (8*144) * (PATTERN_LENGTH - (0xFF&ymTimerB)) / (YM2612_INPUT_FREQUENCY/2);
+        float timerFrequency = 1/timerPeriod * speed;
+        return Math.round(timerFrequency);
     }
 }

@@ -30,6 +30,7 @@ import com.sfc.sf2.sound.convert.io.cube.command.Sustain;
 import com.sfc.sf2.sound.convert.io.cube.command.Vibrato;
 import com.sfc.sf2.sound.convert.io.cube.command.Wait;
 import com.sfc.sf2.sound.convert.io.cube.command.WaitL;
+import com.sfc.sf2.sound.convert.io.cube.command.YmTimer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,7 +79,7 @@ public class PsgToneChannel extends CubeChannel {
             }else if((cmd&0xFF)==0xFA){
                 cmdLength = 2;
                 byte b1 = data[cursor+1];
-                ccs.add(new Stereo(b1));
+                ccs.add(new YmTimer(b1));
             }else if((cmd&0xFF)==0xF9){
                 cmdLength = 2;
                 byte b1 = data[cursor+1];
