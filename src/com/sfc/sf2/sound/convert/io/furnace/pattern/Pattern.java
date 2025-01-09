@@ -10,6 +10,7 @@ import com.sfc.sf2.sound.convert.io.cube.CubeCommand;
 import com.sfc.sf2.sound.convert.io.cube.command.ChannelEnd;
 import com.sfc.sf2.sound.convert.io.cube.command.Inst;
 import com.sfc.sf2.sound.convert.io.cube.command.MainLoopStart;
+import com.sfc.sf2.sound.convert.io.cube.command.NoSlide;
 import com.sfc.sf2.sound.convert.io.cube.command.PsgInst;
 import com.sfc.sf2.sound.convert.io.cube.command.PsgNote;
 import com.sfc.sf2.sound.convert.io.cube.command.PsgNoteL;
@@ -285,11 +286,9 @@ public class Pattern {
             } else if(cc instanceof SetSlide){
                 SetSlide ss = (SetSlide) cc;
                 byte value = ss.getValue();
-                if((value&0xFF)==0xFF){
-                    slide = 0;
-                }else{
-                    slide = (value&0x7F) / 2;
-                }
+                slide = (value&0x7F) / 2;
+            } else if(cc instanceof NoSlide){
+                slide = 0;
             } else if(cc instanceof SetRelease){
                 SetRelease sr = (SetRelease) cc;
                 release = sr.getValue();
@@ -383,7 +382,6 @@ public class Pattern {
                 if(slide>0){
                     currentRow.setNote(new Note(newNoteValue));
                     currentRow.getEffectList().add(new Effect(0x03,slide));
-                    slide=0;
                 }
                 playCounter = 0;
                 releaseCounter = 0;
