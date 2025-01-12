@@ -470,7 +470,7 @@ public class Pattern {
                         }
                     }
                     if(releaseCounter>=(playLength-release)){
-                        currentRow.setNote(new Note(NOTE_OFF));
+                        currentRow.setNote(new Note(NOTE_RELEASE));
                         rowList.add(currentRow);
                         currentRow = new Row();
                         releaseCounter=0;
