@@ -51,7 +51,8 @@ public class Pattern {
     public static final byte NOTE_RELEASE = (byte)181;
     public static final byte MACRO_RELEASE = (byte)182;
     
-    public static final int SAMPLE_INSTRUMENT_OFFSET = 0x50;
+    public static final int PSG_INSTRUMENT_OFFSET = 0x50;
+    public static final int SAMPLE_INSTRUMENT_OFFSET = 0x60;
     
     private Row[] rows;
     
@@ -306,8 +307,8 @@ public class Pattern {
                 newInstrument = inst.getValue();
             }else if(cc instanceof PsgInst){
                 PsgInst inst = (PsgInst) cc;
-                newInstrument = (0xF0&inst.getValue())>>4;
-                newVolume = ((0x0F&inst.getValue())/2);
+                newInstrument = ((0xF0&inst.getValue())>>4)+PSG_INSTRUMENT_OFFSET;
+                newVolume = ((0x0F&inst.getValue()));
             }else if((cc instanceof com.sfc.sf2.sound.convert.io.cube.command.Note || cc instanceof com.sfc.sf2.sound.convert.io.cube.command.NoteL
                     ||cc instanceof com.sfc.sf2.sound.convert.io.cube.command.Sample || cc instanceof com.sfc.sf2.sound.convert.io.cube.command.SampleL)
                     && (  (!introOnly && !mainLoopOnly)
@@ -497,6 +498,9 @@ public class Pattern {
                     playLength = 0xFF & n.getValue();
                 }
                 playCounter = 0;
+                if(channelType==TYPE_PSGTONE){
+                    currentRow.setNote(new Note(NOTE_OFF));
+                }
                 rowList.add(currentRow);
                 currentRow = new Row();
                 playCounter++;

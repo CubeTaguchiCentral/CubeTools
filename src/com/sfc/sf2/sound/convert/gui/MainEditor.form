@@ -959,7 +959,7 @@
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField18">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="C:\u005cSEGADEV\u005cAUDIO\u005cdata\u005csf2\u005ctemplates\u005cfurnace\u005coutput-uncompressed.fur" containsInvalidXMLChars="true"/>
+                            <Property name="text" type="java.lang.String" value="C:\u005cSEGADEV\u005cAUDIO\u005cdata\u005csf2\u005ctemplates\u005cfurnace\u005coutput.fur" containsInvalidXMLChars="true"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField18ActionPerformed"/>
@@ -988,7 +988,7 @@
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField19">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="C:\u005cSEGADEV\u005cAUDIO\u005cdata\u005csf2\u005ctemplates\u005cfurnace\u005cnew-template-decompressed.fur" containsInvalidXMLChars="true"/>
+                            <Property name="text" type="java.lang.String" value="C:\u005cSEGADEV\u005cAUDIO\u005cdata\u005csf2\u005ctemplates\u005cfurnace\u005ctemplate.fur" containsInvalidXMLChars="true"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField19ActionPerformed"/>
@@ -1722,7 +1722,7 @@
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField42">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="C:\u005cSEGADEV\u005cAUDIO\u005cdata\u005csf2\u005ctemplates\u005cfurnace\u005cnew-template-decompressed.fur" containsInvalidXMLChars="true"/>
+                            <Property name="text" type="java.lang.String" value="C:\u005cSEGADEV\u005cAUDIO\u005cdata\u005csf2\u005ctemplates\u005cfurnace\u005ctemplate.fur" containsInvalidXMLChars="true"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField42ActionPerformed"/>
