@@ -40,6 +40,9 @@ public class Pattern {
     public static final int YM2612_CHANNEL_SAMPLE_CYCLES = 6*24;
     public static final float YM2612_OUTPUT_RATE = YM2612_INPUT_FREQUENCY / YM2612_CHANNEL_SAMPLE_CYCLES;
     
+    //public static final int[] YM_LEVELS = {0x4, 0x8, 0xB, 0x10, 0x14, 0x18, 0x1C, 0x20, 0x26, 0x2A, 0x30, 0x38, 0x40, 0x50, 0x60, 0x70};
+    public static final int[] YM_LEVELS = {0x70, 0x60, 0x50, 0x40, 0x38, 0x30, 0x2A, 0x26, 0x20, 0x1C, 0x18, 0x14, 0x10, 0xB, 0x8, 0x4};
+    
     public static final int PATTERN_LENGTH = 256;
     
     public static final int TYPE_FM = 0;
@@ -365,7 +368,7 @@ public class Pattern {
                     currentInstrument = newInstrument;
                 }
                 if(channelType!=TYPE_DAC && newVolume!=currentVolume){
-                    currentRow.setVolume(new Volume(Math.min((newVolume+1)*8,0x7F)));
+                    currentRow.setVolume(new Volume(0x7F-YM_LEVELS[newVolume]));
                     currentVolume = newVolume;
                 }
                 if(vibratoTriggered){
