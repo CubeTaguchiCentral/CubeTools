@@ -31,6 +31,7 @@ public class BinaryMusicBankManager {
     public static final int BANK_SIZE = 0x8000;
     public static final int YM_INSTRUMENT_SIZE = 29;
     public static final int YM_INSTRUMENT_NUMBER = 64;
+    public static final int SAMPLE_ENTRY_SIZE = 8;
        
     public static MusicEntry importMusicEntry(String filePath, int ptOffset, int index, int ymInstOffset){
         MusicEntry me = null;
@@ -62,6 +63,34 @@ public class BinaryMusicBankManager {
             Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ymInstruments;
+    }
+    
+    public static byte[][] importSampleEntries(String filePath, int sampleEntriesOffset, int maxSampleIndex){
+        byte[][] sampleEntries = new byte[maxSampleIndex+1][];
+        try{
+            File f = new File(filePath);
+            byte[] data = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
+            for(int i=0;i<sampleEntries.length;i++){
+                sampleEntries[i] = Arrays.copyOfRange(data, sampleEntriesOffset+i*SAMPLE_ENTRY_SIZE, sampleEntriesOffset+i*SAMPLE_ENTRY_SIZE+SAMPLE_ENTRY_SIZE);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return sampleEntries;
+    }
+    
+    public static byte[][] importSampleBanks(String filePath, int[] sampleBanksOffsets){
+        byte[][] sampleBanks = new byte[sampleBanksOffsets.length][];
+        try{
+            File f = new File(filePath);
+            byte[] data = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
+            for(int i=0;i<sampleBanks.length;i++){
+                sampleBanks[i] = Arrays.copyOfRange(data, sampleBanksOffsets[i], sampleBanksOffsets[i]+0x8000);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return sampleBanks;
     }
     
     public static void exportMusicEntry(MusicEntry me, String filePath, int ptOffset, int index){

@@ -12,6 +12,8 @@ import com.sfc.sf2.sound.convert.io.cube.command.Inst;
 import com.sfc.sf2.sound.convert.io.cube.command.MainLoopStart;
 import com.sfc.sf2.sound.convert.io.cube.command.Note;
 import com.sfc.sf2.sound.convert.io.cube.command.NoteL;
+import com.sfc.sf2.sound.convert.io.cube.command.Sample;
+import com.sfc.sf2.sound.convert.io.cube.command.SampleL;
 import com.sfc.sf2.sound.convert.io.cube.command.Wait;
 import com.sfc.sf2.sound.convert.io.cube.command.WaitL;
 import java.io.ByteArrayOutputStream;
@@ -39,6 +41,8 @@ public class MusicEntry {
     byte ymTimerBValue = 0;
     CubeChannel[] channels = new CubeChannel[10];
     byte[][] ymInstruments;
+    byte[][] sampleEntries;
+    byte[][] sampleBanks;
 
     public String getName() {
         return name;
@@ -275,5 +279,41 @@ public class MusicEntry {
         return hasIntro;
     }   
     
+    public int findMaxSampleIndex(){
+        int maxIndex = 0;
+        for(CubeChannel cch : channels){
+            for(CubeCommand cc : cch.getCcs()){
+                if(cc instanceof Sample || cc instanceof SampleL){
+                    int index = 0;
+                    if(cc instanceof Sample){
+                        index = ((Sample)cc).getSample();
+                    } else{
+                        index = ((SampleL)cc).getSample();
+                    }
+                    if(index>maxIndex){
+                        maxIndex = index;
+                    }
+                }
+            }
+            
+        }
+        return maxIndex;
+    }
+
+    public byte[][] getSampleEntries() {
+        return sampleEntries;
+    }
+
+    public void setSampleEntries(byte[][] sampleEntries) {
+        this.sampleEntries = sampleEntries;
+    }
+
+    public byte[][] getSampleBanks() {
+        return sampleBanks;
+    }
+
+    public void setSampleBanks(byte[][] sampleBanks) {
+        this.sampleBanks = sampleBanks;
+    }
     
 }
