@@ -40,8 +40,7 @@ public class Pattern {
     public static final int YM2612_CHANNEL_SAMPLE_CYCLES = 6*24;
     public static final float YM2612_OUTPUT_RATE = YM2612_INPUT_FREQUENCY / YM2612_CHANNEL_SAMPLE_CYCLES;
     
-    //public static final int[] YM_LEVELS = {0x4, 0x8, 0xB, 0x10, 0x14, 0x18, 0x1C, 0x20, 0x26, 0x2A, 0x30, 0x38, 0x40, 0x50, 0x60, 0x70};
-    public static final int[] YM_LEVELS = {0x70, 0x60, 0x50, 0x40, 0x38, 0x30, 0x2A, 0x26, 0x20, 0x1C, 0x18, 0x14, 0x10, 0xB, 0x8, 0x4};
+    public static final int[] YM_LEVELS = {0x70, 0x60, 0x50, 0x40, 0x38, 0x30, 0x2A, 0x26, 0x20, 0x1C, 0x18, 0x14, 0x10, 0xB, 0x8, 0x4};    
     
     public static final int PATTERN_LENGTH = 256;
     
@@ -287,6 +286,28 @@ public class Pattern {
             } else if(cc instanceof Vibrato){
                 Vibrato v = (Vibrato) cc;
                 vibrato = (v.getValue()&0xF)*2;
+                //TODO implement actual Cube pitch effects 
+                /*
+                  $FB xy     Load Vibrato x, triggered at Note Length 2*y
+                */
+                /*
+                PITCH_EFFECT_0:  db  0, 80h
+                PITCH_EFFECT_1:  db -16, 16, 16, -16, 80h
+                PITCH_EFFECT_2:  db -3, -3, -1,  1,  3,  3,  3,  1, -1, -3, 80h
+                PITCH_EFFECT_3:  db -2, -2, -1,  1,  2,  2,  2,  1, -1, -2, 80h
+                PITCH_EFFECT_4:  db -1, -1,  0,  1,  1,  1,  1,  0, -1, -1, 80h
+                PITCH_EFFECT_5:  db -1,  0,  0,  1,  0,  1,  0,  0, -1,  0, 80h
+                PITCH_EFFECT_6:  db  2, 80h
+                PITCH_EFFECT_7:  db -2, 80h
+                PITCH_EFFECT_8:  db  4, 80h
+                PITCH_EFFECT_9:  db -4, 80h
+                PITCH_EFFECT_A:  db  8, 80h
+                PITCH_EFFECT_B:  db -8, 80h
+                PITCH_EFFECT_C:  db 16, 80h
+                PITCH_EFFECT_D:  db -16, 80h
+                PITCH_EFFECT_E:  db 32, 80h
+                PITCH_EFFECT_F:  db -32, 80h
+                */
             } else if(cc instanceof SetSlide){
                 SetSlide ss = (SetSlide) cc;
                 byte value = ss.getValue();
