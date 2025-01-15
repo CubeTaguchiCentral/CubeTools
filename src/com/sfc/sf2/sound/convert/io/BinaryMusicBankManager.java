@@ -66,7 +66,7 @@ public class BinaryMusicBankManager {
     }
     
     public static byte[][] importSampleEntries(String filePath, int sampleEntriesOffset, int maxSampleIndex){
-        byte[][] sampleEntries = new byte[maxSampleIndex+1][];
+        byte[][] sampleEntries = new byte[Math.min(maxSampleIndex+1,12)][];
         try{
             File f = new File(filePath);
             byte[] data = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
