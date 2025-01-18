@@ -20,17 +20,19 @@ public class CubeConversionManager {
     
     MusicEntry[] mes = new MusicEntry[32];
     
-    public void importMusicEntryFromBinaryMusicBank(String filePath, int ptOffset, int index, int ymInstOffset, boolean ssgEg, int sampleEntriesOffset, int[] sampleBanksOffsets){
+    public void importMusicEntryFromBinaryMusicBank(String filePath, int ptOffset, int ramPreloadOffset, int index, int ymInstOffset, boolean ssgEg, int sampleEntriesOffset, int[] sampleBanksOffsets){
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.importMusicEntryFromBinaryMusicBank() - Importing ...");
         try{        
-            mes[0] = BinaryMusicBankManager.importMusicEntry(filePath, ptOffset, index, ymInstOffset, ssgEg);
+            mes[0] = BinaryMusicBankManager.importMusicEntry(filePath, ptOffset, ramPreloadOffset, index, ymInstOffset, ssgEg);
             mes[0].factorizeIdenticalChannels();
             mes[0].hasMainLoop();
             mes[0].hasIntro();
             int maxSampleIndex = mes[0].findMaxSampleIndex();
-            byte[][] sampleEntries = BinaryMusicBankManager.importSampleEntries(filePath, sampleEntriesOffset, maxSampleIndex);
+        boolean multiSampleBank = false;
+            byte[][] sampleEntries = BinaryMusicBankManager.importSampleEntries(filePath, sampleEntriesOffset, multiSampleBank, maxSampleIndex);
             byte[][] sampleBanks = BinaryMusicBankManager.importSampleBanks(filePath, sampleBanksOffsets);
             mes[0].setSampleEntries(sampleEntries);
+            mes[0].setMultiSampleBank(multiSampleBank);
             mes[0].setSampleBanks(sampleBanks);
         }catch(Exception e){
             e.printStackTrace();
@@ -38,12 +40,13 @@ public class CubeConversionManager {
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.importMusicEntryFromBinaryMusicBank() - ... Done.");
     }
     
-    public void importMusicEntriesFromBinaryMusicBank(String filePath, int ptOffset, int ymInstOffset, boolean ssgEg, int sampleEntriesOffset, int[] sampleBanksOffsets){
+    public void importMusicEntriesFromBinaryMusicBank(String filePath, int ptOffset, int ramPreloadOffset, int ymInstOffset, boolean ssgEg, int sampleEntriesOffset, int[] sampleBanksOffsets){
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.importMusicEntryFromBinaryMusicBank() - Importing ...");
         int maxSampleIndex = 0;
+        
         for(int i=0;i<mes.length;i++){
             try{
-                mes[i] = BinaryMusicBankManager.importMusicEntry(filePath, ptOffset, i+1, ymInstOffset, ssgEg);
+                mes[i] = BinaryMusicBankManager.importMusicEntry(filePath, ptOffset, ramPreloadOffset, i+1, ymInstOffset, ssgEg);
                 mes[i].factorizeIdenticalChannels();
                 mes[i].hasMainLoop();
                 mes[i].hasIntro();
@@ -54,14 +57,24 @@ public class CubeConversionManager {
                 }
             }catch(Exception e){
                 e.printStackTrace();
+                break;
             }
         }
+        
+        boolean multiSampleBank = false;
+        
         for(int i=0;i<mes.length;i++){
-            byte[][] sampleEntries = BinaryMusicBankManager.importSampleEntries(filePath, sampleEntriesOffset, maxSampleIndex);
-            byte[][] sampleBanks = BinaryMusicBankManager.importSampleBanks(filePath, sampleBanksOffsets);
-            mes[i].setSampleEntries(sampleEntries);
-            mes[i].setSampleBanks(sampleBanks);
+            if(mes[i]!=null){
+                byte[][] sampleEntries = BinaryMusicBankManager.importSampleEntries(filePath, sampleEntriesOffset, multiSampleBank, maxSampleIndex);
+                byte[][] sampleBanks = BinaryMusicBankManager.importSampleBanks(filePath, sampleBanksOffsets);
+                mes[i].setSampleEntries(sampleEntries);
+                mes[i].setMultiSampleBank(multiSampleBank);
+                mes[i].setSampleBanks(sampleBanks);   
+            }else{
+                break;
+            }
         }
+
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.importMusicEntryFromBinaryMusicBank() - ... Done.");
     }
     
@@ -166,6 +179,7 @@ public class CubeConversionManager {
                 System.out.println("Exported entry "+(i+1));
             }catch(Exception e){
                 System.out.println("Error while exporting entry "+(i+1)+" : "+e.getMessage());
+                e.printStackTrace();
             }
         }        
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryAsFurnaceClipboard() - ... Done.");

@@ -5,8 +5,6 @@
  */
 package com.sfc.sf2.sound.convert.io.cube;
 
-import static com.sfc.sf2.sound.convert.io.BinaryMusicBankManager.YM_INSTRUMENT_NUMBER;
-import static com.sfc.sf2.sound.convert.io.BinaryMusicBankManager.YM_INSTRUMENT_SIZE;
 import com.sfc.sf2.sound.convert.io.cube.channel.*;
 import com.sfc.sf2.sound.convert.io.cube.command.Inst;
 import com.sfc.sf2.sound.convert.io.cube.command.MainLoopStart;
@@ -44,6 +42,7 @@ public class MusicEntry {
     byte[][] ymInstruments;
     boolean ssgEgAvailable = true;
     byte[][] sampleEntries;
+    boolean multiSampleBank = true;
     byte[][] sampleBanks;
 
     public String getName() {
@@ -333,5 +332,14 @@ public class MusicEntry {
     public void setSsgEgAvailable(boolean ssgEg) {
         this.ssgEgAvailable = ssgEg;
     }
+
+    public boolean isMultiSampleBank() {
+        return multiSampleBank;
+    }
+
+    public void setMultiSampleBank(boolean multiSampleBank) {
+        this.multiSampleBank = multiSampleBank;
+    }
+    
     
 }

@@ -168,21 +168,25 @@ public class FurnaceFileManager {
         byte[][] sampleEntries = me.getSampleEntries();
         byte[][] sampleBanks = me.getSampleBanks();
         SortedSet<Byte>  bankIndexes = new TreeSet();
-        for(int i=0;i<sampleEntries.length;i++){
-            bankIndexes.add(sampleEntries[i][2]);
+        if(me.isMultiSampleBank()){
+            for(int i=0;i<sampleEntries.length;i++){
+                bankIndexes.add(sampleEntries[i][2]);
+            }
         }
         List<Byte> bankIndexList = new ArrayList(bankIndexes);
         
+        boolean multiSampleBank = me.isMultiSampleBank();
+        
         for(int i=0;i<sampleEntries.length;i++){
             int period = sampleEntries[i][0];
-            int bankIndex = bankIndexList.indexOf(sampleEntries[i][2]);
-            byte b5 = sampleEntries[i][5];
-            byte b4 = sampleEntries[i][4];
+            int bankIndex = me.isMultiSampleBank()? bankIndexList.indexOf(multiSampleBank?sampleEntries[i][2]:0) : 0;
+            byte b5 = sampleEntries[i][3+(multiSampleBank?2:0)];
+            byte b4 = sampleEntries[i][2+(multiSampleBank?2:0)];
             int i5 = (0xFF&b5)<<8;
             int i4 = (0xFF&b4);
             int length = i5 + i4;
-            byte b7 = sampleEntries[i][7];
-            byte b6 = sampleEntries[i][6];
+            byte b7 = sampleEntries[i][5+(multiSampleBank?2:0)];
+            byte b6 = sampleEntries[i][4+(multiSampleBank?2:0)];
             int i7 = (0x7F&b7)<<8;
             int i6 = (0xFF&b6);
             int offset = i7 + i6;

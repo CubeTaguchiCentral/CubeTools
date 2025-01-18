@@ -31,13 +31,14 @@ public class BinaryMusicBankManager {
     public static final int BANK_SIZE = 0x8000;
     public static final int YM_INSTRUMENT_SIZE = 29;
     public static final int YM_INSTRUMENT_NUMBER = 64;
-    public static final int SAMPLE_ENTRY_SIZE = 8;
+    public static final int SAMPLE_ENTRY_SIZE = 6;
+    public static final int SAMPLE_ENTRY_SIZE_MULTI_BANK = 8;
     
     public static MusicEntry importMusicEntry(String filePath, int ptOffset, int index) throws Exception{
-        return importMusicEntry(filePath, ptOffset, index, 0, true);
+        return importMusicEntry(filePath, ptOffset, 0, index, 0, true);
     }
        
-    public static MusicEntry importMusicEntry(String filePath, int ptOffset, int index, int ymInstOffset, boolean ssgEg) throws Exception{
+    public static MusicEntry importMusicEntry(String filePath, int ptOffset, int ramPreloadOffset, int index, int ymInstOffset, boolean ssgEg) throws Exception{
         MusicEntry me = null;
         try{
             File f = new File(filePath);
@@ -47,11 +48,18 @@ public class BinaryMusicBankManager {
             byte offsetLow = data[ptOffset + 2*index];
             byte offsetHigh = data[ptOffset + 2*index + 1];
             int offset = ((offsetHigh&0xFF)<<8) + (offsetLow&0xFF);
+            if(offset<0x8000){
+                throw new Exception("Invalid music entry offset : "+String.format("0x%04X", offset));
+            }
             int musicEntryOffset = bankBaseOffset + offset - BANK_SIZE;
             if(data[musicEntryOffset]!=0){
                 throw new Exception("Not a music entry");
             }
-            me = new MusicEntry(data, musicEntryOffset, bankBaseOffset - BANK_SIZE, ymInstOffset, ssgEg);
+            int baseOffset = bankBaseOffset - BANK_SIZE;
+            if(ramPreloadOffset!=0){
+                baseOffset = musicEntryOffset - ramPreloadOffset;
+            }
+            me = new MusicEntry(data, musicEntryOffset, baseOffset, ymInstOffset, ssgEg);
         } catch (IOException ex) {
             Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -72,13 +80,14 @@ public class BinaryMusicBankManager {
         return ymInstruments;
     }
     
-    public static byte[][] importSampleEntries(String filePath, int sampleEntriesOffset, int maxSampleIndex){
+    public static byte[][] importSampleEntries(String filePath, int sampleEntriesOffset, boolean multiSampleBank, int maxSampleIndex){
         byte[][] sampleEntries = new byte[Math.min(maxSampleIndex+1,12)][];
         try{
             File f = new File(filePath);
             byte[] data = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
+            int sampleEntrySize = multiSampleBank?SAMPLE_ENTRY_SIZE_MULTI_BANK:SAMPLE_ENTRY_SIZE;
             for(int i=0;i<sampleEntries.length;i++){
-                sampleEntries[i] = Arrays.copyOfRange(data, sampleEntriesOffset+i*SAMPLE_ENTRY_SIZE, sampleEntriesOffset+i*SAMPLE_ENTRY_SIZE+SAMPLE_ENTRY_SIZE);
+                sampleEntries[i] = Arrays.copyOfRange(data, sampleEntriesOffset+i*sampleEntrySize, sampleEntriesOffset+i*sampleEntrySize+sampleEntrySize);
             }
         } catch (IOException ex) {
             Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);

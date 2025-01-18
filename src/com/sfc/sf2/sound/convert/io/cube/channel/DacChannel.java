@@ -54,6 +54,7 @@ public class DacChannel extends CubeChannel {
                     ccs.add(new ChannelEnd());
                 }else{
                     System.out.println("Unsupported command at offset 0x"+Integer.toHexString(cursor)+" : $"+String.format("%02x", cmd)+String.format("%02x", b1)+String.format("%02x", b2));
+                    break;
                 }
             }else if((cmd&0xFF)==0xFE){
                 cmdLength = 2;
