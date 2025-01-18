@@ -26,13 +26,13 @@ public class Feature {
         System.arraycopy(name.getBytes(StandardCharsets.UTF_8), 0, data, 0, name.length());
     }
     
-    public Feature(byte[] cubeFmInstrument){
+    public Feature(byte[] cubeFmInstrument, boolean ssgEg){
         code = "FM";
         length = (short)36;
         data = new byte[36];
         data[0] = (byte)0xF4;
-        int algo = cubeFmInstrument[28]&0x07;
-        int feedback = (cubeFmInstrument[28]&0x38)>>3;
+        int algo = cubeFmInstrument[ssgEg?28:24]&0x07;
+        int feedback = (cubeFmInstrument[ssgEg?28:24]&0x38)>>3;
         data[1] = (byte)((algo<<4)+feedback);
         data[2] = 0;
         data[3] = 0x20;
@@ -42,7 +42,9 @@ public class Feature {
         data[4+0*8+3] = cubeFmInstrument[3*4+0];
         data[4+0*8+4] = (byte)(cubeFmInstrument[4*4+0]+0x40);
         data[4+0*8+5] = cubeFmInstrument[5*4+0];
-        data[4+0*8+6] = cubeFmInstrument[6*4+0];
+        if(ssgEg){
+            data[4+0*8+6] = cubeFmInstrument[6*4+0];
+        }
         data[4+0*8+7] = 0;
         data[4+1*8+0] = cubeFmInstrument[0*4+1];
         data[4+1*8+1] = (cubeFmInstrument[1*4+1]==0x7F)?0:cubeFmInstrument[1*4+1];
@@ -50,7 +52,9 @@ public class Feature {
         data[4+1*8+3] = cubeFmInstrument[3*4+1];
         data[4+1*8+4] = (byte)(cubeFmInstrument[4*4+1]+0x40);
         data[4+1*8+5] = cubeFmInstrument[5*4+1];
-        data[4+1*8+6] = cubeFmInstrument[6*4+1];
+        if(ssgEg){
+            data[4+1*8+6] = cubeFmInstrument[6*4+1];
+        }
         data[4+1*8+7] = 0;
         data[4+2*8+0] = cubeFmInstrument[0*4+2];
         data[4+2*8+1] = (cubeFmInstrument[1*4+2]==0x7F)?0:cubeFmInstrument[1*4+2];
@@ -58,7 +62,9 @@ public class Feature {
         data[4+2*8+3] = cubeFmInstrument[3*4+2];
         data[4+2*8+4] = (byte)(cubeFmInstrument[4*4+2]+0x40);
         data[4+2*8+5] = cubeFmInstrument[5*4+2];
-        data[4+2*8+6] = cubeFmInstrument[6*4+2];
+        if(ssgEg){
+            data[4+2*8+6] = cubeFmInstrument[6*4+2];
+        }
         data[4+2*8+7] = 0;
         data[4+3*8+0] = cubeFmInstrument[0*4+3];
         data[4+3*8+1] = (cubeFmInstrument[1*4+3]==0x7F)?0:cubeFmInstrument[1*4+3];
@@ -66,7 +72,9 @@ public class Feature {
         data[4+3*8+3] = cubeFmInstrument[3*4+3];
         data[4+3*8+4] = (byte)(cubeFmInstrument[4*4+3]+0x40);
         data[4+3*8+5] = cubeFmInstrument[5*4+3];
-        data[4+3*8+6] = cubeFmInstrument[6*4+3];
+        if(ssgEg){
+            data[4+3*8+6] = cubeFmInstrument[6*4+3];
+        }
         data[4+3*8+7] = 0;
     }
 

@@ -32,8 +32,12 @@ public class BinaryMusicBankManager {
     public static final int YM_INSTRUMENT_SIZE = 29;
     public static final int YM_INSTRUMENT_NUMBER = 64;
     public static final int SAMPLE_ENTRY_SIZE = 8;
+    
+    public static MusicEntry importMusicEntry(String filePath, int ptOffset, int index) throws Exception{
+        return importMusicEntry(filePath, ptOffset, index, 0, true);
+    }
        
-    public static MusicEntry importMusicEntry(String filePath, int ptOffset, int index, int ymInstOffset){
+    public static MusicEntry importMusicEntry(String filePath, int ptOffset, int index, int ymInstOffset, boolean ssgEg) throws Exception{
         MusicEntry me = null;
         try{
             File f = new File(filePath);
@@ -44,7 +48,10 @@ public class BinaryMusicBankManager {
             byte offsetHigh = data[ptOffset + 2*index + 1];
             int offset = ((offsetHigh&0xFF)<<8) + (offsetLow&0xFF);
             int musicEntryOffset = bankBaseOffset + offset - BANK_SIZE;
-            me = new MusicEntry(data, musicEntryOffset, bankBaseOffset - BANK_SIZE, ymInstOffset);
+            if(data[musicEntryOffset]!=0){
+                throw new Exception("Not a music entry");
+            }
+            me = new MusicEntry(data, musicEntryOffset, bankBaseOffset - BANK_SIZE, ymInstOffset, ssgEg);
         } catch (IOException ex) {
             Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -105,7 +112,7 @@ public class BinaryMusicBankManager {
             System.arraycopy(data, bankBaseOffset+BANK_SIZE, dataAfterMusicBank, 0, dataAfterMusicBank.length);
             MusicEntry[] mes = new MusicEntry[32];
             for(int i=0;i<32;i++){
-                mes[i] = BinaryMusicBankManager.importMusicEntry(filePath, ptOffset, i+1, 0);
+                mes[i] = BinaryMusicBankManager.importMusicEntry(filePath, ptOffset, i+1);
             }
             mes[index-1] = me;
             byte[][] meBytes = new byte[32][];
@@ -137,7 +144,7 @@ public class BinaryMusicBankManager {
             File nf = new File(newFilePath);
             Path path = Paths.get(nf.getAbsolutePath());
             Files.write(path,data);   
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         

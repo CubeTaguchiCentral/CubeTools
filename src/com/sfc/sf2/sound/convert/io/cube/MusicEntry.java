@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 public class MusicEntry {
     
     public static final int YM_INSTRUMENT_SIZE = 29;
+    public static final int YM_INSTRUMENT_SIZE_NOSSGEG = 25;
     public static final int YM_INSTRUMENT_NUMBER = 80;
     
     String name;
@@ -41,6 +42,7 @@ public class MusicEntry {
     byte ymTimerBValue = 0;
     CubeChannel[] channels = new CubeChannel[10];
     byte[][] ymInstruments;
+    boolean ssgEgAvailable = true;
     byte[][] sampleEntries;
     byte[][] sampleBanks;
 
@@ -76,12 +78,20 @@ public class MusicEntry {
         this.channels = channels;
     }
     
-    public MusicEntry(byte [] data, int entryOffset, int baseOffset, int ymInstOffset){
+    public MusicEntry(byte [] data, int entryOffset, int baseOffset, int ymInstOffset, boolean ssgEg){
         this(data, entryOffset, baseOffset);
+        this.setSsgEgAvailable(ssgEg);
         if(ymInstOffset!=0){
+            int instrumentSize = ssgEg?YM_INSTRUMENT_SIZE:YM_INSTRUMENT_SIZE_NOSSGEG;
             ymInstruments = new byte[YM_INSTRUMENT_NUMBER][];
             for(int i=0;i<YM_INSTRUMENT_NUMBER;i++){
-                ymInstruments[i] = Arrays.copyOfRange(data, ymInstOffset+i*YM_INSTRUMENT_SIZE, ymInstOffset+i*YM_INSTRUMENT_SIZE+YM_INSTRUMENT_SIZE);
+                try{
+                    ymInstruments[i] = Arrays.copyOfRange(data, ymInstOffset+i*instrumentSize, ymInstOffset+i*instrumentSize+instrumentSize);
+                }catch(Exception e){
+                    e.printStackTrace();
+                    ymInstruments = Arrays.copyOfRange(ymInstruments, 0, i);
+                    break;
+                }
             } 
         }       
     }
@@ -314,6 +324,14 @@ public class MusicEntry {
 
     public void setSampleBanks(byte[][] sampleBanks) {
         this.sampleBanks = sampleBanks;
+    }
+
+    public boolean isSsgEgAvailable() {
+        return ssgEgAvailable;
+    }
+
+    public void setSsgEgAvailable(boolean ssgEg) {
+        this.ssgEgAvailable = ssgEg;
     }
     
 }

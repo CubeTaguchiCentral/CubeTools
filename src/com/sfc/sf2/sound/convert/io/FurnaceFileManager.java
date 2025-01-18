@@ -155,7 +155,7 @@ public class FurnaceFileManager {
         for(int i=0;i<cubeInstruments.length;i++){
             Feature[] newFeatures = new Feature[2];
             newFeatures[0] = new Feature("yminst"+String.format("%02d", i));
-            newFeatures[1] = new Feature(cubeInstruments[i]);
+            newFeatures[1] = new Feature(cubeInstruments[i], me.isSsgEgAvailable());
             /*if(ff.getInstruments()[i]==null){
                 ff.getInstruments()[i] = new InstrumentBlock();
             }*/
