@@ -56,8 +56,8 @@ public class CubeConversionManager {
                     maxSampleIndex = sampleIndex;
                 }
             }catch(Exception e){
-                e.printStackTrace();
-                break;
+                //e.printStackTrace();
+                //break;
             }
         }
         
@@ -208,7 +208,7 @@ public class CubeConversionManager {
                     ymInstrumentsOffset = ymInstruments[j];
                 }
                 importMusicEntriesFromBinaryMusicBank(completRomFilepath, musicBankOffsets[j], inRamPreloadOffset, ymInstrumentsOffset, ssgEg, sampleTableOffset, multiBankSampleTableFormat, sampleBankOffsets);
-                String completeOutputFilePath = inputFileFolder + targetFolders[j];
+                String completeOutputFilePath = completRomFilepath.substring(0, completRomFilepath.lastIndexOf(File.separator)+1) + targetFolders[j];
                 System.out.println("... "+gameName+" music bank "+(j)+" imported.");
                 System.out.println("Exporting "+gameName+" music bank "+(j)+" ...");
                 exportMusicEntriesAsFurnaceFiles(templateFilePath, completeOutputFilePath);
