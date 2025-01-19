@@ -266,7 +266,7 @@ public class MusicEntry {
                 hasMainLoop = true;
             }
         }
-        System.out.println("hasMainLoop : "+hasMainLoop);
+        //System.out.println("hasMainLoop : "+hasMainLoop);
         return hasMainLoop;
     }
     
@@ -292,7 +292,7 @@ public class MusicEntry {
                 }
             }
         }
-        System.out.println("hasIntro : "+hasIntro);
+        //System.out.println("hasIntro : "+hasIntro);
         return hasIntro;
     }   
     
@@ -363,5 +363,13 @@ public class MusicEntry {
         this.multiSampleBank = multiSampleBank;
     }
     
+    public boolean hasContent(){
+        for(int i=0;i<this.channels.length;i++){
+            if(this.channels[i].getCcs().length>1){
+                return true;
+            }
+        }            
+        return false;
+    }
     
 }

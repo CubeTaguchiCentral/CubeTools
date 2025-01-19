@@ -52,7 +52,7 @@ public class FurnaceFileManager {
     
     public static void exportMusicEntryAsFurnaceFile(MusicEntry me, String templateFilePath, String outputFilePath){
         try {
-            System.out.println("com.sfc.sf2.sound.convert.io.FurnaceFileManager() - Exporting Furnace File ...");
+            System.out.println("FurnaceFileManager() - Exporting Furnace File ...");
             
             File f = new File(templateFilePath);
             byte[] inputData = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
@@ -126,7 +126,7 @@ public class FurnaceFileManager {
             ff.getSongInfo().setOrdersLength((short)(0xFFFF&orderLength));
              
             int ticksPerSecond = Pattern.calculateTicksPersSecond(me.getYmTimerBValue(), ff.getSongInfo().getSpeed1());
-            System.out.println("Timer B value "+Integer.toString(0xFF&me.getYmTimerBValue())+" -> "+ticksPerSecond+" ticks per second");
+            //System.out.println("Timer B value "+Integer.toString(0xFF&me.getYmTimerBValue())+" -> "+ticksPerSecond+" ticks per second");
             ff.getSongInfo().setTicksPerSecond(ticksPerSecond);
             
             convertYmInstruments(me, ff);
@@ -138,7 +138,7 @@ public class FurnaceFileManager {
             byte[] outputData = ff.toByteArray();
             Files.write(path,outputData);
             
-            System.out.println("com.sfc.sf2.sound.convert.io.FurnaceFileManager() - Furnace File exported.");
+            System.out.println("FurnaceFileManager() - Furnace File exported.");
         } catch (IOException ex) {
             Logger.getLogger(FurnaceFileManager.class.getName()).log(Level.SEVERE, null, ex);
         }

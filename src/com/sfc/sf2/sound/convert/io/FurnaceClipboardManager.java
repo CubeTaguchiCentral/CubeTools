@@ -25,7 +25,7 @@ public class FurnaceClipboardManager {
     
     public static void exportMusicEntryAsFurnaceClipboard(MusicEntry me, String filePath){
         try {
-            System.out.println("com.sfc.sf2.sound.convert.io.FurnaceClipboardManager() - Exporting Furnace Clipboard ...");
+            System.out.println("FurnaceClipboardManager() - Exporting Furnace Clipboard ...");
             Path path = Paths.get(filePath);
             PrintWriter pw;
             pw = new PrintWriter(path.toString(),System.getProperty("file.encoding"));
@@ -44,7 +44,7 @@ public class FurnaceClipboardManager {
                 pw.print(FurnaceClipboardProducer.produceClipboardOutput(fp));
             }
             pw.close();
-            System.out.println("com.sfc.sf2.sound.convert.io.FurnaceClipboardManager() - Furnace Clipboard exported.");
+            System.out.println("FurnaceClipboardManager() - Furnace Clipboard exported.");
         } catch (IOException ex) {
             Logger.getLogger(FurnaceClipboardManager.class.getName()).log(Level.SEVERE, null, ex);
         }

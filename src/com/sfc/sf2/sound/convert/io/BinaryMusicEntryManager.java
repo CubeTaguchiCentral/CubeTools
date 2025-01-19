@@ -24,7 +24,7 @@ public class BinaryMusicEntryManager {
     public static void exportMusicEntryAsBinary(MusicEntry me, String filePath){
     
         try {
-            System.out.println("com.sfc.sf2.sound.convert.io.BinaryMusicEntryManager.exportMusicEntryAsBinary() - Writing file ...");
+            System.out.println("BinaryMusicEntryManager.exportMusicEntryAsBinary() - Writing file ...");
             File file = new File(filePath);
             Path path = Paths.get(file.getAbsolutePath());
             byte[] data = me.produceBinaryOutput(0);
@@ -42,7 +42,7 @@ public class BinaryMusicEntryManager {
             } 
             */
             System.out.println(data.length + " bytes into " + filePath);  
-            System.out.println("com.sfc.sf2.sound.convert.io.BinaryMusicEntryManager.exportMusicEntryAsBinary() - File written.");
+            System.out.println("BinaryMusicEntryManager.exportMusicEntryAsBinary() - File written.");
         } catch (IOException ex) {
             Logger.getLogger(BinaryMusicEntryManager.class.getName()).log(Level.SEVERE, null, ex);
         }

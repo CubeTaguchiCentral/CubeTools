@@ -136,7 +136,7 @@ public class PatternRange {
                 maxLength = introRows.length+mainLoopRows.length;
             }
         }
-        System.out.println("maxLength : "+maxLength);
+        //System.out.println("maxLength : "+maxLength);
         for (int i=0;i<MAX_CHANNELS_SIZE;i++){
             Row[] introRows = introChannels[i].getRows();
             Row[] mainLoopRows = mainLoopChannels[i].getRows();

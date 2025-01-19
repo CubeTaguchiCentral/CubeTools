@@ -540,7 +540,7 @@ public class Pattern {
             }else if(cc instanceof ChannelEnd){
                 
             }else {
-                System.out.println("com.sfc.sf2.sound.convert.io.furnace.FurnacePattern.convertFmCubeChannel() - Ignoring command "+i+" : "+cc.produceAsmOutput());
+                //System.out.println("FurnacePattern.convertFmCubeChannel() - Ignoring command "+i+" : "+cc.produceAsmOutput());
             }
         }
         if(introOnly){

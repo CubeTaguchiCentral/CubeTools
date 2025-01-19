@@ -23,13 +23,13 @@ public class AsmMusicEntryManager {
     
     public static void exportMusicEntryAsAsm(MusicEntry me, String filePath){
         try {
-            System.out.println("com.sfc.sf2.sound.convert.io.AsmMusicEntryManager() - Exporting ASM ...");
+            System.out.println("AsmMusicEntryManager.exportMusicEntryAsAsm() - Exporting ASM ...");
             Path path = Paths.get(filePath);
             PrintWriter pw;
             pw = new PrintWriter(path.toString(),System.getProperty("file.encoding"));
             pw.print(me.produceAsmOutput());
             pw.close();
-            System.out.println("com.sfc.sf2.sound.convert.io.AsmMusicEntryManager() - ASM exported.");
+            System.out.println("AsmMusicEntryManager.exportMusicEntryAsAsm() - ASM exported.");
         } catch (IOException ex) {
             Logger.getLogger(AsmMusicEntryManager.class.getName()).log(Level.SEVERE, null, ex);
         }
