@@ -53,8 +53,8 @@ public class Pattern {
     public static final byte NOTE_RELEASE = (byte)181;
     public static final byte MACRO_RELEASE = (byte)182;
     
-    public static final int PSG_INSTRUMENT_OFFSET = 0x50;
-    public static final int SAMPLE_INSTRUMENT_OFFSET = 0x60;
+    public static final int PSG_INSTRUMENT_OFFSET = 0xA0;
+    public static final int SAMPLE_INSTRUMENT_OFFSET = 0xC0;
     
     private Row[] rows;
     

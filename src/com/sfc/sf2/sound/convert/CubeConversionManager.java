@@ -42,7 +42,7 @@ public class CubeConversionManager {
     public void importMusicEntriesFromBinaryMusicBank(String filePath, int ptOffset, int ramPreloadOffset, int ymInstOffset, boolean ssgEg, int sampleEntriesOffset, boolean multipleBanksFormat, int[] sampleBanksOffsets){
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.importMusicEntryFromBinaryMusicBank() - Importing ...");
         int maxSampleIndex = 0;
-        
+        int maxYmInstrumentIndex = 0;        
         for(int i=0;i<mes.length;i++){
             try{
                 mes[i] = BinaryMusicBankManager.importMusicEntry(filePath, ptOffset, ramPreloadOffset, i+1, ymInstOffset, ssgEg);
@@ -50,9 +50,9 @@ public class CubeConversionManager {
                 mes[i].hasMainLoop();
                 mes[i].hasIntro();
                 System.out.println("Imported entry "+(i+1));
-                int index = mes[i].findMaxSampleIndex();
-                if(index>maxSampleIndex){
-                    maxSampleIndex = index;
+                int sampleIndex = mes[i].findMaxSampleIndex();
+                if(sampleIndex>maxSampleIndex){
+                    maxSampleIndex = sampleIndex;
                 }
             }catch(Exception e){
                 e.printStackTrace();

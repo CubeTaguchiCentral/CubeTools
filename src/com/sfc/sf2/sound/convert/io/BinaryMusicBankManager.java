@@ -29,8 +29,6 @@ import java.util.logging.Logger;
 public class BinaryMusicBankManager {
     
     public static final int BANK_SIZE = 0x8000;
-    public static final int YM_INSTRUMENT_SIZE = 29;
-    public static final int YM_INSTRUMENT_NUMBER = 64;
     public static final int SAMPLE_ENTRY_SIZE = 6;
     public static final int SAMPLE_ENTRY_SIZE_MULTI_BANK = 8;
     
@@ -64,20 +62,6 @@ public class BinaryMusicBankManager {
             Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return me;
-    }
-    
-    public static byte[][] importYmInstruments(String filePath, int ymInstOffset){
-        byte[][] ymInstruments = new byte[YM_INSTRUMENT_NUMBER][];
-        try{
-            File f = new File(filePath);
-            byte[] data = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
-            for(int i=0;i<YM_INSTRUMENT_NUMBER;i++){
-                ymInstruments[i] = Arrays.copyOfRange(data, ymInstOffset+i*YM_INSTRUMENT_SIZE, ymInstOffset+i*YM_INSTRUMENT_SIZE+YM_INSTRUMENT_SIZE);
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return ymInstruments;
     }
     
     public static byte[][] importSampleEntries(String filePath, int sampleEntriesOffset, boolean multiSampleBank, int maxSampleIndex){

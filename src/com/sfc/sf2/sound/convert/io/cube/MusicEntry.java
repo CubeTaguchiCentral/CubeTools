@@ -33,7 +33,8 @@ public class MusicEntry {
     
     public static final int YM_INSTRUMENT_SIZE = 29;
     public static final int YM_INSTRUMENT_SIZE_NOSSGEG = 25;
-    public static final int YM_INSTRUMENT_NUMBER = 80;
+    public static final int YM_INSTRUMENT_CHUNK_SIZE = 16;
+    
     
     String name;
     boolean ym6InDacMode = false;
@@ -82,8 +83,15 @@ public class MusicEntry {
         this.setSsgEgAvailable(ssgEg);
         if(ymInstOffset!=0){
             int instrumentSize = ssgEg?YM_INSTRUMENT_SIZE:YM_INSTRUMENT_SIZE_NOSSGEG;
-            ymInstruments = new byte[YM_INSTRUMENT_NUMBER][];
-            for(int i=0;i<YM_INSTRUMENT_NUMBER;i++){
+            int maxYmInstrumentIndex = 0;
+            int ymInstrumentIndex = findMaxYmInstrumentIndex();
+            if(ymInstrumentIndex>maxYmInstrumentIndex){
+                maxYmInstrumentIndex = ymInstrumentIndex;
+            }
+            int chunkCount = (maxYmInstrumentIndex / YM_INSTRUMENT_CHUNK_SIZE) + 1;
+            maxYmInstrumentIndex = chunkCount * YM_INSTRUMENT_CHUNK_SIZE;
+            ymInstruments = new byte[maxYmInstrumentIndex][];
+            for(int i=0;i<maxYmInstrumentIndex;i++){
                 try{
                     ymInstruments[i] = Arrays.copyOfRange(data, ymInstOffset+i*instrumentSize, ymInstOffset+i*instrumentSize+instrumentSize);
                 }catch(Exception e){
@@ -304,7 +312,21 @@ public class MusicEntry {
                     }
                 }
             }
-            
+        }
+        return maxIndex;
+    }
+    
+    public int findMaxYmInstrumentIndex(){
+        int maxIndex = 0;
+        for(CubeChannel cch : channels){
+            for(CubeCommand cc : cch.getCcs()){
+                if(cc instanceof Inst){
+                    int index = ((Inst)cc).getValue();
+                    if(index>maxIndex){
+                        maxIndex = index;
+                    }
+                }
+            }
         }
         return maxIndex;
     }

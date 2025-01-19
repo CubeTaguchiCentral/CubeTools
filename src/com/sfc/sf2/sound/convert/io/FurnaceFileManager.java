@@ -38,22 +38,17 @@ import java.util.logging.Logger;
  * @author Wiz
  */
 public class FurnaceFileManager {
-    
-    private static FurnaceFile currentFile = null;   
-       
+           
     public static MusicEntry importFurnaceFile(String filePath){
         MusicEntry me = null;
         try{
             File f = new File(filePath);
             byte[] data = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
-            currentFile = new FurnaceFile(data);
         } catch (IOException ex) {
             Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return me;
     }
-    
-    
     
     public static void exportMusicEntryAsFurnaceFile(MusicEntry me, String templateFilePath, String outputFilePath){
         try {
