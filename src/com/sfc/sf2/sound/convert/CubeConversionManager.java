@@ -8,9 +8,11 @@ package com.sfc.sf2.sound.convert;
 import com.sfc.sf2.sound.convert.io.AsmMusicEntryManager;
 import com.sfc.sf2.sound.convert.io.BinaryMusicBankManager;
 import com.sfc.sf2.sound.convert.io.BinaryMusicEntryManager;
+import com.sfc.sf2.sound.convert.io.ConversionInputs;
 import com.sfc.sf2.sound.convert.io.FurnaceClipboardManager;
 import com.sfc.sf2.sound.convert.io.FurnaceFileManager;
 import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
+import java.io.File;
 
 /**
  *
@@ -180,6 +182,39 @@ public class CubeConversionManager {
             }
         }        
         System.out.println("com.sfc.sf2.sound.convert.CubeConversionManager.exportMusicEntryAsFurnaceClipboard() - ... Done.");
+    }
+    
+    public void massExportFromBinaryMusicBankToFurnaceFiles(String inputFilePath, String templateFilePath){
+        System.out.println("massExportFromBinaryMusicBankToFurnaceFiles() - Exporting ...");
+        ConversionInputs[] cis = ConversionInputs.importConversionInputs(inputFilePath);
+        String inputFileFolder = inputFilePath.substring(0, inputFilePath.lastIndexOf(File.separator)+1);
+        for(int i=0;i<cis.length;i++){
+            String gameName = cis[i].getGameName();
+            String completRomFilepath = inputFileFolder + cis[i].getRomFilePath();
+            int[] musicBankOffsets = cis[i].getMusicBankOffsets();
+            int inRamPreloadOffset = cis[i].getInRamPreloadOffset();
+            int[] ymInstruments = cis[i].getYmInstruments();
+            boolean ssgEg = cis[i].isSsgEg();
+            int sampleTableOffset = cis[i].getSampleTableOffset();
+            boolean multiBankSampleTableFormat = cis[i].isMultiBankSampleTableFormat();
+            int[] sampleBankOffsets = cis[i].getSampleBankOffsets();
+            String[] targetFolders = cis[i].getTargetFolders();
+            for(int j=0;j<musicBankOffsets.length;j++){
+                System.out.println("Importing "+gameName+" music bank "+(j)+" ...");
+                mes = new MusicEntry[32];
+                int ymInstrumentsOffset = ymInstruments[0];
+                if(ymInstruments.length>j){
+                    ymInstrumentsOffset = ymInstruments[j];
+                }
+                importMusicEntriesFromBinaryMusicBank(completRomFilepath, musicBankOffsets[j], inRamPreloadOffset, ymInstrumentsOffset, ssgEg, sampleTableOffset, multiBankSampleTableFormat, sampleBankOffsets);
+                String completeOutputFilePath = inputFileFolder + targetFolders[j];
+                System.out.println("... "+gameName+" music bank "+(j)+" imported.");
+                System.out.println("Exporting "+gameName+" music bank "+(j)+" ...");
+                exportMusicEntriesAsFurnaceFiles(templateFilePath, completeOutputFilePath);
+                System.out.println("... "+gameName+" music bank "+(j)+" exported.");
+            }
+        }    
+        System.out.println("massExportFromBinaryMusicBankToFurnaceFiles() - ... Done.");
     }
     
     
