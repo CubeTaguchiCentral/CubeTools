@@ -173,7 +173,7 @@ public class FurnaceFileManager {
         boolean multiSampleBank = me.isMultiSampleBank();
         
         for(int i=0;i<sampleEntries.length;i++){
-            int period = sampleEntries[i][0];
+            int period = sampleEntries[i][0] / 5 + 1;
             int bankIndex = me.isMultiSampleBank()? bankIndexList.indexOf(multiSampleBank?sampleEntries[i][2]:0) : 0;
             byte b5 = sampleEntries[i][3+(multiSampleBank?2:0)];
             byte b4 = sampleEntries[i][2+(multiSampleBank?2:0)];

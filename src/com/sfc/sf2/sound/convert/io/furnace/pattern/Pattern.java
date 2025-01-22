@@ -243,7 +243,8 @@ public class Pattern {
         int currentVolume = -1;
         int newInstrument = 0;
         int currentInstrument = 0;
-        int vibrato = -1;
+        int vibratoDelay = -1;
+        int vibratoIndex = 0;
         int vibratoCounter = 0;
         boolean vibratoTriggered = mainLoopOnly?true:false;
         int release = 0;
@@ -285,33 +286,12 @@ public class Pattern {
                 detune = ((s.getValue()&0x30)>>4)+3;
             } else if(cc instanceof Vibrato){
                 Vibrato v = (Vibrato) cc;
-                vibrato = (v.getValue()&0xF)*2;
-                //TODO implement actual Cube pitch effects 
-                /*
-                  $FB xy     Load Vibrato x, triggered at Note Length 2*y
-                */
-                /*
-                PITCH_EFFECT_0:  db  0, 80h
-                PITCH_EFFECT_1:  db -16, 16, 16, -16, 80h
-                PITCH_EFFECT_2:  db -3, -3, -1,  1,  3,  3,  3,  1, -1, -3, 80h
-                PITCH_EFFECT_3:  db -2, -2, -1,  1,  2,  2,  2,  1, -1, -2, 80h
-                PITCH_EFFECT_4:  db -1, -1,  0,  1,  1,  1,  1,  0, -1, -1, 80h
-                PITCH_EFFECT_5:  db -1,  0,  0,  1,  0,  1,  0,  0, -1,  0, 80h
-                PITCH_EFFECT_6:  db  2, 80h
-                PITCH_EFFECT_7:  db -2, 80h
-                PITCH_EFFECT_8:  db  4, 80h
-                PITCH_EFFECT_9:  db -4, 80h
-                PITCH_EFFECT_A:  db  8, 80h
-                PITCH_EFFECT_B:  db -8, 80h
-                PITCH_EFFECT_C:  db 16, 80h
-                PITCH_EFFECT_D:  db -16, 80h
-                PITCH_EFFECT_E:  db 32, 80h
-                PITCH_EFFECT_F:  db -32, 80h
-                */
+                vibratoIndex = (v.getValue()&0xF0)>>4;
+                vibratoDelay = (v.getValue()&0xF)*2;
             } else if(cc instanceof SetSlide){
                 SetSlide ss = (SetSlide) cc;
                 byte value = ss.getValue();
-                slide = (value&0x7F) / 2;
+                slide = (value&0x7F) / 2 + 1;
             } else if(cc instanceof NoSlide){
                 slide = 0;
             } else if(cc instanceof SetRelease){
@@ -417,9 +397,89 @@ public class Pattern {
                 releaseCounter++;
                 vibratoCounter++;
                 while(playCounter<playLength){
-                    if(!vibratoTriggered && vibrato>0){
-                        if(vibratoCounter>=(vibrato)){
-                            currentRow.getEffectList().add(new Effect(0x04,0x52));
+                    if(!vibratoTriggered && vibratoDelay>0){
+                        if(vibratoCounter>=(vibratoDelay)){
+                            //currentRow.getEffectList().add(new Effect(0x04,0x52));
+                            
+                            //TODO implement actual Cube pitch effects 
+                            /*
+                              $FB xy     Load Vibrato x, triggered at Note Length 2*y
+                            */
+                            /*
+                            PITCH_EFFECT_0:  db  0, 80h
+                            PITCH_EFFECT_1:  db -16, 16, 16, -16, 80h
+                            PITCH_EFFECT_2:  db -3, -3, -1,  1,  3,  3,  3,  1, -1, -3, 80h
+                            PITCH_EFFECT_3:  db -2, -2, -1,  1,  2,  2,  2,  1, -1, -2, 80h
+                            PITCH_EFFECT_4:  db -1, -1,  0,  1,  1,  1,  1,  0, -1, -1, 80h
+                            PITCH_EFFECT_5:  db -1,  0,  0,  1,  0,  1,  0,  0, -1,  0, 80h
+                            PITCH_EFFECT_6:  db  2, 80h
+                            PITCH_EFFECT_7:  db -2, 80h
+                            PITCH_EFFECT_8:  db  4, 80h
+                            PITCH_EFFECT_9:  db -4, 80h
+                            PITCH_EFFECT_A:  db  8, 80h
+                            PITCH_EFFECT_B:  db -8, 80h
+                            PITCH_EFFECT_C:  db 16, 80h
+                            PITCH_EFFECT_D:  db -16, 80h
+                            PITCH_EFFECT_E:  db 32, 80h
+                            PITCH_EFFECT_F:  db -32, 80h
+                            */
+                            switch(vibratoIndex){
+                                case 0x1:
+                                    currentRow.getEffectList().add(new Effect(0xE3,0x06));
+                                    currentRow.getEffectList().add(new Effect(0x04,0x2F));
+                                    break;
+                                case 0x2:
+                                    currentRow.getEffectList().add(new Effect(0xE3,0x00));
+                                    currentRow.getEffectList().add(new Effect(0x04,0x53));
+                                    break;
+                                case 0x3:
+                                    currentRow.getEffectList().add(new Effect(0xE3,0x00));
+                                    currentRow.getEffectList().add(new Effect(0x04,0x52));
+                                    break;
+                                case 0x4:
+                                    currentRow.getEffectList().add(new Effect(0xE3,0x00));
+                                    currentRow.getEffectList().add(new Effect(0x04,0x52));
+                                    break;
+                                case 0x5:
+                                    currentRow.getEffectList().add(new Effect(0xE3,0x00));
+                                    currentRow.getEffectList().add(new Effect(0x04,0x32));
+                                    break;
+                                case 0x6:
+                                    currentRow.getEffectList().add(new Effect(0xE1,0x1F));
+                                    break;
+                                case 0x7:
+                                    currentRow.getEffectList().add(new Effect(0xE2,0x1F));
+                                    break;
+                                case 0x8:
+                                    currentRow.getEffectList().add(new Effect(0xE1,0x2F));
+                                    break;
+                                case 0x9:
+                                    currentRow.getEffectList().add(new Effect(0xE2,0x2F));
+                                    break;
+                                case 0xA:
+                                    currentRow.getEffectList().add(new Effect(0xE1,0x4F));
+                                    break;
+                                case 0xB:
+                                    currentRow.getEffectList().add(new Effect(0xE2,0x4F));
+                                    break;
+                                case 0xC:
+                                    currentRow.getEffectList().add(new Effect(0xE1,0x8F));
+                                    break;
+                                case 0xD:
+                                    currentRow.getEffectList().add(new Effect(0xE2,0x8F));
+                                    break;
+                                case 0xE:
+                                    currentRow.getEffectList().add(new Effect(0xE1,0xFF));
+                                    break;
+                                case 0xF:
+                                    currentRow.getEffectList().add(new Effect(0xE2,0xFF));
+                                    break;
+                                default:
+                                    currentRow.getEffectList().add(new Effect(0xE3,0x00));
+                                    currentRow.getEffectList().add(new Effect(0x04,0x52));
+                                    break;
+                            }
+                            
                             vibratoTriggered = true;
                             vibratoCounter = 0;
                         } else{
@@ -484,9 +544,88 @@ public class Pattern {
                 releaseCounter++;
                 vibratoCounter++;
                 while(playCounter<playLength){
-                    if(!vibratoTriggered && vibrato!=-1){
-                        if(vibratoCounter>=(vibrato)){
-                            currentRow.getEffectList().add(new Effect(0x04,0x52));
+                    if(!vibratoTriggered && vibratoDelay!=-1){
+                        if(vibratoCounter>=(vibratoDelay)){
+                            //currentRow.getEffectList().add(new Effect(0x04,0x52));
+                            
+                            //TODO implement actual Cube pitch effects 
+                            /*
+                              $FB xy     Load Vibrato x, triggered at Note Length 2*y
+                            */
+                            /*
+                            PITCH_EFFECT_0:  db  0, 80h
+                            PITCH_EFFECT_1:  db -16, 16, 16, -16, 80h
+                            PITCH_EFFECT_2:  db -3, -3, -1,  1,  3,  3,  3,  1, -1, -3, 80h
+                            PITCH_EFFECT_3:  db -2, -2, -1,  1,  2,  2,  2,  1, -1, -2, 80h
+                            PITCH_EFFECT_4:  db -1, -1,  0,  1,  1,  1,  1,  0, -1, -1, 80h
+                            PITCH_EFFECT_5:  db -1,  0,  0,  1,  0,  1,  0,  0, -1,  0, 80h
+                            PITCH_EFFECT_6:  db  2, 80h
+                            PITCH_EFFECT_7:  db -2, 80h
+                            PITCH_EFFECT_8:  db  4, 80h
+                            PITCH_EFFECT_9:  db -4, 80h
+                            PITCH_EFFECT_A:  db  8, 80h
+                            PITCH_EFFECT_B:  db -8, 80h
+                            PITCH_EFFECT_C:  db 16, 80h
+                            PITCH_EFFECT_D:  db -16, 80h
+                            PITCH_EFFECT_E:  db 32, 80h
+                            PITCH_EFFECT_F:  db -32, 80h
+                            */
+                            switch(vibratoIndex){
+                                case 0x1:
+                                    currentRow.getEffectList().add(new Effect(0xE3,0x06));
+                                    currentRow.getEffectList().add(new Effect(0x04,0x2F));
+                                    break;
+                                case 0x2:
+                                    currentRow.getEffectList().add(new Effect(0xE3,0x00));
+                                    currentRow.getEffectList().add(new Effect(0x04,0x53));
+                                    break;
+                                case 0x3:
+                                    currentRow.getEffectList().add(new Effect(0xE3,0x00));
+                                    currentRow.getEffectList().add(new Effect(0x04,0x52));
+                                    break;
+                                case 0x4:
+                                    currentRow.getEffectList().add(new Effect(0xE3,0x00));
+                                    currentRow.getEffectList().add(new Effect(0x04,0x52));
+                                    break;
+                                case 0x5:
+                                    currentRow.getEffectList().add(new Effect(0xE3,0x00));
+                                    currentRow.getEffectList().add(new Effect(0x04,0x32)); /* Not appropriate for Cube's shape, better solution to find here */
+                                    break;
+                                case 0x6:
+                                    currentRow.getEffectList().add(new Effect(0xE1,0x1F));
+                                    break;
+                                case 0x7:
+                                    currentRow.getEffectList().add(new Effect(0xE2,0x1F));
+                                    break;
+                                case 0x8:
+                                    currentRow.getEffectList().add(new Effect(0xE1,0x2F));
+                                    break;
+                                case 0x9:
+                                    currentRow.getEffectList().add(new Effect(0xE2,0x2F));
+                                    break;
+                                case 0xA:
+                                    currentRow.getEffectList().add(new Effect(0xE1,0x4F));
+                                    break;
+                                case 0xB:
+                                    currentRow.getEffectList().add(new Effect(0xE2,0x4F));
+                                    break;
+                                case 0xC:
+                                    currentRow.getEffectList().add(new Effect(0xE1,0x8F));
+                                    break;
+                                case 0xD:
+                                    currentRow.getEffectList().add(new Effect(0xE2,0x8F));
+                                    break;
+                                case 0xE:
+                                    currentRow.getEffectList().add(new Effect(0xE1,0xFF));
+                                    break;
+                                case 0xF:
+                                    currentRow.getEffectList().add(new Effect(0xE2,0xFF));
+                                    break;
+                                default:
+                                    currentRow.getEffectList().add(new Effect(0xE3,0x00));
+                                    currentRow.getEffectList().add(new Effect(0x04,0x52));
+                                    break;
+                            }
                             vibratoTriggered = true;
                             vibratoCounter = 0;
                         } else{
