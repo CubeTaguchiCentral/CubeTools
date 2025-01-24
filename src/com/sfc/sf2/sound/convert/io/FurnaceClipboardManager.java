@@ -5,8 +5,8 @@
  */
 package com.sfc.sf2.sound.convert.io;
 
-import com.sfc.sf2.sound.convert.io.furnace.PatternRange;
 import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
+import com.sfc.sf2.sound.convert.io.furnace.PatternRange;
 import com.sfc.sf2.sound.convert.io.furnace.clipboard.*;
 import java.io.IOException;
 import java.io.PrintWriter;

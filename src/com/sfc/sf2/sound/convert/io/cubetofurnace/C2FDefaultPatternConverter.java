@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sfc.sf2.sound.convert.io.furnace.pattern;
+package com.sfc.sf2.sound.convert.io.cubetofurnace;
 
 import com.sfc.sf2.sound.convert.io.cube.CubeChannel;
 import com.sfc.sf2.sound.convert.io.cube.CubeCommand;
@@ -24,8 +24,21 @@ import com.sfc.sf2.sound.convert.io.cube.command.Vol;
 import com.sfc.sf2.sound.convert.io.cube.command.Wait;
 import com.sfc.sf2.sound.convert.io.cube.command.WaitL;
 import com.sfc.sf2.sound.convert.io.cube.command.YmTimer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Effect;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Instrument;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Note;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern;
+import static com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern.NOTE_OFF;
+import static com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern.NOTE_RELEASE;
+import static com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern.PSG_INSTRUMENT_OFFSET;
+import static com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern.SAMPLE_INSTRUMENT_OFFSET;
+import static com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern.TYPE_DAC;
+import static com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern.TYPE_PSGTONE;
+import static com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern.YM_LEVELS;
+import static com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern.calculateTicksPersSecond;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Pitch;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Row;
+import com.sfc.sf2.sound.convert.io.furnace.pattern.Volume;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +46,7 @@ import java.util.List;
  *
  * @author Wiz
  */
-public class Pattern {
+public class C2FDefaultPatternConverter {
     
     public static final int MD_CRYSTAL_FREQUENCY = 53693175;
     public static final float YM2612_INPUT_FREQUENCY = MD_CRYSTAL_FREQUENCY / 7;
@@ -58,207 +71,35 @@ public class Pattern {
     
     private Row[] rows;
     
-    public Pattern(){
-        
-    }
+    private int newNoteValue = 0;
+    private int playLength = 0;
+    private int playCounter = 0;
+    private int newVolume = 0;
+    private int currentVolume = -1;
+    private int newInstrument = 0;
+    private int currentInstrument = 0;
+    private int vibratoDelay = -1;
+    private int vibratoIndex = 0;
+    private int vibratoCounter = 0;
+    private boolean vibratoTriggered = false;
+    private int release = 0;
+    private int releaseCounter = 0;
+    private boolean released = false;
+    private boolean legatoToActivate = false;
+    private boolean sustainedNotePlayed = false;
+    private boolean legatoActivated = false;
+    private boolean legatoToDeactivate = true;
+    private boolean releasePlayed = true;
+    private int detune = -1;
+    private int panning = -1;
+    private int slide = 0;
+    private boolean mainLoopStarted = false;
     
-    public Pattern(byte[] data){
-        ByteBuffer bb = ByteBuffer.wrap(data);
-        bb.order(ByteOrder.LITTLE_ENDIAN);
-        bb.position(0);
-        byte b = 0;
-        boolean notePresent = false;
-        boolean instrumentPresent = false;
-        boolean volumePresent = false;
-        boolean effect0TypePresent = false;
-        boolean effect0ValuePresent = false;
-        boolean otherEffects03Present = false;
-        boolean otherEffects47Present = false;
-        boolean otherEffect0TypePresent = false;
-        boolean otherEffect0ValuePresent = false;
-        boolean otherEffect1TypePresent = false;
-        boolean otherEffect1ValuePresent = false;
-        boolean otherEffect2TypePresent = false;
-        boolean otherEffect2ValuePresent = false;
-        boolean otherEffect3TypePresent = false;
-        boolean otherEffect3ValuePresent = false;
-        boolean otherEffect4TypePresent = false;
-        boolean otherEffect4ValuePresent = false;
-        boolean otherEffect5TypePresent = false;
-        boolean otherEffect5ValuePresent = false;
-        boolean otherEffect6TypePresent = false;
-        boolean otherEffect6ValuePresent = false;
-        boolean otherEffect7TypePresent = false;
-        boolean otherEffect7ValuePresent = false;
-        List<Row> rowList = new ArrayList();
-        while(bb.position()<bb.capacity()){
-            b = bb.get();
-            if((b&0xFF)==0xFF){
-                break;
-            }
-            if(b==0){
-                rowList.add(new Row());
-            }else if((b&0x80)!=0){
-                int skipLength = (b&0x7F)+2;
-                for(int i=0;i<skipLength;i++){
-                    rowList.add(new Row());
-                }
-            }else{
-                Row r = new Row();
-                notePresent = (b&0x01)!=0;
-                instrumentPresent = (b&0x02)!=0;
-                volumePresent = (b&0x04)!=0;
-                effect0TypePresent = (b&0x08)!=0;
-                effect0ValuePresent = (b&0x10)!=0;
-                otherEffects03Present = (b&0x20)!=0;
-                otherEffects47Present = (b&0x40)!=0;
-                if(otherEffects03Present){
-                    b = bb.get();
-                    otherEffect0TypePresent = (b&0x01)!=0;
-                    otherEffect0ValuePresent = (b&0x02)!=0;
-                    otherEffect1TypePresent = (b&0x04)!=0;
-                    otherEffect1ValuePresent = (b&0x08)!=0;
-                    otherEffect2TypePresent = (b&0x10)!=0;
-                    otherEffect2ValuePresent = (b&0x20)!=0;
-                    otherEffect3TypePresent = (b&0x40)!=0;
-                    otherEffect3ValuePresent = (b&0x80)!=0;
-                }else{
-                    otherEffect0TypePresent = false;
-                    otherEffect0ValuePresent = false;
-                    otherEffect1TypePresent = false;
-                    otherEffect1ValuePresent = false;
-                    otherEffect2TypePresent = false;
-                    otherEffect2ValuePresent = false;
-                    otherEffect3TypePresent = false;
-                    otherEffect3ValuePresent = false;
-                }
-                if(otherEffects47Present){
-                    b = bb.get();
-                    otherEffect4TypePresent = (b&0x01)!=0;
-                    otherEffect4ValuePresent = (b&0x02)!=0;
-                    otherEffect5TypePresent = (b&0x04)!=0;
-                    otherEffect5ValuePresent = (b&0x08)!=0;
-                    otherEffect6TypePresent = (b&0x10)!=0;
-                    otherEffect6ValuePresent = (b&0x20)!=0;
-                    otherEffect7TypePresent = (b&0x40)!=0;
-                    otherEffect7ValuePresent = (b&0x80)!=0;
-                }else{
-                    otherEffect4TypePresent = false;
-                    otherEffect4ValuePresent = false;
-                    otherEffect5TypePresent = false;
-                    otherEffect5ValuePresent = false;
-                    otherEffect6TypePresent = false;
-                    otherEffect6ValuePresent = false;
-                    otherEffect7TypePresent = false;
-                    otherEffect7ValuePresent = false;
-                }
-                if(notePresent){
-                    r.setNote(new Note(bb.get()));
-                }
-                if(instrumentPresent){
-                    r.setInstrument(new Instrument(bb.get()));
-                }
-                if(volumePresent){
-                    r.setVolume(new Volume(bb.get()));
-                }
-                /*if(effect0TypePresent){
-                    Effect e = new Effect(bb.get());
-                    if(effect0ValuePresent){
-                        e.setValue(bb.get());
-                    }
-                    r.getEffectList().add(e);
-                }*/
-                if(otherEffect0TypePresent){
-                    Effect e = new Effect(bb.get());
-                    if(otherEffect0ValuePresent){
-                        e.setValue(bb.get());
-                    }
-                    r.getEffectList().add(e);
-                }
-                if(otherEffect1TypePresent){
-                    Effect e = new Effect(bb.get());
-                    if(otherEffect1ValuePresent){
-                        e.setValue(bb.get());
-                    }
-                    r.getEffectList().add(e);
-                }
-                if(otherEffect2TypePresent){
-                    Effect e = new Effect(bb.get());
-                    if(otherEffect2ValuePresent){
-                        e.setValue(bb.get());
-                    }
-                    r.getEffectList().add(e);
-                }
-                if(otherEffect3TypePresent){
-                    Effect e = new Effect(bb.get());
-                    if(otherEffect3ValuePresent){
-                        e.setValue(bb.get());
-                    }
-                    r.getEffectList().add(e);
-                }
-                if(otherEffect4TypePresent){
-                    Effect e = new Effect(bb.get());
-                    if(otherEffect4ValuePresent){
-                        e.setValue(bb.get());
-                    }
-                    r.getEffectList().add(e);
-                }
-                if(otherEffect5TypePresent){
-                    Effect e = new Effect(bb.get());
-                    if(otherEffect5ValuePresent){
-                        e.setValue(bb.get());
-                    }
-                    r.getEffectList().add(e);
-                }
-                if(otherEffect6TypePresent){
-                    Effect e = new Effect(bb.get());
-                    if(otherEffect6ValuePresent){
-                        e.setValue(bb.get());
-                    }
-                    r.getEffectList().add(e);
-                }
-                if(otherEffect7TypePresent){
-                    Effect e = new Effect(bb.get());
-                    if(otherEffect7ValuePresent){
-                        e.setValue(bb.get());
-                    }
-                    r.getEffectList().add(e);
-                }
-                rowList.add(r);
-            }
-        }
-        rows = new Row[rowList.size()];
-        for(int j=0;j<rows.length;j++){
-            rows[j]=rowList.get(j);
-        }
-    }
-    
-    public Pattern(CubeChannel cch, int channelType, boolean introOnly, boolean mainLoopOnly){
+    public Pattern convertCubeChannelToFurnacePattern(CubeChannel cch, int channelType, boolean introOnly, boolean mainLoopOnly){
+        Pattern p = new Pattern();
         List<Row> rowList = new ArrayList();
         CubeCommand[] ccs = cch.getCcs();
-        int newNoteValue = 0;
-        int playLength = 0;
-        int playCounter = 0;
-        int newVolume = 0;
-        int currentVolume = -1;
-        int newInstrument = 0;
-        int currentInstrument = 0;
-        int vibratoDelay = -1;
-        int vibratoIndex = 0;
-        int vibratoCounter = 0;
-        boolean vibratoTriggered = mainLoopOnly?true:false;
-        int release = 0;
-        int releaseCounter = 0;
-        boolean released = false;
-        boolean legatoToActivate = false;
-        boolean sustainedNotePlayed = false;
-        boolean legatoActivated = false;
-        boolean legatoToDeactivate = true;
-        boolean releasePlayed = true;
-        int detune = -1;
-        int panning = -1;
-        int slide = 0;
-        boolean mainLoopStarted = false;
+        vibratoTriggered = mainLoopOnly?true:false;
         Row currentRow = new Row();
         for(int i=0;i<ccs.length;i++){
             CubeCommand cc = ccs[i];
@@ -745,19 +586,10 @@ public class Pattern {
         for(int j=0;j<rows.length;j++){
             rows[j]=rowList.get(j);
         }
+        
+        p.setRows(rows);
+        
+        return p;
     }
     
-    public Row[] getRows() {
-        return rows;
-    }
-
-    public void setRows(Row[] rows) {
-        this.rows = rows;
-    }
-    
-    public static int calculateTicksPersSecond(byte ymTimerB, int speed){  
-        float timerPeriod = (8*144) * (PATTERN_LENGTH - (0xFF&ymTimerB)) / (YM2612_INPUT_FREQUENCY/2);
-        float timerFrequency = 1/timerPeriod * speed;
-        return Math.round(timerFrequency);
-    }
 }

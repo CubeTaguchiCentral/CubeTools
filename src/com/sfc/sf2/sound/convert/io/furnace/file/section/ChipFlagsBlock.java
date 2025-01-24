@@ -6,17 +6,11 @@
 package com.sfc.sf2.sound.convert.io.furnace.file.section;
 
 import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
-import com.sfc.sf2.sound.convert.io.furnace.pattern.Effect;
-import com.sfc.sf2.sound.convert.io.furnace.pattern.Instrument;
-import com.sfc.sf2.sound.convert.io.furnace.pattern.Note;
-import com.sfc.sf2.sound.convert.io.furnace.pattern.Row;
-import com.sfc.sf2.sound.convert.io.furnace.pattern.Volume;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;

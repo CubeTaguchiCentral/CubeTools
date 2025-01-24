@@ -824,7 +824,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel70.setText("Input parameters file :");
 
-                    jTextField52.setText("C:\\SEGADEV\\SOUNDRESEARCH\\CUBE\\Shining Force II\\inputs.txt");
+                    jTextField52.setText("C:\\SEGADEV\\SOUNDRESEARCH\\CUBE\\inputs.txt");
                     jTextField52.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField52ActionPerformed(evt);

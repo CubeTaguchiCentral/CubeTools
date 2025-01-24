@@ -6,7 +6,6 @@
 package com.sfc.sf2.sound.convert.io.furnace.file.section;
 
 import com.sfc.sf2.sound.convert.io.furnace.file.FurnaceFile;
-import com.sfc.sf2.sound.convert.io.furnace.PatternRange;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Effect;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Instrument;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Note;

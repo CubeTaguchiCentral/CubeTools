@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sfc.sf2.sound.convert.io;
+package com.sfc.sf2.sound.convert;
 
 import java.io.File;
 import java.util.ArrayList;

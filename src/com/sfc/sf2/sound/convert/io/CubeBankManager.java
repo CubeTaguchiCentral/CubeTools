@@ -8,6 +8,7 @@ package com.sfc.sf2.sound.convert.io;
 import com.sfc.sf2.sound.convert.io.cube.CubeChannel;
 import com.sfc.sf2.sound.convert.io.cube.CubeCommand;
 import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
+import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
 import com.sfc.sf2.sound.convert.io.cube.Pitch;
 import com.sfc.sf2.sound.convert.io.cube.command.*;
 import java.io.ByteArrayOutputStream;
@@ -26,7 +27,7 @@ import java.util.logging.Logger;
  *
  * @author Wiz
  */
-public class BinaryMusicBankManager {
+public class CubeBankManager {
     
     public static final int BANK_SIZE = 0x8000;
     public static final int SAMPLE_ENTRY_SIZE = 6;
@@ -59,7 +60,7 @@ public class BinaryMusicBankManager {
             }
             me = new MusicEntry(data, musicEntryOffset, baseOffset, ymInstOffset, ssgEg);
         } catch (IOException ex) {
-            Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CubeBankManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return me;
     }
@@ -74,7 +75,7 @@ public class BinaryMusicBankManager {
                 sampleEntries[i] = Arrays.copyOfRange(data, sampleEntriesOffset+i*sampleEntrySize, sampleEntriesOffset+i*sampleEntrySize+sampleEntrySize);
             }
         } catch (IOException ex) {
-            Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CubeBankManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return sampleEntries;
     }
@@ -88,7 +89,7 @@ public class BinaryMusicBankManager {
                 sampleBanks[i] = Arrays.copyOfRange(data, sampleBanksOffsets[i], sampleBanksOffsets[i]+0x8000);
             }
         } catch (IOException ex) {
-            Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CubeBankManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return sampleBanks;
     }
@@ -105,7 +106,7 @@ public class BinaryMusicBankManager {
             System.arraycopy(data, bankBaseOffset+BANK_SIZE, dataAfterMusicBank, 0, dataAfterMusicBank.length);
             MusicEntry[] mes = new MusicEntry[32];
             for(int i=0;i<32;i++){
-                mes[i] = BinaryMusicBankManager.importMusicEntry(filePath, ptOffset, i+1);
+                mes[i] = CubeBankManager.importMusicEntry(filePath, ptOffset, i+1);
             }
             mes[index-1] = me;
             byte[][] meBytes = new byte[32][];
@@ -138,7 +139,7 @@ public class BinaryMusicBankManager {
             Path path = Paths.get(nf.getAbsolutePath());
             Files.write(path,data);   
         } catch (Exception ex) {
-            Logger.getLogger(BinaryMusicBankManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CubeBankManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         

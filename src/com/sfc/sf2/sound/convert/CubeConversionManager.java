@@ -5,10 +5,9 @@
  */
 package com.sfc.sf2.sound.convert;
 
-import com.sfc.sf2.sound.convert.io.AsmMusicEntryManager;
-import com.sfc.sf2.sound.convert.io.BinaryMusicBankManager;
-import com.sfc.sf2.sound.convert.io.BinaryMusicEntryManager;
-import com.sfc.sf2.sound.convert.io.ConversionInputs;
+import com.sfc.sf2.sound.convert.io.CubeAsmManager;
+import com.sfc.sf2.sound.convert.io.CubeBankManager;
+import com.sfc.sf2.sound.convert.io.CubeEntryManager;
 import com.sfc.sf2.sound.convert.io.FurnaceClipboardManager;
 import com.sfc.sf2.sound.convert.io.FurnaceFileManager;
 import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
@@ -25,13 +24,13 @@ public class CubeConversionManager {
     public void importMusicEntryFromBinaryMusicBank(String filePath, int ptOffset, int ramPreloadOffset, int index, int ymInstOffset, boolean ssgEg, int sampleEntriesOffset, boolean multipleBanksFormat, int[] sampleBanksOffsets){
         System.out.println("CubeConversionManager.importMusicEntryFromBinaryMusicBank() - Importing ...");
         try{        
-            mes[0] = BinaryMusicBankManager.importMusicEntry(filePath, ptOffset, ramPreloadOffset, index, ymInstOffset, ssgEg);
+            mes[0] = CubeBankManager.importMusicEntry(filePath, ptOffset, ramPreloadOffset, index, ymInstOffset, ssgEg);
             mes[0].factorizeIdenticalChannels();
             mes[0].hasMainLoop();
             mes[0].hasIntro();
             int maxSampleIndex = mes[0].findMaxSampleIndex();
-            byte[][] sampleEntries = BinaryMusicBankManager.importSampleEntries(filePath, sampleEntriesOffset, multipleBanksFormat, maxSampleIndex);
-            byte[][] sampleBanks = BinaryMusicBankManager.importSampleBanks(filePath, sampleBanksOffsets);
+            byte[][] sampleEntries = CubeBankManager.importSampleEntries(filePath, sampleEntriesOffset, multipleBanksFormat, maxSampleIndex);
+            byte[][] sampleBanks = CubeBankManager.importSampleBanks(filePath, sampleBanksOffsets);
             mes[0].setSampleEntries(sampleEntries);
             mes[0].setMultiSampleBank(multipleBanksFormat);
             mes[0].setSampleBanks(sampleBanks);
@@ -46,7 +45,7 @@ public class CubeConversionManager {
         int maxSampleIndex = 0;      
         for(int i=0;i<mes.length;i++){
             try{
-                mes[i] = BinaryMusicBankManager.importMusicEntry(filePath, ptOffset, ramPreloadOffset, i+1, ymInstOffset, ssgEg);
+                mes[i] = CubeBankManager.importMusicEntry(filePath, ptOffset, ramPreloadOffset, i+1, ymInstOffset, ssgEg);
                 mes[i].factorizeIdenticalChannels();
                 mes[i].hasMainLoop();
                 mes[i].hasIntro();
@@ -63,8 +62,8 @@ public class CubeConversionManager {
         
         for(int i=0;i<mes.length;i++){
             if(mes[i]!=null){
-                byte[][] sampleEntries = BinaryMusicBankManager.importSampleEntries(filePath, sampleEntriesOffset, multipleBanksFormat, maxSampleIndex);
-                byte[][] sampleBanks = BinaryMusicBankManager.importSampleBanks(filePath, sampleBanksOffsets);
+                byte[][] sampleEntries = CubeBankManager.importSampleEntries(filePath, sampleEntriesOffset, multipleBanksFormat, maxSampleIndex);
+                byte[][] sampleBanks = CubeBankManager.importSampleBanks(filePath, sampleBanksOffsets);
                 mes[i].setSampleEntries(sampleEntries);
                 mes[i].setMultiSampleBank(multipleBanksFormat);
                 mes[i].setSampleBanks(sampleBanks);   
@@ -85,7 +84,7 @@ public class CubeConversionManager {
                 mes[0].optimize();
             }
         }
-        AsmMusicEntryManager.exportMusicEntryAsAsm(mes[0], filePath);
+        CubeAsmManager.exportMusicEntryAsAsm(mes[0], filePath);
         System.out.println("CubeConversionManager.exportMusicEntryAsAsm() - ... Done.");
     }
     
@@ -100,7 +99,7 @@ public class CubeConversionManager {
                     mes[i].optimize();
                 }
             }
-            AsmMusicEntryManager.exportMusicEntryAsAsm(mes[i], completePath);
+            CubeAsmManager.exportMusicEntryAsAsm(mes[i], completePath);
         }
         System.out.println("CubeConversionManager.exportMusicEntryAsAsm() - ... Done.");
     }
@@ -113,7 +112,7 @@ public class CubeConversionManager {
                 mes[0].optimize();
             }
         }
-        BinaryMusicEntryManager.exportMusicEntryAsBinary(mes[0], filePath);
+        CubeEntryManager.exportMusicEntryAsBinary(mes[0], filePath);
         System.out.println("CubeConversionManager.exportMusicEntryAsBinary() - ... Done.");
     }
     
@@ -127,14 +126,14 @@ public class CubeConversionManager {
                     mes[i].optimize();
                 }
             }
-            BinaryMusicEntryManager.exportMusicEntryAsBinary(mes[i], completePath);
+            CubeEntryManager.exportMusicEntryAsBinary(mes[i], completePath);
         }        
         System.out.println("CubeConversionManager.exportMusicEntryAsBinary() - ... Done.");
     }
     
     public void importMusicEntryFromBinaryFile(String filePath){
         System.out.println("CubeConversionManager.importMusicEntryFromBinaryFile() - Importing ...");
-        mes[0] = BinaryMusicEntryManager.importMusicEntry(filePath);
+        mes[0] = CubeEntryManager.importMusicEntry(filePath);
         mes[0].factorizeIdenticalChannels();
         mes[0].hasMainLoop();
         mes[0].hasIntro();
@@ -149,7 +148,7 @@ public class CubeConversionManager {
                 mes[0].optimize();
             }
         }
-        BinaryMusicBankManager.exportMusicEntry(mes[0], filePath, ptOffset, index);
+        CubeBankManager.exportMusicEntry(mes[0], filePath, ptOffset, index);
         System.out.println("CubeConversionManager.exportMusicEntryToBinaryMusicBank() - ... Done.");
     }
     
