@@ -1285,7 +1285,7 @@
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField43">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="1F0000"/>
+                            <Property name="text" type="java.lang.String" value="1F8000"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField43ActionPerformed"/>
@@ -1373,7 +1373,7 @@
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField47">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="01"/>
+                            <Property name="text" type="java.lang.String" value="02"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField47ActionPerformed"/>

@@ -6,7 +6,7 @@
 package com.sfc.sf2.sound.convert.io.furnace;
 
 import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
-import com.sfc.sf2.sound.convert.io.cubetofurnace.C2FDefaultPatternConverter;
+import com.sfc.sf2.sound.convert.io.cubetofurnace.C2FPatternConverter;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Row;
 import java.lang.reflect.Array;
@@ -33,17 +33,17 @@ public class PatternRange {
     public PatternRange(MusicEntry me, boolean introOnly, boolean mainLoopOnly){
         for(int i=0;i<patterns.length;i++){
             if(i<5){
-                patterns[i] = new C2FDefaultPatternConverter().convertCubeChannelToFurnacePattern(me.getChannels()[i], Pattern.TYPE_FM, introOnly, mainLoopOnly);
+                patterns[i] = new C2FPatternConverter().convertCubeChannelToFurnacePattern(me.getChannels()[i], Pattern.TYPE_FM, introOnly, mainLoopOnly);
             }else if(i==5){
                 if(!me.isYm6InDacMode()){
-                    patterns[i] = new C2FDefaultPatternConverter().convertCubeChannelToFurnacePattern(me.getChannels()[i], Pattern.TYPE_FM, introOnly, mainLoopOnly);
+                    patterns[i] = new C2FPatternConverter().convertCubeChannelToFurnacePattern(me.getChannels()[i], Pattern.TYPE_FM, introOnly, mainLoopOnly);
                 }else{
-                    patterns[i] = new C2FDefaultPatternConverter().convertCubeChannelToFurnacePattern(me.getChannels()[i], Pattern.TYPE_DAC, introOnly, mainLoopOnly);
+                    patterns[i] = new C2FPatternConverter().convertCubeChannelToFurnacePattern(me.getChannels()[i], Pattern.TYPE_DAC, introOnly, mainLoopOnly);
                 }
             }else if(i<9){
-                patterns[i] = new C2FDefaultPatternConverter().convertCubeChannelToFurnacePattern(me.getChannels()[i], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
+                patterns[i] = new C2FPatternConverter().convertCubeChannelToFurnacePattern(me.getChannels()[i], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
             }else{
-                patterns[i] = new C2FDefaultPatternConverter().convertCubeChannelToFurnacePattern(me.getChannels()[i], Pattern.TYPE_PSGNOISE, introOnly, mainLoopOnly);
+                patterns[i] = new C2FPatternConverter().convertCubeChannelToFurnacePattern(me.getChannels()[i], Pattern.TYPE_PSGNOISE, introOnly, mainLoopOnly);
             }
         }
     }

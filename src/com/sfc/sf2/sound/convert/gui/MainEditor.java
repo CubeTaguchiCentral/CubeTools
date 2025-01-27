@@ -945,7 +945,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel53.setText("Pointer Table :");
 
-                    jTextField43.setText("1F0000");
+                    jTextField43.setText("1F8000");
                     jTextField43.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField43ActionPerformed(evt);
@@ -996,7 +996,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel63.setText("0x");
 
-                    jTextField47.setText("01");
+                    jTextField47.setText("02");
                     jTextField47.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField47ActionPerformed(evt);

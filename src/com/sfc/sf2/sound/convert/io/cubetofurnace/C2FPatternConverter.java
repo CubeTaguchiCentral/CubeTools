@@ -28,14 +28,6 @@ import com.sfc.sf2.sound.convert.io.furnace.pattern.Effect;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Instrument;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Note;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern;
-import static com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern.NOTE_OFF;
-import static com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern.NOTE_RELEASE;
-import static com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern.PSG_INSTRUMENT_OFFSET;
-import static com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern.SAMPLE_INSTRUMENT_OFFSET;
-import static com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern.TYPE_DAC;
-import static com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern.TYPE_PSGTONE;
-import static com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern.YM_LEVELS;
-import static com.sfc.sf2.sound.convert.io.furnace.pattern.Pattern.calculateTicksPersSecond;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Pitch;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Row;
 import com.sfc.sf2.sound.convert.io.furnace.pattern.Volume;
@@ -46,7 +38,7 @@ import java.util.List;
  *
  * @author Wiz
  */
-public class C2FDefaultPatternConverter {
+public class C2FPatternConverter {
     
     public static final int MD_CRYSTAL_FREQUENCY = 53693175;
     public static final float YM2612_INPUT_FREQUENCY = MD_CRYSTAL_FREQUENCY / 7;
@@ -93,6 +85,8 @@ public class C2FDefaultPatternConverter {
     private int detune = -1;
     private int panning = -1;
     private int slide = 0;
+    private int cursor = 0;
+    private int mainLoopStartPosition = 0;
     private boolean mainLoopStarted = false;
     
     public Pattern convertCubeChannelToFurnacePattern(CubeChannel cch, int channelType, boolean introOnly, boolean mainLoopOnly){
@@ -101,10 +95,11 @@ public class C2FDefaultPatternConverter {
         CubeCommand[] ccs = cch.getCcs();
         vibratoTriggered = mainLoopOnly?true:false;
         Row currentRow = new Row();
-        for(int i=0;i<ccs.length;i++){
-            CubeCommand cc = ccs[i];
+        while(cursor<ccs.length){
+            CubeCommand cc = ccs[cursor];
             if(cc instanceof MainLoopStart){
                 if(introOnly){
+                    mainLoopStartPosition = rowList.size();
                     break;
                 }else{
                     mainLoopStarted = true;
@@ -146,7 +141,7 @@ public class C2FDefaultPatternConverter {
                 legatoToActivate = true;
             } else if(cc instanceof Vol){
                 Vol v = (Vol) cc;
-                newVolume = v.getValue();
+                newVolume = v.getValue()&0x0F;
             } else if(cc instanceof Inst){
                 Inst inst = (Inst) cc;
                 newInstrument = inst.getValue();
@@ -578,6 +573,7 @@ public class C2FDefaultPatternConverter {
             }else {
                 //System.out.println("FurnacePattern.convertFmCubeChannel() - Ignoring command "+i+" : "+cc.produceAsmOutput());
             }
+            cursor++;
         }
         if(introOnly){
             currentRow.getEffectList().add(new Effect(0x0D,0x00));
@@ -590,6 +586,16 @@ public class C2FDefaultPatternConverter {
         p.setRows(rows);
         
         return p;
+    }
+    
+    public static int calculateTicksPersSecond(byte ymTimerB, int speed){  
+        float timerPeriod = (8*144) * (PATTERN_LENGTH - (0xFF&ymTimerB)) / (YM2612_INPUT_FREQUENCY/2);
+        float timerFrequency = 1/timerPeriod * speed;
+        return Math.round(timerFrequency);
+    }
+
+    public int getMainLoopStartPosition() {
+        return mainLoopStartPosition;
     }
     
 }
