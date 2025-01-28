@@ -35,75 +35,17 @@ public class C2FFileConverter {
         Pattern[][] splitPatterns = null;
 
         if(!me.hasMainLoop()){
-            /* No loop :
-            - Extract
-            - Fill
-            - Split
-            - Add "stop song" effect
-            */
-            Pattern[] patterns = convertPatterns(me, converters, false, false); /* Extract whole content */
+            Pattern[] patterns = convertPatterns(me, converters, false, false);
+            applyEnd(patterns);
             fillChannelsToMaxLength(patterns);
             splitPatterns = splitPatterns(patterns, PATTERN_LENGTH);
-            Row[] rows = splitPatterns[splitPatterns.length-1][0].getRows();
-            List<Row> rowList = new ArrayList();
-            rowList.addAll(Arrays.asList(rows));
-            Row row = new Row();
-            row.getEffectList().add(new Effect(0xFF,0x00));
-            rowList.add(row);
-            splitPatterns[splitPatterns.length-1][0].setRows(rowList.toArray(new Row[0]));
-        }else{              
-            
-            /* Loop :
-            - Extract introPatterns
-            - Extract loop from introPatterns's end context
-            - Shorter channels repeat loop to max length
-            - Longest introPatterns channel jumps back to loop start
-            - Concatenate introPatterns and loop
-            - Fill to max Length
-            */            
-            
-            /* Target :
-            - Extract introPatterns
-            - Extract loop from introPatterns's end context
-            - Longest introPatterns channel jumps back to loop start
-            - Concatenate introPatterns and loop
-            - Shorter channels repeat loop to max length
-            - Fill to max Length (empty channels)
-            */
-            
-            Pattern[] introPatterns = convertPatterns(me, converters, true, false); /* Extract introPatterns */
-            int longestIntroChannel = 0;
-            int longestIntroChannelLength = 0;
-            for (int i=0;i<introPatterns.length;i++){
-                if(longestIntroChannelLength<introPatterns[i].getRows().length){
-                    longestIntroChannelLength = introPatterns[i].getRows().length;
-                    longestIntroChannel = i;
-                }
-            }
-            int longestIntroChannelMainLoopStartPattern = (longestIntroChannelLength) / PATTERN_LENGTH;
-            int longestIntroChannelMainLoopStartPosition = (longestIntroChannelLength) % PATTERN_LENGTH;
-
-            Pattern[] mainLoopPatterns = convertPatterns(me, converters, false, true); /* Extract main loop */
-            
+        }else{         
+            Pattern[] introPatterns = convertPatterns(me, converters, true, false);
+            Pattern[] mainLoopPatterns = convertPatterns(me, converters, false, true);
             Pattern[] concatenatedPatterns = concatenatePatterns(introPatterns, mainLoopPatterns);
-
+            applyLoopEnd(concatenatedPatterns, converters);
             repeatMainLoopToMaxLength(concatenatedPatterns, converters);
-
-            int longestChannel = 0;
-            int longestChannelLength = 0;
-            for (int i=0;i<concatenatedPatterns.length;i++){
-                if(longestChannelLength<concatenatedPatterns[i].getRows().length){
-                    longestChannelLength = concatenatedPatterns[i].getRows().length;
-                    longestChannel = i;
-                }
-            }
-            Row[] rows = concatenatedPatterns[longestChannel].getRows();
-            Row longestChannelLastRow = rows[concatenatedPatterns[longestChannel].getRows().length-1];
-            longestChannelLastRow.getEffectList().add(new Effect(0x0B,longestIntroChannelMainLoopStartPattern));
-            longestChannelLastRow.getEffectList().add(new Effect(0x0D,longestIntroChannelMainLoopStartPosition));
-            
-            fillChannelsToMaxLength(concatenatedPatterns); /* empty channels */
-
+            fillChannelsToMaxLength(concatenatedPatterns);
             splitPatterns = splitPatterns(concatenatedPatterns, PATTERN_LENGTH);
         }            
 
@@ -137,6 +79,14 @@ public class C2FFileConverter {
         return ff;
     }
     
+    private static C2FPatternConverter[] initializeConverters(){
+        C2FPatternConverter[] converters = new C2FPatternConverter[CHANNEL_COUNT];
+        for(int i=0;i<converters.length;i++){
+            converters[i] = new C2FPatternConverter();
+        }
+        return converters;
+    }
+    
     public static Pattern[] convertPatterns(MusicEntry me, C2FPatternConverter[] converters, boolean introOnly, boolean mainLoopOnly){
         Pattern[] patterns = new Pattern[CHANNEL_COUNT];
         patterns[0] = converters[0].convertCubeChannelToFurnacePattern(me.getChannels()[0], Pattern.TYPE_FM, introOnly, mainLoopOnly);
@@ -155,6 +105,82 @@ public class C2FFileConverter {
         patterns[9] = converters[9].convertCubeChannelToFurnacePattern(me.getChannels()[9], Pattern.TYPE_PSGNOISE, introOnly, mainLoopOnly);
         return patterns;
     }
+    
+    public static Pattern[] concatenatePatterns(Pattern[] intro, Pattern[] mainLoop){
+        Pattern[] patterns = new Pattern[CHANNEL_COUNT];
+        for (int i=0;i<CHANNEL_COUNT;i++){
+            Row[] introRows = intro[i].getRows();
+            Row[] mainLoopRows = mainLoop[i].getRows();
+            Row[] rows = concatenate(introRows, mainLoopRows);
+            Pattern fc = new Pattern();
+            fc.setRows(rows);
+            patterns[i] = fc;
+        }
+        return patterns;
+    }
+    
+    public static <T> T[] concatenate(T[] a, T[] b) {
+        int aLen = a.length;
+        int bLen = b.length;
+
+        @SuppressWarnings("unchecked")
+        T[] c = (T[]) Array.newInstance(a.getClass().getComponentType(), aLen + bLen);
+        System.arraycopy(a, 0, c, 0, aLen);
+        System.arraycopy(b, 0, c, aLen, bLen);
+
+        return c;
+    }
+    
+    public static void applyEnd(Pattern[] patterns){
+        Row[] rows = patterns[0].getRows();
+        List<Row> rowList = new ArrayList();
+        rowList.addAll(Arrays.asList(rows));
+        Row row = new Row();
+        row.getEffectList().add(new Effect(0xFF,0x00));
+        rowList.add(row);
+        patterns[0].setRows(rowList.toArray(new Row[0]));
+    }
+    
+    public static void applyLoopEnd(Pattern[] patterns, C2FPatternConverter[] converters){
+        int longestChannel = 0;
+        int longestChannelLength = 0;
+        for (int i=0;i<patterns.length;i++){
+            if(longestChannelLength<patterns[i].getRows().length){
+                longestChannelLength = patterns[i].getRows().length;
+                longestChannel = i;
+            }
+        }
+        int longestChannelMainLoopStartPattern = (converters[longestChannel].getMainLoopStartPosition()) / PATTERN_LENGTH;
+        int longestChannelMainLoopStartPosition = (converters[longestChannel].getMainLoopStartPosition()) % PATTERN_LENGTH;
+        Row[] rows = patterns[longestChannel].getRows();
+        Row longestChannelLastRow = rows[patterns[longestChannel].getRows().length-1];
+        longestChannelLastRow.getEffectList().add(new Effect(0x0B,longestChannelMainLoopStartPattern));
+        longestChannelLastRow.getEffectList().add(new Effect(0x0D,longestChannelMainLoopStartPosition));
+    }
+    
+    public static void repeatMainLoopToMaxLength(Pattern[] patterns, C2FPatternConverter[] converters){
+        int maxLength = getMaxLength(patterns);
+        for (int i=0;i<patterns.length;i++){
+            if(patterns[i].getRows()!=null && patterns[i].getRows().length>0){
+                int mainLoopStartPosition = converters[i].getMainLoopStartPosition();
+                patterns[i].setRows(repeat(patterns[i].getRows(), mainLoopStartPosition, maxLength));
+            }
+        }
+    }
+    
+    public static Row[] repeat(Row[] rows, int start, int newLength) {
+        Row[] newRows = Arrays.copyOf(rows, newLength);
+        int sourceCursor = start;
+        int targetCursor = rows.length;
+        while(targetCursor<newRows.length){
+            newRows[targetCursor] = newRows[sourceCursor].clone();
+            sourceCursor++;
+            targetCursor++;
+        }
+        return newRows;
+    }
+    
+
     
     public static int getMaxLength(Pattern[] patterns){
         int maxLength = 0;
@@ -198,54 +224,7 @@ public class C2FFileConverter {
         }else{
             return rows;
         }
-    }
-    
-    public static void repeatMainLoopToMaxLength(Pattern[] patterns, C2FPatternConverter[] converters){
-        int maxLength = getMaxLength(patterns);
-        for (int i=0;i<patterns.length;i++){
-            if(patterns[i].getRows()!=null && patterns[i].getRows().length>0){
-                int mainLoopStartPosition = converters[i].getMainLoopStartPosition();
-                patterns[i].setRows(repeat(patterns[i].getRows(), mainLoopStartPosition, maxLength));
-            }
-        }
-    }
-    
-    public static Row[] repeat(Row[] rows, int start, int newLength) {
-        Row[] newRows = Arrays.copyOf(rows, newLength);
-        int sourceCursor = start;
-        int targetCursor = rows.length;
-        while(targetCursor<newRows.length){
-            newRows[targetCursor] = newRows[sourceCursor].clone();
-            sourceCursor++;
-            targetCursor++;
-        }
-        return newRows;
-    }
-    
-    public static Pattern[] concatenatePatterns(Pattern[] intro, Pattern[] mainLoop){
-        Pattern[] patterns = new Pattern[CHANNEL_COUNT];
-        for (int i=0;i<CHANNEL_COUNT;i++){
-            Row[] introRows = intro[i].getRows();
-            Row[] mainLoopRows = mainLoop[i].getRows();
-            Row[] rows = concatenate(introRows, mainLoopRows);
-            Pattern fc = new Pattern();
-            fc.setRows(rows);
-            patterns[i] = fc;
-        }
-        return patterns;
-    }
-    
-    public static <T> T[] concatenate(T[] a, T[] b) {
-        int aLen = a.length;
-        int bLen = b.length;
-
-        @SuppressWarnings("unchecked")
-        T[] c = (T[]) Array.newInstance(a.getClass().getComponentType(), aLen + bLen);
-        System.arraycopy(a, 0, c, 0, aLen);
-        System.arraycopy(b, 0, c, aLen, bLen);
-
-        return c;
-    }
+    }    
 
     public static Pattern[][] splitPatterns(Pattern[] patterns, int patternLength) {
         int maxLength=0;
@@ -270,14 +249,6 @@ public class C2FFileConverter {
             }     
         }
         return splitPatterns;
-    }
-    
-    private static C2FPatternConverter[] initializeConverters(){
-        C2FPatternConverter[] converters = new C2FPatternConverter[CHANNEL_COUNT];
-        for(int i=0;i<converters.length;i++){
-            converters[i] = new C2FPatternConverter();
-        }
-        return converters;
     }
     
 }
