@@ -5,8 +5,8 @@
  */
 package com.sfc.sf2.sound.convert.io;
 
-import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
-import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
+import com.sfc.sf2.sound.formats.cube.MusicEntry;
+import com.sfc.sf2.sound.formats.cube.MusicEntry;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

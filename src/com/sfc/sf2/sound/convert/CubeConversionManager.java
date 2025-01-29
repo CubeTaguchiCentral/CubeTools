@@ -10,7 +10,7 @@ import com.sfc.sf2.sound.convert.io.CubeBankManager;
 import com.sfc.sf2.sound.convert.io.CubeEntryManager;
 import com.sfc.sf2.sound.convert.io.FurnaceClipboardManager;
 import com.sfc.sf2.sound.convert.io.FurnaceFileManager;
-import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
+import com.sfc.sf2.sound.formats.cube.MusicEntry;
 import java.io.File;
 
 /**

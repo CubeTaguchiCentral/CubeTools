@@ -5,12 +5,11 @@
  */
 package com.sfc.sf2.sound.convert.io;
 
-import com.sfc.sf2.sound.convert.io.cube.CubeChannel;
-import com.sfc.sf2.sound.convert.io.cube.CubeCommand;
-import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
-import com.sfc.sf2.sound.convert.io.cube.MusicEntry;
-import com.sfc.sf2.sound.convert.io.cube.Pitch;
-import com.sfc.sf2.sound.convert.io.cube.command.*;
+import com.sfc.sf2.sound.formats.cube.CubeChannel;
+import com.sfc.sf2.sound.formats.cube.CubeCommand;
+import com.sfc.sf2.sound.formats.cube.MusicEntry;
+import com.sfc.sf2.sound.formats.cube.MusicEntry;
+import com.sfc.sf2.sound.formats.cube.Pitch;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
