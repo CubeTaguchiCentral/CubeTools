@@ -72,13 +72,23 @@ public abstract class CubeChannel {
     public void unrollCountedLoops(){
         List<CubeCommand> ccl = new ArrayList(Arrays.asList(ccs));
         List<CubeCommand> newCcl = new ArrayList();
+        int countedLoopStartIndex = 0;
         for(int i=0;i<ccl.size();i++){
             if(ccl.get(i) instanceof CountedLoopStart){
                 CountedLoopStart cls = (CountedLoopStart)ccl.get(i);
                 int loopCount = (cls.getValue()&0xFF)+1;
-                for(int j=i;j<ccl.size();j++){
+                countedLoopStartIndex = i+1;
+                for(int j=i+1;j<ccl.size();j++){
+                    if(ccl.get(j) instanceof CountedLoopStart){
+                        /* edge case */
+                        List<CubeCommand> content = ccl.subList(countedLoopStartIndex, j);
+                        newCcl.addAll(content);
+                        cls = (CountedLoopStart)ccl.get(j);
+                        loopCount = (cls.getValue()&0xFF)+1;
+                        countedLoopStartIndex = j+1;
+                    }
                     if(ccl.get(j) instanceof CountedLoopEnd){
-                        List<CubeCommand> loopContent = ccl.subList(i+1, j);
+                        List<CubeCommand> loopContent = ccl.subList(countedLoopStartIndex, j);
                         //ccl.subList(i, j+1).clear();
                         for(int c=0;c<loopCount;c++){
                             newCcl.addAll(loopContent);
