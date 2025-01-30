@@ -13,6 +13,7 @@ import com.sfc.sf2.sound.formats.cube.command.Inst;
 import com.sfc.sf2.sound.formats.cube.command.MainLoopStart;
 import com.sfc.sf2.sound.formats.cube.command.Note;
 import com.sfc.sf2.sound.formats.cube.command.NoteL;
+import com.sfc.sf2.sound.formats.cube.command.RepeatStart;
 import com.sfc.sf2.sound.formats.cube.command.Sample;
 import com.sfc.sf2.sound.formats.cube.command.SampleL;
 import com.sfc.sf2.sound.formats.cube.command.Wait;
@@ -273,6 +274,18 @@ public class MusicEntry {
         return hasMainLoop;
     }
     
+    public boolean hasRepeatLoop(){
+        boolean hasMainLoop = false;
+        CubeCommand[] ccs = channels[0].getCcs();
+        for(int i=0;i<ccs.length;i++){
+            CubeCommand cc = ccs[i];
+            if(cc instanceof RepeatStart){
+                hasMainLoop = true;
+            }
+        }
+        return hasMainLoop;
+    }
+    
     public boolean hasIntro(){
         boolean hasIntro = false;
         for(int c=0;c<channels.length;c++){
@@ -280,7 +293,7 @@ public class MusicEntry {
             boolean noteOrWaitMet = false;
             for(int i=0;i<ccs.length;i++){
                 CubeCommand cc = ccs[i];
-                if(cc instanceof MainLoopStart){
+                if(cc instanceof MainLoopStart || cc instanceof RepeatStart){
                     if(noteOrWaitMet){
                         hasIntro = true;
                         break;

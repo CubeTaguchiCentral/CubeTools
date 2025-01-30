@@ -31,7 +31,7 @@ public class C2FFileConverter {
         C2FPatternConverter[] converters = C2FPatternConverter.instantiateConverterArray(CHANNEL_COUNT);
 
         Pattern[] patterns = null;
-        if(!me.hasMainLoop()){
+        if(!me.hasMainLoop() && !me.hasRepeatLoop()){
             patterns = convertPatterns(me, converters, false, false);
             applyEnd(patterns);
             fillChannelsToMaxLength(patterns);

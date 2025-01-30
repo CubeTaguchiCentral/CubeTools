@@ -66,7 +66,8 @@ public abstract class CubeChannel {
     
     public void unroll(){
         unrollCountedLoops();
-        unrollVoltaBrackets();
+        //unrollVoltaBrackets();
+        unrollVoltaBracketsNewImpl();
     }
     
     public void unrollCountedLoops(){
@@ -153,6 +154,65 @@ public abstract class CubeChannel {
             }else{
                 newCcl.add(ccl.get(i));
             }
+        }
+        
+        CubeCommand[] newCcs = new CubeCommand[newCcl.size()];
+        ccs = newCcl.toArray(newCcs);
+    }
+    
+    
+    public void unrollVoltaBracketsNewImpl(){
+        List<CubeCommand> ccl = new ArrayList(Arrays.asList(ccs));
+        List<CubeCommand> newCcl = new ArrayList();       
+        
+        int startPosition = -1;
+        int section1EndPosition = -1;
+        int section2EndPosition = -1;
+        boolean section1Started = false;
+        boolean section2Started = false;
+        
+        for(int i=0;i<ccl.size();i++){
+            CubeCommand cc = ccl.get(i);
+            
+            if(cc instanceof RepeatStart){
+                startPosition = i;
+                section1EndPosition = -1;
+                section2EndPosition = -1;
+                section1Started = false;
+                section2Started = false;
+            }else if(cc instanceof RepeatSection1Start){
+                if(section1Started){
+                    i = section1EndPosition;
+                }else{
+                    section1EndPosition = -1;
+                    section1Started = true;
+                }
+            }else if(cc instanceof RepeatSection2Start){
+                if(section2Started){
+                    i = section2EndPosition;
+                }else{
+                    section2EndPosition = -1;
+                    section2Started = true;
+                }
+            }else if(cc instanceof RepeatEnd){
+                if(section2Started){
+                    section2EndPosition = i;
+                    i = startPosition;
+                }else if(section1Started){
+                    section1EndPosition = i;
+                    i = startPosition;
+                }else{
+                    /* Infinite loop without using the dedicated command */
+                    newCcl.add(startPosition, ccl.get(startPosition));
+                    newCcl.add(cc);
+                    break;
+                }
+            }else if(cc instanceof RepeatSection3Start){
+                
+            }else{     
+                newCcl.add(cc);
+            }
+            
         }
         
         CubeCommand[] newCcs = new CubeCommand[newCcl.size()];

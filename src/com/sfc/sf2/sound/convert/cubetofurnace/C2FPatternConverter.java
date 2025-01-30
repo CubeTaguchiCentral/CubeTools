@@ -15,6 +15,8 @@ import com.sfc.sf2.sound.formats.cube.command.NoSlide;
 import com.sfc.sf2.sound.formats.cube.command.PsgInst;
 import com.sfc.sf2.sound.formats.cube.command.PsgNote;
 import com.sfc.sf2.sound.formats.cube.command.PsgNoteL;
+import com.sfc.sf2.sound.formats.cube.command.RepeatEnd;
+import com.sfc.sf2.sound.formats.cube.command.RepeatStart;
 import com.sfc.sf2.sound.formats.cube.command.SetRelease;
 import com.sfc.sf2.sound.formats.cube.command.SetSlide;
 import com.sfc.sf2.sound.formats.cube.command.Shifting;
@@ -112,7 +114,8 @@ public class C2FPatternConverter {
         currentRow = new Row();
         while(cursor<ccs.length){
             CubeCommand cc = ccs[cursor];
-            if(cc instanceof MainLoopStart){
+            if(cc instanceof MainLoopStart 
+            /* Edge case */ || cc instanceof RepeatStart){
                 if(introOnly){
                     mainLoopStartPosition = rowList.size();
                     break;
@@ -400,7 +403,7 @@ public class C2FPatternConverter {
                 playCounter=0;
             }else if(cc instanceof YmTimer){
                 ymTimer(cc);
-            }else if(cc instanceof ChannelEnd || cc instanceof MainLoopEnd){
+            }else if(cc instanceof ChannelEnd || cc instanceof MainLoopEnd ||cc instanceof RepeatEnd){
                 
             }else {
                 System.out.println("FurnacePattern.convertFmCubeChannel() - Ignoring command "+cursor+" : "+cc.produceAsmOutput());
