@@ -1256,7 +1256,7 @@
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField40">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="C:\u005cSEGADEV\u005cSOUNDRESEARCH\u005cCUBEter\u005cShining in the Darkness\u005cShining in the Darkness.bin" containsInvalidXMLChars="true"/>
+                            <Property name="text" type="java.lang.String" value="C:\u005cSEGADEV\u005cSOUNDRESEARCH\u005cCUBEter\u005cKishi Densetsu\u005cKishi Densetsu.bin" containsInvalidXMLChars="true"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField40ActionPerformed"/>
@@ -1285,7 +1285,7 @@
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField43">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="F8900"/>
+                            <Property name="text" type="java.lang.String" value="F8AE0"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField43ActionPerformed"/>
@@ -1313,7 +1313,7 @@
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField44">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="F3755"/>
+                            <Property name="text" type="java.lang.String" value="F8000"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField44ActionPerformed"/>
@@ -1331,7 +1331,7 @@
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField45">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="F36ED"/>
+                            <Property name="text" type="java.lang.String" value="F7494"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField45ActionPerformed"/>
@@ -1349,7 +1349,7 @@
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField46">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="F0000"/>
+                            <Property name="text" type="java.lang.String" value="E0000,E8000,F0000"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField46ActionPerformed"/>
@@ -1373,7 +1373,7 @@
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField47">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="05"/>
+                            <Property name="text" type="java.lang.String" value="07"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField47ActionPerformed"/>
@@ -1589,7 +1589,7 @@
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField15">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="C:\u005cSEGADEV\u005cSOUNDRESEARCH\u005cCUBEter\u005cShining in the Darkness\u005c05unrolled.asm" containsInvalidXMLChars="true"/>
+                            <Property name="text" type="java.lang.String" value="C:\u005cSEGADEV\u005cSOUNDRESEARCH\u005cCUBEter\u005cKishi Densetsu\u005c07.asm" containsInvalidXMLChars="true"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField15ActionPerformed"/>

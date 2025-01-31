@@ -65,7 +65,8 @@ public abstract class CubeChannel {
     }
     
     public void unroll(){
-        unrollCountedLoops();
+        //unrollCountedLoops();
+        unrollCountedLoopsNewImpl();
         //unrollVoltaBrackets();
         unrollVoltaBracketsNewImpl();
     }
@@ -100,6 +101,29 @@ public abstract class CubeChannel {
                 }
             }else{
                 newCcl.add(ccl.get(i));
+            }
+        }
+        CubeCommand[] newCcs = new CubeCommand[newCcl.size()];
+        ccs = newCcl.toArray(newCcs);
+    }
+    
+    public void unrollCountedLoopsNewImpl(){
+        List<CubeCommand> ccl = new ArrayList(Arrays.asList(ccs));
+        List<CubeCommand> newCcl = new ArrayList();    
+        int startPosition = -1;
+        int loopCount = -1;
+        for(int i=0;i<ccl.size();i++){
+            CubeCommand cc = ccl.get(i);
+            if(cc instanceof CountedLoopStart){
+                startPosition = i;
+                loopCount = ((CountedLoopStart) cc).getValue();
+            }else if(cc instanceof CountedLoopEnd){
+                if(loopCount>0){
+                    loopCount--;
+                    i = startPosition;
+                }
+            }else{     
+                newCcl.add(cc);
             }
         }
         CubeCommand[] newCcs = new CubeCommand[newCcl.size()];
@@ -168,6 +192,7 @@ public abstract class CubeChannel {
         int startPosition = -1;
         int section1EndPosition = -1;
         int section2EndPosition = -1;
+        boolean repeatStarted = false;
         boolean section1Started = false;
         boolean section2Started = false;
         
@@ -180,24 +205,25 @@ public abstract class CubeChannel {
                 section2EndPosition = -1;
                 section1Started = false;
                 section2Started = false;
-            }else if(cc instanceof RepeatSection1Start){
+            }else if(startPosition>=0 && cc instanceof RepeatSection1Start){
                 if(section1Started){
                     i = section1EndPosition;
                 }else{
                     section1EndPosition = -1;
                     section1Started = true;
                 }
-            }else if(cc instanceof RepeatSection2Start){
+            }else if(startPosition>=0 && cc instanceof RepeatSection2Start){
                 if(section2Started){
                     i = section2EndPosition;
                 }else{
                     section2EndPosition = -1;
                     section2Started = true;
                 }
-            }else if(cc instanceof RepeatEnd){
+            }else if(startPosition>=0 && cc instanceof RepeatEnd){
                 if(section2Started){
                     section2EndPosition = i;
                     i = startPosition;
+                    startPosition = -1;
                 }else if(section1Started){
                     section1EndPosition = i;
                     i = startPosition;
