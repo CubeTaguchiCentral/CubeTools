@@ -65,49 +65,11 @@ public abstract class CubeChannel {
     }
     
     public void unroll(){
-        //unrollCountedLoops();
-        unrollCountedLoopsNewImpl();
-        //unrollVoltaBrackets();
-        unrollVoltaBracketsNewImpl();
+        unrollCountedLoops();
+        unrollVoltaBrackets();
     }
     
     public void unrollCountedLoops(){
-        List<CubeCommand> ccl = new ArrayList(Arrays.asList(ccs));
-        List<CubeCommand> newCcl = new ArrayList();
-        int countedLoopStartIndex = 0;
-        for(int i=0;i<ccl.size();i++){
-            if(ccl.get(i) instanceof CountedLoopStart){
-                CountedLoopStart cls = (CountedLoopStart)ccl.get(i);
-                int loopCount = (cls.getValue()&0xFF)+1;
-                countedLoopStartIndex = i+1;
-                for(int j=i+1;j<ccl.size();j++){
-                    if(ccl.get(j) instanceof CountedLoopStart){
-                        /* edge case */
-                        List<CubeCommand> content = ccl.subList(countedLoopStartIndex, j);
-                        newCcl.addAll(content);
-                        cls = (CountedLoopStart)ccl.get(j);
-                        loopCount = (cls.getValue()&0xFF)+1;
-                        countedLoopStartIndex = j+1;
-                    }
-                    if(ccl.get(j) instanceof CountedLoopEnd){
-                        List<CubeCommand> loopContent = ccl.subList(countedLoopStartIndex, j);
-                        //ccl.subList(i, j+1).clear();
-                        for(int c=0;c<loopCount;c++){
-                            newCcl.addAll(loopContent);
-                        }
-                        i=j;
-                        break;
-                    }
-                }
-            }else{
-                newCcl.add(ccl.get(i));
-            }
-        }
-        CubeCommand[] newCcs = new CubeCommand[newCcl.size()];
-        ccs = newCcl.toArray(newCcs);
-    }
-    
-    public void unrollCountedLoopsNewImpl(){
         List<CubeCommand> ccl = new ArrayList(Arrays.asList(ccs));
         List<CubeCommand> newCcl = new ArrayList();    
         int startPosition = -1;
@@ -130,62 +92,7 @@ public abstract class CubeChannel {
         ccs = newCcl.toArray(newCcs);
     }
     
-    
     public void unrollVoltaBrackets(){
-        List<CubeCommand> ccl = new ArrayList(Arrays.asList(ccs));
-        List<CubeCommand> newCcl = new ArrayList();       
-        
-        for(int i=0;i<ccl.size();i++){
-            if(ccl.get(i) instanceof RepeatStart){
-                
-                /* Build and add Start Section */
-                List<CubeCommand> voltaStartCcl = new ArrayList();
-                for(int j=i;j<ccl.size();j++){
-                    if(ccl.get(j) instanceof RepeatSection1Start){ 
-                        voltaStartCcl = ccl.subList(i+1, j);
-                        newCcl.addAll(voltaStartCcl);
-                        i=j+1;
-                        break;
-                    }
-                }
-                
-                /* Build and add Ending 1 */
-                for(int j=i;j<ccl.size();j++){
-                    if(ccl.get(j) instanceof RepeatEnd){
-                        List<CubeCommand> voltaEnd1Ccl = ccl.subList(i, j);
-                        newCcl.addAll(voltaEnd1Ccl);
-                        i=j+1;
-                        break;
-                    }
-                }
-
-                /* Build and add Ending 2, only if it has an end */
-                for(int j=i;j<ccl.size();j++){
-                    if(ccl.get(j) instanceof RepeatStart){
-                        break;
-                    }              
-                    if(ccl.get(j) instanceof RepeatEnd){
-                        List<CubeCommand> voltaEnd2Ccl = ccl.subList(i+1, j);
-                        newCcl.addAll(voltaStartCcl);
-                        newCcl.addAll(voltaEnd2Ccl);
-                        i=j+1;
-                        break;
-                    }
-                }
-                
-                newCcl.addAll(voltaStartCcl);
-                
-            }else{
-                newCcl.add(ccl.get(i));
-            }
-        }
-        
-        CubeCommand[] newCcs = new CubeCommand[newCcl.size()];
-        ccs = newCcl.toArray(newCcs);
-    }
-    
-    
-    public void unrollVoltaBracketsNewImpl(){
         List<CubeCommand> ccl = new ArrayList(Arrays.asList(ccs));
         List<CubeCommand> newCcl = new ArrayList();       
         
