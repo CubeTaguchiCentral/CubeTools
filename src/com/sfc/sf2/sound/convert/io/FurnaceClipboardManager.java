@@ -49,7 +49,7 @@ public class FurnaceClipboardManager {
                 Pattern[] introPatterns = convertPatterns(me, converters, true, false);
                 Pattern[] mainLoopPatterns = convertPatterns(me, converters, false, true);
                 patterns = concatenatePatterns(introPatterns, mainLoopPatterns);
-                applyLoopEnd(patterns, converters);
+                applyLoopEnd(patterns, introPatterns, converters);
                 repeatMainLoopToMaxLength(patterns, converters);
                 fillChannelsToMaxLength(patterns);
             }   
