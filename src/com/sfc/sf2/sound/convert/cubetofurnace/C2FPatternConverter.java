@@ -85,7 +85,8 @@ public class C2FPatternConverter {
     private boolean legatoToDeactivate = true;
     private boolean releasePlayed = true;
     private int detune = -1;
-    private int panning = -1;
+    private int newPanning = -1;
+    private int currentPanning = -1;
     private int slide = 0;
     private int cursor = 0;
     private int mainLoopStartPosition = 0;
@@ -245,14 +246,14 @@ public class C2FPatternConverter {
                     }
                     detune=-1;
                 }
-                if(panning>=0){
+                if(newPanning!=currentPanning){
                     if((  (!introOnly && !mainLoopOnly)
                        || (introOnly && !mainLoopStarted)
                        || (mainLoopOnly && mainLoopStarted)
                        )){
-                        currentRow.getEffectList().add(new Effect(0x80,panning));
+                        currentRow.getEffectList().add(new Effect(0x80,newPanning));
                     }
-                    panning=-1;
+                    currentPanning=newPanning;
                 }
                 if(slide>0){
                     if((  (!introOnly && !mainLoopOnly)
@@ -533,13 +534,13 @@ public class C2FPatternConverter {
         Stereo s = (Stereo) cc;
         switch(0xFF&s.getValue()){
             case 0x80:
-                panning = 0x00;
+                newPanning = 0x00;
                 break;
             case 0x40:
-                panning = 0xFF;
+                newPanning = 0xFF;
                 break;
             default:
-                panning = 0x80;
+                newPanning = 0x80;
                 break;
         }
     }

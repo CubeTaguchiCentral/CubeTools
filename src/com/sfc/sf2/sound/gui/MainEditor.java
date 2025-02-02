@@ -250,7 +250,7 @@ public class MainEditor extends javax.swing.JFrame {
 
         jLabel24.setText("ROM File :");
 
-        jTextField24.setText("C:\\SEGADEV\\SOUNDRESEARCH\\CUBE\\Shining Force II\\Shining Force II - Return of the King.bin");
+        jTextField24.setText("C:\\SEGADEV\\SOUNDRESEARCH\\CUBE\\Shining Force II\\Shining Force II.bin");
         jTextField24.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField24ActionPerformed(evt);
@@ -922,7 +922,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel52.setText("ROM File :");
 
-                    jTextField40.setText("C:\\SEGADEV\\SOUNDRESEARCH\\CUBEter\\Kishi Densetsu\\Kishi Densetsu.bin");
+                    jTextField40.setText("C:\\SEGADEV\\SOUNDRESEARCH\\CUBEter\\Crusader of Centy\\Crusader of Centy.bin");
                     jTextField40.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField40ActionPerformed(evt);
@@ -945,7 +945,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel53.setText("Pointer Table :");
 
-                    jTextField43.setText("F8AE0");
+                    jTextField43.setText("1F8000");
                     jTextField43.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField43ActionPerformed(evt);
@@ -960,7 +960,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel57.setText("0x");
 
-                    jTextField44.setText("F8000");
+                    jTextField44.setText("1F7000");
                     jTextField44.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField44ActionPerformed(evt);
@@ -971,7 +971,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel59.setText("0x");
 
-                    jTextField45.setText("F7494");
+                    jTextField45.setText("1EF5BB");
                     jTextField45.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField45ActionPerformed(evt);
@@ -982,7 +982,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel61.setText("0x");
 
-                    jTextField46.setText("E0000,E8000,F0000");
+                    jTextField46.setText("1D8000,1E0000,1E8000");
                     jTextField46.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField46ActionPerformed(evt);
@@ -996,7 +996,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel63.setText("0x");
 
-                    jTextField47.setText("07");
+                    jTextField47.setText("03");
                     jTextField47.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField47ActionPerformed(evt);
@@ -1192,7 +1192,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel15.setText("ASM Music Entry File : ");
 
-                    jTextField15.setText("C:\\SEGADEV\\SOUNDRESEARCH\\CUBEter\\Kishi Densetsu\\07.asm");
+                    jTextField15.setText("CC:\\SEGADEV\\SOUNDRESEARCH\\CUBEter\\Crusader of Centy\\03.asm");
                     jTextField15.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField15ActionPerformed(evt);

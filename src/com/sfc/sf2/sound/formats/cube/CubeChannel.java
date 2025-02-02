@@ -5,8 +5,10 @@
  */
 package com.sfc.sf2.sound.formats.cube;
 
+import com.sfc.sf2.sound.formats.cube.command.ChannelEnd;
 import com.sfc.sf2.sound.formats.cube.command.CountedLoopEnd;
 import com.sfc.sf2.sound.formats.cube.command.CountedLoopStart;
+import com.sfc.sf2.sound.formats.cube.command.MainLoopEnd;
 import com.sfc.sf2.sound.formats.cube.command.RepeatEnd;
 import com.sfc.sf2.sound.formats.cube.command.RepeatSection1Start;
 import com.sfc.sf2.sound.formats.cube.command.RepeatSection2Start;
@@ -97,9 +99,6 @@ public abstract class CubeChannel {
         List<CubeCommand> newCcl = new ArrayList();       
         
         int startPosition = -1;
-        int section1EndPosition = -1;
-        int section2EndPosition = -1;
-        boolean repeatStarted = false;
         boolean section1Started = false;
         boolean section2Started = false;
         
@@ -108,40 +107,49 @@ public abstract class CubeChannel {
             
             if(cc instanceof RepeatStart){
                 startPosition = i;
-                section1EndPosition = -1;
-                section2EndPosition = -1;
                 section1Started = false;
                 section2Started = false;
-            }else if(startPosition>=0 && cc instanceof RepeatSection1Start){
-                if(section1Started){
-                    i = section1EndPosition;
-                }else{
-                    section1EndPosition = -1;
-                    section1Started = true;
+            }else if(cc instanceof RepeatSection1Start){
+                if(startPosition>=0){
+                    if(section1Started){
+                        for(int j=i+1;j<ccl.size();j++){
+                            CubeCommand target = ccl.get(j);
+                            if(target instanceof RepeatSection2Start || target instanceof MainLoopEnd || target instanceof ChannelEnd){
+                                i = j-1;
+                                break;
+                            }
+                        }
+                    }else{
+                        section1Started = true;
+                    }
                 }
-            }else if(startPosition>=0 && cc instanceof RepeatSection2Start){
-                if(section2Started){
-                    i = section2EndPosition;
-                }else{
-                    section2EndPosition = -1;
-                    section2Started = true;
-                }
-            }else if(startPosition>=0 && cc instanceof RepeatEnd){
-                if(section2Started){
-                    section2EndPosition = i;
-                    i = startPosition;
-                    startPosition = -1;
-                }else if(section1Started){
-                    section1EndPosition = i;
-                    i = startPosition;
-                }else{
-                    /* Infinite loop without using the dedicated command */
-                    newCcl.add(startPosition, ccl.get(startPosition));
-                    newCcl.add(cc);
-                    break;
+            }else if(cc instanceof RepeatSection2Start){
+                if(startPosition>=0){
+                    if(section2Started){
+                        for(int j=i+1;j<ccl.size();j++){
+                            CubeCommand target = ccl.get(j);
+                            if(target instanceof RepeatSection3Start || target instanceof MainLoopEnd || target instanceof ChannelEnd){
+                                i = j-1;
+                                break;
+                            }
+                        }
+                    }else{
+                        section2Started = true;
+                    }
                 }
             }else if(cc instanceof RepeatSection3Start){
                 
+            }else if(cc instanceof RepeatEnd){
+                if(startPosition>=0){
+                    if(section1Started){
+                        i = startPosition;
+                    }else{
+                        /* Infinite loop without using the dedicated command */
+                        newCcl.add(startPosition, ccl.get(startPosition));
+                        newCcl.add(cc);
+                        break;
+                    }
+                }
             }else{     
                 newCcl.add(cc);
             }

@@ -39,8 +39,8 @@ public class C2FFileConverter {
             Pattern[] introPatterns = convertPatterns(me, converters, true, false);
             Pattern[] mainLoopPatterns = convertPatterns(me, converters, false, true);
             patterns = concatenatePatterns(introPatterns, mainLoopPatterns);
-            applyLoopEnd(patterns, introPatterns, converters);
             repeatMainLoopToMaxLength(patterns, converters);
+            applyLoopEnd(patterns, introPatterns, converters);
             fillChannelsToMaxLength(patterns);
         } 
         Pattern[][] splitPatterns = splitPatterns(patterns, PATTERN_LENGTH);
