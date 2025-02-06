@@ -27,30 +27,29 @@ public class C2FFileConverter {
     
     public static FurnaceFile convertMusicEntry(MusicEntry me, FurnaceFile ff){
 
-        /* Stateful converters */
+        /* Stateful converters for intro+loop case */
         C2FPatternConverter[] converters = C2FPatternConverter.instantiateConverterArray(CHANNEL_COUNT);
 
         Pattern[] patterns = null;
         if(!me.hasMainLoop() && !me.hasRepeatLoop()){
             patterns = convertPatterns(me, converters, false, false);
             applyEnd(patterns);
-            fillChannelsToMaxLength(patterns);
         }else{         
             Pattern[] introPatterns = convertPatterns(me, converters, true, false);
             Pattern[] mainLoopPatterns = convertPatterns(me, converters, false, true);
             patterns = concatenatePatterns(introPatterns, mainLoopPatterns);
             repeatMainLoopToMaxLength(patterns, converters);
             applyLoopEnd(patterns, introPatterns, converters);
-            fillChannelsToMaxLength(patterns);
         } 
+        fillChannelsToMaxLength(patterns);
         Pattern[][] splitPatterns = splitPatterns(patterns, PATTERN_LENGTH);
 
         List<PatternBlock> pbList = new ArrayList();
         List<Byte> orderList = new ArrayList();
-        int orderLength = splitPatterns.length;
-        for(int i=0;i<splitPatterns[0].length;i++){
+        int orderLength = splitPatterns[0].length;
+        for(int i=0;i<splitPatterns.length;i++){
             for(int j=0;j<orderLength;j++){
-                pbList.add(new PatternBlock(splitPatterns[j][i],i,j));
+                pbList.add(new PatternBlock(splitPatterns[i][j],i,j));
                 orderList.add((byte)(0xFF&j));
             }
         }
@@ -66,7 +65,6 @@ public class C2FFileConverter {
 
         ff.getSongInfo().setPatternLength((short)PATTERN_LENGTH);
         int ticksPerSecond = C2FPatternConverter.calculateTicksPersSecond(me.getYmTimerBValue(), ff.getSongInfo().getSpeed1());
-        //System.out.println("Timer B value "+Integer.toString(0xFF&me.getYmTimerBValue())+" -> "+ticksPerSecond+" ticks per second");
         ff.getSongInfo().setTicksPerSecond(ticksPerSecond);
 
         C2FYmInstrumentConverter.convertYmInstruments(me, ff);
@@ -221,15 +219,15 @@ public class C2FFileConverter {
         if((maxLength % patternLength) > 0){
             splitPatternNumber++;
         }
-        Pattern[][] splitPatterns = new Pattern[splitPatternNumber][];
+        Pattern[][] splitPatterns = new Pattern[patterns.length][];
         for(int i=0;i<splitPatterns.length;i++){
-            splitPatterns[i] = new Pattern[patterns.length];
+            splitPatterns[i] = new Pattern[splitPatternNumber];
         }
         for(int i=0;i<patterns.length;i++){
             Row[] rows = patterns[i].getRows();
             for(int j=0;j*patternLength<rows.length;j++){
-                splitPatterns[j][i] = new Pattern();
-                splitPatterns[j][i].setRows(Arrays.copyOfRange(rows, j*patternLength, Math.min(rows.length,j*patternLength+patternLength)));
+                splitPatterns[i][j] = new Pattern();
+                splitPatterns[i][j].setRows(Arrays.copyOfRange(rows, j*patternLength, Math.min(rows.length,j*patternLength+patternLength)));
             }     
         }
         return splitPatterns;
