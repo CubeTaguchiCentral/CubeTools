@@ -9,11 +9,11 @@ package com.sfc.sf2.sound.formats.furnace.pattern;
  *
  * @author Wiz
  */
-public class Note {
+public class FNote {
     
     private byte value;
     
-    public Note(int value){
+    public FNote(int value){
         this.value=(byte)(0xFF&value);
     }
 

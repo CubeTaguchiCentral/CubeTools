@@ -8,7 +8,7 @@ package com.sfc.sf2.sound.formats.furnace.file.section;
 import com.sfc.sf2.sound.formats.furnace.file.FurnaceFile;
 import com.sfc.sf2.sound.formats.furnace.pattern.Effect;
 import com.sfc.sf2.sound.formats.furnace.pattern.Instrument;
-import com.sfc.sf2.sound.formats.furnace.pattern.Note;
+import com.sfc.sf2.sound.formats.furnace.pattern.FNote;
 import com.sfc.sf2.sound.formats.furnace.pattern.Pattern;
 import com.sfc.sf2.sound.formats.furnace.pattern.Row;
 import com.sfc.sf2.sound.formats.furnace.pattern.Volume;
@@ -195,7 +195,7 @@ public class PatternBlock {
                     baos.write((byte)(0x80+(skipLength-2)));
                 }
             }else{
-                Note note = r.getNote();
+                FNote note = r.getNote();
                 Instrument instrument = r.getInstrument();
                 Volume volume = r.getVolume();
                 List<Effect> effectList = r.getEffectList();

@@ -16,16 +16,16 @@ public class Row {
     
     private static final int MAX_EFFECT_SIZE=4;
     
-    private Note note;
+    private FNote note;
     private Instrument instrument;
     private Volume volume;
     private List<Effect> effectList = new ArrayList();
 
-    public Note getNote() {
+    public FNote getNote() {
         return note;
     }
 
-    public void setNote(Note note) {
+    public void setNote(FNote note) {
         this.note = note;
     }
 

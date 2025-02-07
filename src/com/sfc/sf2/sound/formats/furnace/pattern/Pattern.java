@@ -40,7 +40,7 @@ public class Pattern {
     private Row[] rows;
     
     public Pattern(){
-        
+        rows = new Row[0];
     }
     
     public Pattern(byte[] data){
@@ -134,7 +134,7 @@ public class Pattern {
                     otherEffect7ValuePresent = false;
                 }
                 if(notePresent){
-                    r.setNote(new Note(bb.get()));
+                    r.setNote(new FNote(bb.get()));
                 }
                 if(instrumentPresent){
                     r.setInstrument(new Instrument(bb.get()));

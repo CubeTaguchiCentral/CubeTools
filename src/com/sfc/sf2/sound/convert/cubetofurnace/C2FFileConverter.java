@@ -87,8 +87,10 @@ public class C2FFileConverter {
         }
         patterns[6] = converters[6].convertCubeChannelToFurnacePattern(me.getChannels()[6], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
         patterns[7] = converters[7].convertCubeChannelToFurnacePattern(me.getChannels()[7], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
+        /*patterns[8] = new Pattern();*/
+        patterns[9] = new Pattern();
         patterns[8] = converters[8].convertCubeChannelToFurnacePattern(me.getChannels()[8], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
-        patterns[9] = converters[9].convertCubeChannelToFurnacePattern(me.getChannels()[9], Pattern.TYPE_PSGNOISE, introOnly, mainLoopOnly);
+        /*patterns[9] = converters[9].convertCubeChannelToFurnacePattern(me.getChannels()[9], Pattern.TYPE_PSGNOISE, introOnly, mainLoopOnly);*/
         return patterns;
     }
     

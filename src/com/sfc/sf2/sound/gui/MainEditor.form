@@ -1019,7 +1019,7 @@
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField51">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="C:\u005cSEGADEV\u005cSOUNDRESEARCH\u005cCUBEter\u005ctemplate.fur" containsInvalidXMLChars="true"/>
+                            <Property name="text" type="java.lang.String" value="C:\u005cSEGADEV\u005cSOUNDRESEARCH\u005cCUBE\u005ctemplate.fur" containsInvalidXMLChars="true"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField51ActionPerformed"/>
@@ -1032,7 +1032,7 @@
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField52">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="C:\u005cSEGADEV\u005cSOUNDRESEARCH\u005cCUBEter\u005cinputs.txt" containsInvalidXMLChars="true"/>
+                            <Property name="text" type="java.lang.String" value="C:\u005cSEGADEV\u005cSOUNDRESEARCH\u005cCUBE\u005cinputs.txt" containsInvalidXMLChars="true"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField52ActionPerformed"/>
