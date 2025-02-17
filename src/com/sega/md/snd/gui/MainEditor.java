@@ -815,7 +815,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel69.setText("Template Furnace File : ");
 
-                    jTextField51.setText("C:\\SEGADEV\\SOUNDRESEARCH\\CUBE\\template.fur");
+                    jTextField51.setText("C:\\SEGADEV\\GITHUB\\CubeCentral\\CubeAssets\\template.fur");
                     jTextField51.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField51ActionPerformed(evt);
@@ -824,7 +824,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel70.setText("Input parameters file :");
 
-                    jTextField52.setText("C:\\SEGADEV\\SOUNDRESEARCH\\CUBE\\inputs.txt");
+                    jTextField52.setText("C:\\SEGADEV\\GITHUB\\CubeCentral\\CubeAssets\\inputs.txt");
                     jTextField52.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField52ActionPerformed(evt);
