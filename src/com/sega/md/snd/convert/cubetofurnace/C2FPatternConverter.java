@@ -393,7 +393,7 @@ public class C2FPatternConverter {
         float timerPeriod = (8*144) * (PATTERN_LENGTH - (0xFF&ymTimerB)) / (YM2612_INPUT_FREQUENCY/2);
         float timerFrequency = 1/timerPeriod * speed;
         int ticksPerSecond = Math.round(timerFrequency);
-        System.out.println("Timer B value "+Integer.toString(0xFF&ymTimerB)+" -> "+ticksPerSecond+" ticks per second");
+        //System.out.println("Timer B value "+Integer.toString(0xFF&ymTimerB)+" -> "+ticksPerSecond+" ticks per second");
         return ticksPerSecond;
     }
 

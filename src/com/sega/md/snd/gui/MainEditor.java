@@ -392,7 +392,6 @@ public class MainEditor extends javax.swing.JFrame {
         jPanel12Layout.setVerticalGroup(
             jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel12Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField24, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel24)
@@ -424,7 +423,7 @@ public class MainEditor extends javax.swing.JFrame {
                     .addComponent(jLabel51))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel39, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(1, 1, 1))
+                .addGap(0, 12, Short.MAX_VALUE))
         );
 
         jTabbedPane4.addTab("ROM File", jPanel12);
@@ -1081,7 +1080,6 @@ public class MainEditor extends javax.swing.JFrame {
                     jPanel10Layout.setVerticalGroup(
                         jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel10Layout.createSequentialGroup()
-                            .addContainerGap()
                             .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jTextField40, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jLabel52)
@@ -1107,7 +1105,7 @@ public class MainEditor extends javax.swing.JFrame {
                                 .addComponent(jLabel56)
                                 .addComponent(jLabel57)
                                 .addComponent(jCheckBox1))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
                             .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jTextField45, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jLabel58)
@@ -1117,8 +1115,7 @@ public class MainEditor extends javax.swing.JFrame {
                                 .addComponent(jLabel61)
                                 .addComponent(jCheckBox4))
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(jLabel55, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(1, 1, 1))
+                            .addComponent(jLabel55, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
                     );
 
                     jTabbedPane1.addTab("ROM File", jPanel10);
@@ -1184,7 +1181,7 @@ public class MainEditor extends javax.swing.JFrame {
                     );
                     jPanel3Layout.setVerticalGroup(
                         jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                        .addComponent(jTabbedPane1)
                     );
 
                     jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Export to :"));

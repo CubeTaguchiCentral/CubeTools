@@ -24,27 +24,28 @@ public class FurnaceClipboardProducer {
     }
     
     public static String produceClipboardOutput(Pattern[] patterns, int patternLength){
-        String clipboard="";
+        StringBuilder clipboard= new StringBuilder();
         for(int i=0;i<patterns[0].getRows().length;i++){
             if(i%patternLength==0){
-                clipboard+=produceClipboardHeaderOutput();
+                clipboard.append(produceClipboardHeaderOutput());
             }
             for(int j=0;j<patterns.length;j++){
-                clipboard+=patterns[j].getRows()[i].produceClipboardOutput();
-                clipboard+="|";
+                clipboard.append(patterns[j].getRows()[i].produceClipboardOutput());
+                clipboard.append("|");
             }
-            clipboard+=System.lineSeparator();
+            clipboard.append(System.lineSeparator());
         }
-        return clipboard;
+        return clipboard.toString();
     }
     
     public static String produceClipboardOutput(Pattern channel){
-        String clipboard=produceClipboardHeaderOutput();
+        StringBuilder clipboard = new StringBuilder();
+        clipboard.append(produceClipboardHeaderOutput());
         for(int i=0;i<channel.getRows().length;i++){
-            clipboard+=channel.getRows()[i].produceClipboardOutput();
-            clipboard+=System.lineSeparator();
+            clipboard.append(channel.getRows()[i].produceClipboardOutput());
+            clipboard.append(System.lineSeparator());
         }
-        return clipboard;
+        return clipboard.toString();
     }
     
     public static String produceClipboardOutput(Row row){

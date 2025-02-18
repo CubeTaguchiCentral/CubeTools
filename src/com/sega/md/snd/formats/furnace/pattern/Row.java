@@ -54,30 +54,30 @@ public class Row {
     }
     
     public String produceClipboardOutput(){
-        String clipboard="";
+        StringBuilder clipboard = new StringBuilder();
         if(note!=null){
-            clipboard+=note.produceClipboardOutput();
+            clipboard.append(note.produceClipboardOutput());
         }else{
-            clipboard+="...";
+            clipboard.append("...");
         }
         if(instrument!=null){
-            clipboard+=instrument.produceClipboardOutput();
+            clipboard.append(instrument.produceClipboardOutput());
         }else{
-            clipboard+="..";
+            clipboard.append("..");
         }
         if(volume!=null){
-            clipboard+=volume.produceClipboardOutput();
+            clipboard.append(volume.produceClipboardOutput());
         }else{
-            clipboard+="..";
+            clipboard.append("..");
         }
         for(int i=0;i<MAX_EFFECT_SIZE;i++){
             if(effectList.size()>i && effectList.get(i)!=null){
-                clipboard+=effectList.get(i).produceClipboardOutput();
+                clipboard.append(effectList.get(i).produceClipboardOutput());
             }else{
-                clipboard+="....";
+                clipboard.append("....");
             }
         }
-        return clipboard;
+        return clipboard.toString();
     }
     
     public boolean isEmpty(){

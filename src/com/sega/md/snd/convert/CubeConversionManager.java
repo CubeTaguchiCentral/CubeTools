@@ -19,6 +19,12 @@ import java.io.File;
  */
 public class CubeConversionManager {
     
+    public static final String DEFAULT_ASM_MUSIC_ENTRY_NAME = "Music_";
+    
+    public static final String MASS_EXPORT_FOLDER_ASM = "ASM";
+    public static final String MASS_EXPORT_FOLDER_FURNACE = "Furnace";    
+    public static final String MASS_EXPORT_FOLDER_FURNACE_CLIPBOARD = "FurnaceClipboard";
+    
     MusicEntry[] mes = new MusicEntry[32];
     
     public void importMusicEntryFromBinaryMusicBank(String filePath, int ptOffset, int ramPreloadOffset, int index, int ymInstOffset, boolean ssgEg, int sampleEntriesOffset, boolean multipleBanksFormat, int[] sampleBanksOffsets){
@@ -90,16 +96,22 @@ public class CubeConversionManager {
     
     public void exportMusicEntriesAsAsm(String filePath, String name, boolean unroll, boolean optimize){
         System.out.println("CubeConversionManager.exportMusicEntryAsAsm() - Exporting ...");
-        for(int i=0;i<32;i++){        
-            mes[i].setName(name+String.format("%02d", i+1));
-            String completePath = filePath + String.format("%02d", i+1) + ".asm";
-            if(unroll){
-                mes[i].unroll();
-                if(optimize){
-                    mes[i].optimize();
+        for(int i=0;i<32;i++){    
+            try{
+                mes[i].setName(name+String.format("%02d", i+1));
+                String completePath = filePath + String.format("%02d", i+1) + ".asm";
+                if(unroll){
+                    mes[i].unroll();
+                    if(optimize){
+                        mes[i].optimize();
+                    }
                 }
+                CubeAsmManager.exportMusicEntryAsAsm(mes[i], completePath);
+                System.out.println("Exported ASM entry "+(i+1));
+            }catch(Exception e){
+                System.out.println("Error while exporting ASM entry "+(i+1)+" : "+e.getMessage());
+                e.printStackTrace();
             }
-            CubeAsmManager.exportMusicEntryAsAsm(mes[i], completePath);
         }
         System.out.println("CubeConversionManager.exportMusicEntryAsAsm() - ... Done.");
     }
@@ -159,6 +171,24 @@ public class CubeConversionManager {
         System.out.println("CubeConversionManager.exportMusicEntryAsFurnaceClipboard() - ... Done.");
     }
     
+    public void exportMusicEntriesAsFurnaceClipboards(String outputFilePath){
+        System.out.println("CubeConversionManager.exportMusicEntriesAsFurnaceClipboards() - Exporting ...");
+        for(int i=0;i<mes.length;i++){  
+            if(mes[i]!=null && mes[i].hasContent()){
+                try{
+                    String completePath = outputFilePath + String.format("%02d", i+1) + ".txt";
+                    mes[i].unroll();
+                    FurnaceClipboardManager.exportMusicEntryAsFurnaceClipboard(mes[i], completePath);
+                    System.out.println("Exported Furnace clipboard entry "+(i+1));
+                }catch(Exception e){
+                    System.out.println("Error while exporting Furnace clipboard entry "+(i+1)+" : "+e.getMessage());
+                    e.printStackTrace();
+                }
+            }            
+        }        
+        System.out.println("CubeConversionManager.exportMusicEntriesAsFurnaceClipboards() - ... Done.");
+    }
+    
     public void exportMusicEntryAsFurnaceFile(String templateFilePath, String outputFilePath){
         System.out.println("CubeConversionManager.exportMusicEntryAsFurnaceClipboard() - Exporting ...");
         mes[0].unroll();
@@ -167,21 +197,21 @@ public class CubeConversionManager {
     }
     
     public void exportMusicEntriesAsFurnaceFiles(String templateFilePath, String outputFilePath){
-        System.out.println("CubeConversionManager.exportMusicEntryAsFurnaceClipboard() - Exporting ...");
+        System.out.println("CubeConversionManager.exportMusicEntriesAsFurnaceFiles() - Exporting ...");
         for(int i=0;i<mes.length;i++){  
             if(mes[i]!=null && mes[i].hasContent()){
                 try{
                     String completePath = outputFilePath + String.format("%02d", i+1) + ".fur";
                     mes[i].unroll();
                     FurnaceFileManager.exportMusicEntryAsFurnaceFile(mes[i], templateFilePath, completePath);
-                    System.out.println("Exported entry "+(i+1));
+                    System.out.println("Exported Furnace entry "+(i+1));
                 }catch(Exception e){
-                    System.out.println("Error while exporting entry "+(i+1)+" : "+e.getMessage());
+                    System.out.println("Error while exporting Furnace entry "+(i+1)+" : "+e.getMessage());
                     e.printStackTrace();
                 }
             }            
         }        
-        System.out.println("CubeConversionManager.exportMusicEntryAsFurnaceClipboard() - ... Done.");
+        System.out.println("CubeConversionManager.exportMusicEntriesAsFurnaceFiles() - ... Done.");
     }
     
     public void massExportFromBinaryMusicBankToFurnaceFiles(String inputFilePath, String templateFilePath){
@@ -207,10 +237,14 @@ public class CubeConversionManager {
                     ymInstrumentsOffset = ymInstruments[j];
                 }
                 importMusicEntriesFromBinaryMusicBank(completRomFilepath, musicBankOffsets[j], inRamPreloadOffset, ymInstrumentsOffset, ssgEg, sampleTableOffset, multiBankSampleTableFormat, sampleBankOffsets);
-                String completeOutputFilePath = completRomFilepath.substring(0, completRomFilepath.lastIndexOf(File.separator)+1) + targetFolders[j];
                 System.out.println("... "+gameName+" music bank "+(j)+" imported.");
+                String completeAsmOutputFilePath = completRomFilepath.substring(0, completRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_ASM + File.separator + targetFolders[j];
+                exportMusicEntriesAsAsm(completeAsmOutputFilePath, DEFAULT_ASM_MUSIC_ENTRY_NAME, false, false);
+                String completeFurnaceClipboardOutputFilePath = completRomFilepath.substring(0, completRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_FURNACE_CLIPBOARD + File.separator + targetFolders[j];
+                exportMusicEntriesAsFurnaceClipboards(completeFurnaceClipboardOutputFilePath);
+                String completeFurnaceOutputFilePath = completRomFilepath.substring(0, completRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_FURNACE + File.separator + targetFolders[j];
                 System.out.println("Exporting "+gameName+" music bank "+(j)+" ...");
-                exportMusicEntriesAsFurnaceFiles(templateFilePath, completeOutputFilePath);
+                exportMusicEntriesAsFurnaceFiles(templateFilePath, completeFurnaceOutputFilePath);
                 System.out.println("... "+gameName+" music bank "+(j)+" exported.");
             }
         }    
