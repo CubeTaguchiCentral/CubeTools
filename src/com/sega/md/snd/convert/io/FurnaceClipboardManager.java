@@ -5,13 +5,14 @@
  */
 package com.sega.md.snd.convert.io;
 
-import com.sega.md.snd.formats.furnace.clipboard.FurnaceClipboardProducer;
-import com.sega.md.snd.formats.cube.MusicEntry;
 import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.applyEnd;
 import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.applyLoopEnd;
+import com.sega.md.snd.formats.furnace.clipboard.FurnaceClipboardProducer;
+import com.sega.md.snd.formats.cube.MusicEntry;
 import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.concatenatePatterns;
 import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.convertPatterns;
 import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.fillChannelsToMaxLength;
+import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.maximizeLongestIntroChannelLength;
 import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.repeatMainLoopToMaxLength;
 import com.sega.md.snd.convert.cubetofurnace.C2FPatternConverter;
 import com.sega.md.snd.formats.furnace.pattern.Pattern;
@@ -41,18 +42,18 @@ public class FurnaceClipboardManager {
             /* Stateful converters */
             C2FPatternConverter[] converters = C2FPatternConverter.instantiateConverterArray(CHANNEL_COUNT);
             Pattern[] patterns = null;
-            if(!me.hasMainLoop()){
+            if(!me.hasMainLoop() && !me.hasRepeatLoop()){
                 patterns = convertPatterns(me, converters, false, false);
                 applyEnd(patterns);
-                fillChannelsToMaxLength(patterns);
             }else{         
                 Pattern[] introPatterns = convertPatterns(me, converters, true, false);
                 Pattern[] mainLoopPatterns = convertPatterns(me, converters, false, true);
                 patterns = concatenatePatterns(introPatterns, mainLoopPatterns);
-                applyLoopEnd(patterns, introPatterns, converters);
+                maximizeLongestIntroChannelLength(introPatterns, mainLoopPatterns, patterns, converters);
                 repeatMainLoopToMaxLength(patterns, converters);
-                fillChannelsToMaxLength(patterns);
-            }   
+                applyLoopEnd(patterns, introPatterns, converters);
+            } 
+            fillChannelsToMaxLength(patterns);
             pw.print(FurnaceClipboardProducer.produceClipboardOutput(patterns, PATTERN_LENGTH));
             pw.close();
             System.out.println("FurnaceClipboardManager() - Furnace Clipboard exported.");
