@@ -161,17 +161,19 @@ public class C2FPatternConverter {
                 applyPanning();
                 applySlide();
                 applyLegato();
-                rowList.add(currentRow);
-                currentRow = new Row();
-                playCounter = 1;
-                vibratoCounter = playCounter;
-                releaseCounter = playCounter;
-                while(playCounter<playLength){
-                    applyVibrato();
-                    applyRelease();
+                if(playLength>0){
+                    rowList.add(currentRow);
+                    currentRow = new Row();
+                    playCounter = 1;
+                    vibratoCounter = playCounter;
+                    releaseCounter = playCounter;
+                    while(playCounter<playLength){
+                        applyVibrato();
+                        applyRelease();
+                    }
+                    playCounter=0;
+                    released = false;
                 }
-                playCounter=0;
-                released = false;
             }else if(cc instanceof Wait || cc instanceof WaitL){
                 applyWait(cc);
             }else if(cc instanceof YmTimer){
