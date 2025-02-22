@@ -72,6 +72,8 @@ public class C2FPatternConverter {
     private int channelType = 0;
     private int newNoteValue = 0;
     private int playLength = 0;
+    private int currentPlayLength = 0;
+    private boolean decreaseNextNoteLength = false;
     private int playCounter = 0;
     private int newVolume = 0;
     private int currentVolume = -1;
@@ -159,21 +161,29 @@ public class C2FPatternConverter {
                 applyInstrument();
                 applyVolume();
                 applyPanning();
-                applySlide();
+                applyPortamento();
                 applyLegato();
-                if(playLength>0){
-                    rowList.add(currentRow);
-                    currentRow = new Row();
-                    playCounter = 1;
-                    vibratoCounter = playCounter;
-                    releaseCounter = playCounter;
-                    while(playCounter<playLength){
-                        applyVibrato();
-                        applyRelease();
+                rowList.add(currentRow);
+                currentPlayLength = playLength;
+                if(currentPlayLength==0){
+                    decreaseNextNoteLength = true;
+                }else if(decreaseNextNoteLength){
+                    currentPlayLength--;
+                    if(vibratoDelay>0){
+                        vibratoDelay--;
                     }
-                    playCounter=0;
-                    released = false;
+                    decreaseNextNoteLength = false;
                 }
+                currentRow = new Row();
+                playCounter = 1;
+                vibratoCounter = playCounter;
+                releaseCounter = playCounter;
+                while(playCounter<currentPlayLength){
+                    applyVibrato();
+                    applyRelease();
+                }
+                playCounter=0;
+                released = false;
             }else if(cc instanceof Wait || cc instanceof WaitL){
                 applyWait(cc);
             }else if(cc instanceof YmTimer){
@@ -365,7 +375,7 @@ public class C2FPatternConverter {
         }        
     }
     
-    private void applySlide(){
+    private void applyPortamento(){
         if(slide>0){
             currentRow.setNote(new FNote(newNoteValue));
             currentRow.getEffectList().add(new Effect(0x03,slide));
@@ -373,7 +383,7 @@ public class C2FPatternConverter {
     }
     
     public void applyRelease(){
-        if(releaseCounter>=(playLength-release)){
+        if(releaseCounter>=(currentPlayLength-release)){
             currentRow.setNote(new FNote(NOTE_RELEASE));
             rowList.add(currentRow);
             currentRow = new Row();
