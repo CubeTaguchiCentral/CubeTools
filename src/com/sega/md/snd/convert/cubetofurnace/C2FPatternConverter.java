@@ -71,9 +71,10 @@ public class C2FPatternConverter {
     
     private int channelType = 0;
     private int newNoteValue = 0;
+    private int previousNoteValue = 0;
     private int playLength = 0;
     private int currentPlayLength = 0;
-    private boolean decreaseNextNoteLength = false;
+    private int nextNoteLengthDecrement = 0;
     private int playCounter = 0;
     private int newVolume = 0;
     private int currentVolume = -1;
@@ -165,25 +166,29 @@ public class C2FPatternConverter {
                 applyLegato();
                 rowList.add(currentRow);
                 currentPlayLength = playLength;
-                if(currentPlayLength==0){
-                    decreaseNextNoteLength = true;
-                }else if(decreaseNextNoteLength){
-                    currentPlayLength--;
+                if(nextNoteLengthDecrement>0){
+                    currentPlayLength-=nextNoteLengthDecrement;
                     if(vibratoDelay>0){
-                        vibratoDelay--;
+                        vibratoDelay-=nextNoteLengthDecrement;
                     }
-                    decreaseNextNoteLength = false;
+                    nextNoteLengthDecrement = 0;
+                }
+                if(currentPlayLength==0){
+                    /* Managing tracker limitation here :
+                    Cube uses 0-length note as a portamento starting point, while trackers can't have 0-length notes.
+                    Apply note followed immediately by new note with decreased playLength. */ 
+                    nextNoteLengthDecrement++;
                 }
                 currentRow = new Row();
                 playCounter = 1;
                 vibratoCounter = playCounter;
                 releaseCounter = playCounter;
+                released = false;
                 while(playCounter<currentPlayLength){
                     applyVibrato();
                     applyRelease();
                 }
                 playCounter=0;
-                released = false;
             }else if(cc instanceof Wait || cc instanceof WaitL){
                 applyWait(cc);
             }else if(cc instanceof YmTimer){
@@ -279,6 +284,7 @@ public class C2FPatternConverter {
     }
     
     private void applyYmNote(CubeCommand cc){
+        previousNoteValue = newNoteValue;
         newNoteValue = cc instanceof Note ? 
                 C2FPitch.valueFromCubeValue(((Note)cc).getNote().getValue()-12).getFurnaceValue()
                 : C2FPitch.valueFromCubeValue(((NoteL)cc).getNote().getValue()-12).getFurnaceValue();
@@ -300,6 +306,7 @@ public class C2FPatternConverter {
     }
     
     private void applyPsgNote(CubeCommand cc){
+        previousNoteValue = newNoteValue;
         newNoteValue = cc instanceof PsgNote ? 
                 C2FPitch.valueFromCubeValue(((PsgNote)cc).getNote().getValue()-12).getFurnaceValue()
                 : C2FPitch.valueFromCubeValue(((PsgNoteL)cc).getNote().getValue()-12).getFurnaceValue();
@@ -377,8 +384,20 @@ public class C2FPatternConverter {
     
     private void applyPortamento(){
         if(slide>0){
-            currentRow.setNote(new FNote(newNoteValue));
-            currentRow.getEffectList().add(new Effect(0x03,slide));
+            if(released=true){
+                /* Managing Furnace limitation : portamento expects previous note to be active, not released.
+                Apply last note again, followed immediately by new note with decreased playLength */                
+                currentRow.setNote(new FNote(previousNoteValue));
+                rowList.add(currentRow);
+                currentPlayLength = playLength;
+                nextNoteLengthDecrement++;
+                currentRow = new Row();
+                currentRow.setNote(new FNote(newNoteValue));
+                currentRow.getEffectList().add(new Effect(0x03,slide));
+            }else{
+                currentRow.setNote(new FNote(newNoteValue));
+                currentRow.getEffectList().add(new Effect(0x03,slide));
+            }
         }        
     }
     
