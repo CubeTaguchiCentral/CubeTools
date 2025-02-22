@@ -38,9 +38,7 @@ public class C2FFileConverter {
             Pattern[] introPatterns = convertPatterns(me, converters, true, false);
             Pattern[] mainLoopPatterns = convertPatterns(me, converters, false, true);
             patterns = concatenatePatterns(introPatterns, mainLoopPatterns);
-            maximizeLongestIntroChannelLength(introPatterns, mainLoopPatterns, patterns, converters);
-            repeatMainLoopToMaxLength(patterns, converters);
-            applyLoopEnd(patterns, introPatterns, converters);
+            fillChannelsAndApplyLoop(introPatterns, mainLoopPatterns, patterns, converters);
         } 
         fillChannelsToMaxLength(patterns);
         Pattern[][] splitPatterns = splitPatterns(patterns, PATTERN_LENGTH);
@@ -128,7 +126,13 @@ public class C2FFileConverter {
         patterns[0].setRows(rowList.toArray(new Row[0]));
     }
     
-    public static void applyLoopEnd(Pattern[] patterns, Pattern[] introPatterns, C2FPatternConverter[] converters){
+    public static void fillChannelsAndApplyLoop(Pattern[] introPatterns, Pattern[] mainLoopPatterns, Pattern[] concatenatedPatterns, C2FPatternConverter[] converters){
+        int loopStartOffset = maximizeLongestIntroChannelLength(introPatterns, mainLoopPatterns, concatenatedPatterns, converters);
+        repeatMainLoopToMaxLength(concatenatedPatterns, converters);
+        applyLoopEnd(concatenatedPatterns, introPatterns, converters, loopStartOffset);
+    }
+    
+    public static void applyLoopEnd(Pattern[] patterns, Pattern[] introPatterns, C2FPatternConverter[] converters, int loopStartOffset){
         int longestIntroChannel = 0;
         int longestIntroLength = 0;
         for (int i=0;i<introPatterns.length;i++){
@@ -137,15 +141,17 @@ public class C2FFileConverter {
                 longestIntroChannel = i;
             }
         }
-        int longestIntroChannelMainLoopStartPattern = (converters[longestIntroChannel].getMainLoopStartPosition()) / PATTERN_LENGTH;
-        int longestIntroChannelMainLoopStartPosition = (converters[longestIntroChannel].getMainLoopStartPosition()) % PATTERN_LENGTH;
+        int loopStartPosition = converters[longestIntroChannel].getMainLoopStartPosition() + loopStartOffset;
+        int longestIntroChannelMainLoopStartPattern = loopStartPosition / PATTERN_LENGTH;
+        int longestIntroChannelMainLoopStartPosition = loopStartPosition % PATTERN_LENGTH;
         Row[] rows = patterns[longestIntroChannel].getRows();
         Row longestChannelLastRow = rows[patterns[longestIntroChannel].getRows().length-1];
         longestChannelLastRow.getEffectList().add(new Effect(0x0B,longestIntroChannelMainLoopStartPattern));
         longestChannelLastRow.getEffectList().add(new Effect(0x0D,longestIntroChannelMainLoopStartPosition));
     }
     
-    public static void maximizeLongestIntroChannelLength(Pattern[] introPatterns, Pattern[] mainLoopPatterns, Pattern[] concatenatedPatterns, C2FPatternConverter[] converters){
+    public static int maximizeLongestIntroChannelLength(Pattern[] introPatterns, Pattern[] mainLoopPatterns, Pattern[] concatenatedPatterns, C2FPatternConverter[] converters){
+        int loopStartOffset = 0;
         int maxIntroLength = getMaxLength(introPatterns);
         int longestIntroChannel = getLongestChannel(introPatterns);
         int longestChannel = getLongestChannel(concatenatedPatterns);
@@ -156,10 +162,15 @@ public class C2FFileConverter {
             int mainLoopStartPosition = converters[longestIntroChannel].getMainLoopStartPosition();
             int newLength = mainLoopStartPosition + longestIntroChannelMainLoopLength;
             while(concatenatedPatterns[longestIntroChannel].getRows().length < maxLength){
+                if(newLength>maxLength){
+                    loopStartOffset = maxLength - concatenatedPatterns[longestIntroChannel].getRows().length;
+                    newLength = maxLength;
+                }
                 concatenatedPatterns[longestIntroChannel].setRows(repeat(concatenatedPatterns[longestIntroChannel].getRows(), mainLoopStartPosition, newLength));
                 newLength += longestIntroChannelMainLoopLength;
             }
         }
+        return loopStartOffset;
     }
     
     public static void repeatMainLoopToMaxLength(Pattern[] patterns, C2FPatternConverter[] converters){

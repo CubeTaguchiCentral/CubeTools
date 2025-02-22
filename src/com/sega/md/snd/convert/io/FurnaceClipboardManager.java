@@ -11,6 +11,7 @@ import com.sega.md.snd.formats.furnace.clipboard.FurnaceClipboardProducer;
 import com.sega.md.snd.formats.cube.MusicEntry;
 import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.concatenatePatterns;
 import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.convertPatterns;
+import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.fillChannelsAndApplyLoop;
 import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.fillChannelsToMaxLength;
 import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.maximizeLongestIntroChannelLength;
 import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.repeatMainLoopToMaxLength;
@@ -49,9 +50,7 @@ public class FurnaceClipboardManager {
                 Pattern[] introPatterns = convertPatterns(me, converters, true, false);
                 Pattern[] mainLoopPatterns = convertPatterns(me, converters, false, true);
                 patterns = concatenatePatterns(introPatterns, mainLoopPatterns);
-                maximizeLongestIntroChannelLength(introPatterns, mainLoopPatterns, patterns, converters);
-                repeatMainLoopToMaxLength(patterns, converters);
-                applyLoopEnd(patterns, introPatterns, converters);
+                fillChannelsAndApplyLoop(introPatterns, mainLoopPatterns, patterns, converters);
             } 
             fillChannelsToMaxLength(patterns);
             pw.print(FurnaceClipboardProducer.produceClipboardOutput(patterns, PATTERN_LENGTH));
