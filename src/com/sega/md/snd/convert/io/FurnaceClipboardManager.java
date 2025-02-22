@@ -5,16 +5,12 @@
  */
 package com.sega.md.snd.convert.io;
 
-import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.applyEnd;
-import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.applyLoopEnd;
 import com.sega.md.snd.formats.furnace.clipboard.FurnaceClipboardProducer;
 import com.sega.md.snd.formats.cube.MusicEntry;
 import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.concatenatePatterns;
 import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.convertPatterns;
 import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.fillChannelsAndApplyLoop;
 import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.fillChannelsToMaxLength;
-import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.maximizeLongestIntroChannelLength;
-import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.repeatMainLoopToMaxLength;
 import com.sega.md.snd.convert.cubetofurnace.C2FPatternConverter;
 import com.sega.md.snd.formats.furnace.pattern.Pattern;
 import java.io.IOException;
@@ -45,7 +41,6 @@ public class FurnaceClipboardManager {
             Pattern[] patterns = null;
             if(!me.hasMainLoop() && !me.hasRepeatLoop()){
                 patterns = convertPatterns(me, converters, false, false);
-                applyEnd(patterns);
             }else{         
                 Pattern[] introPatterns = convertPatterns(me, converters, true, false);
                 Pattern[] mainLoopPatterns = convertPatterns(me, converters, false, true);

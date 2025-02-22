@@ -33,7 +33,6 @@ public class C2FFileConverter {
         Pattern[] patterns = null;
         if(!me.hasMainLoop() && !me.hasRepeatLoop()){
             patterns = convertPatterns(me, converters, false, false);
-            applyEnd(patterns);
         }else{         
             Pattern[] introPatterns = convertPatterns(me, converters, true, false);
             Pattern[] mainLoopPatterns = convertPatterns(me, converters, false, true);
@@ -114,16 +113,6 @@ public class C2FFileConverter {
         System.arraycopy(a, 0, c, 0, aLen);
         System.arraycopy(b, 0, c, aLen, bLen);
         return c;
-    }
-    
-    public static void applyEnd(Pattern[] patterns){
-        Row[] rows = patterns[0].getRows();
-        List<Row> rowList = new ArrayList();
-        rowList.addAll(Arrays.asList(rows));
-        Row row = new Row();
-        row.getEffectList().add(new Effect(0xFF,0x00));
-        rowList.add(row);
-        patterns[0].setRows(rowList.toArray(new Row[0]));
     }
     
     public static void fillChannelsAndApplyLoop(Pattern[] introPatterns, Pattern[] mainLoopPatterns, Pattern[] concatenatedPatterns, C2FPatternConverter[] converters){
