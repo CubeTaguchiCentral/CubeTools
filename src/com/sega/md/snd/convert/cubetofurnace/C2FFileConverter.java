@@ -8,8 +8,11 @@ package com.sega.md.snd.convert.cubetofurnace;
 import com.sega.md.snd.formats.cube.MusicEntry;
 import com.sega.md.snd.formats.furnace.file.FurnaceFile;
 import com.sega.md.snd.formats.furnace.file.section.PatternBlock;
+import static com.sega.md.snd.formats.furnace.file.section.SongInfoBlock.LOOP_MODALITY_HARD_RESET;
 import com.sega.md.snd.formats.furnace.pattern.Effect;
+import com.sega.md.snd.formats.furnace.pattern.FNote;
 import com.sega.md.snd.formats.furnace.pattern.Pattern;
+import static com.sega.md.snd.formats.furnace.pattern.Pattern.MACRO_RELEASE;
 import com.sega.md.snd.formats.furnace.pattern.Row;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -32,7 +35,9 @@ public class C2FFileConverter {
 
         Pattern[] patterns = null;
         if(!me.hasMainLoop() && !me.hasRepeatLoop()){
+            ff.getSongInfo().setLoopModality(LOOP_MODALITY_HARD_RESET);
             patterns = convertPatterns(me, converters, false, false);
+            applyChannelEnds(patterns);
         }else{         
             Pattern[] introPatterns = convertPatterns(me, converters, true, false);
             Pattern[] mainLoopPatterns = convertPatterns(me, converters, false, true);
@@ -41,7 +46,11 @@ public class C2FFileConverter {
         } 
         fillChannelsToMaxLength(patterns);
         Pattern[][] splitPatterns = splitPatterns(patterns, PATTERN_LENGTH);
-
+        
+        if(!me.hasMainLoop() && !me.hasRepeatLoop()){
+            splitPatterns[0][splitPatterns[0].length-1].getRows()[PATTERN_LENGTH-1].getEffectList().add(new Effect(0xFF,0x00));
+        }
+        
         List<PatternBlock> pbList = new ArrayList();
         List<Byte> orderList = new ArrayList();
         int orderLength = splitPatterns[0].length;
@@ -115,6 +124,18 @@ public class C2FFileConverter {
         return c;
     }
     
+    public static void applyChannelEnds(Pattern[] patterns){
+        for(int i=0;i<patterns.length;i++){
+            Row[] rows = patterns[i].getRows();
+            List<Row> rowList = new ArrayList();
+            rowList.addAll(Arrays.asList(rows));
+            Row row = new Row();
+            row.setNote(new FNote(MACRO_RELEASE));
+            rowList.add(row);
+            patterns[i].setRows(rowList.toArray(new Row[0]));
+        }
+    }
+    
     public static void fillChannelsAndApplyLoop(Pattern[] introPatterns, Pattern[] mainLoopPatterns, Pattern[] concatenatedPatterns, C2FPatternConverter[] converters){
         int loopStartOffset = maximizeLongestIntroChannelLength(introPatterns, mainLoopPatterns, concatenatedPatterns, converters);
         repeatMainLoopToMaxLength(concatenatedPatterns, converters);
@@ -122,14 +143,7 @@ public class C2FFileConverter {
     }
     
     public static void applyLoopEnd(Pattern[] patterns, Pattern[] introPatterns, C2FPatternConverter[] converters, int loopStartOffset){
-        int longestIntroChannel = 0;
-        int longestIntroLength = 0;
-        for (int i=0;i<introPatterns.length;i++){
-            if(longestIntroLength<introPatterns[i].getRows().length){
-                longestIntroLength = introPatterns[i].getRows().length;
-                longestIntroChannel = i;
-            }
-        }
+        int longestIntroChannel = getLongestChannel(introPatterns);
         int loopStartPosition = converters[longestIntroChannel].getMainLoopStartPosition() + loopStartOffset;
         int longestIntroChannelMainLoopStartPattern = loopStartPosition / PATTERN_LENGTH;
         int longestIntroChannelMainLoopStartPosition = loopStartPosition % PATTERN_LENGTH;
@@ -208,6 +222,13 @@ public class C2FFileConverter {
     
     public static void fillChannelsToMaxLength(Pattern[] patterns){
         int maxLength = getMaxLength(patterns);
+        if((maxLength%PATTERN_LENGTH)>0){
+            maxLength = ((maxLength/PATTERN_LENGTH)+1)*PATTERN_LENGTH;
+        }
+        fillToMaxLength(patterns, maxLength);
+    }
+    
+    public static void fillToMaxLength(Pattern[] patterns, int maxLength){
         for (int i=0;i<patterns.length;i++){
             Row[] rows = patterns[i].getRows();
             patterns[i].setRows(fillToMaxLength(rows, maxLength));

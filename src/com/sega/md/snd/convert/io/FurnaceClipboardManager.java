@@ -19,6 +19,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.applyChannelEnds;
+import com.sega.md.snd.formats.furnace.pattern.Effect;
 
 /**
  *
@@ -41,6 +43,7 @@ public class FurnaceClipboardManager {
             Pattern[] patterns = null;
             if(!me.hasMainLoop() && !me.hasRepeatLoop()){
                 patterns = convertPatterns(me, converters, false, false);
+                applyChannelEnds(patterns);
             }else{         
                 Pattern[] introPatterns = convertPatterns(me, converters, true, false);
                 Pattern[] mainLoopPatterns = convertPatterns(me, converters, false, true);
@@ -48,6 +51,10 @@ public class FurnaceClipboardManager {
                 fillChannelsAndApplyLoop(introPatterns, mainLoopPatterns, patterns, converters);
             } 
             fillChannelsToMaxLength(patterns);
+        
+            if(!me.hasMainLoop() && !me.hasRepeatLoop()){
+                patterns[0].getRows()[patterns[0].getRows().length-1].getEffectList().add(new Effect(0xFF,0x00));
+            }
             pw.print(FurnaceClipboardProducer.produceClipboardOutput(patterns, PATTERN_LENGTH));
             pw.close();
             System.out.println("FurnaceClipboardManager() - Furnace Clipboard exported.");

@@ -16,6 +16,8 @@ import java.nio.charset.StandardCharsets;
  */
 public class SongInfoBlock {
     
+    public static byte LOOP_MODALITY_HARD_RESET = 0;
+    
     private String blockId = "INFO";
     private int blockSize = 0;
     private byte timebase = 0;
