@@ -83,11 +83,12 @@ public class C2FPatternConverter {
     private int vibratoDelay = -1;
     private int vibratoIndex = 0;
     private int vibratoCounter = 0;
-    private boolean vibratoTriggered = false;
+    private boolean vibratoOngoing = false;
     private int release = 0;
     private int releaseCounter = 0;
     private boolean released = false;
     private boolean legatoToActivate = false;
+    private boolean sustainOngoing = false;
     private boolean sustainedNotePlayed = false;
     private boolean legatoActivated = false;
     private boolean legatoToDeactivate = true;
@@ -117,7 +118,7 @@ public class C2FPatternConverter {
         rowList = new ArrayList();
         CubeCommand[] ccs = cch.getCcs();
         this.channelType = channelType;
-        vibratoTriggered = mainLoopOnly;
+        vibratoOngoing = mainLoopOnly;
         legatoToDeactivate = true;
         releasePlayed = true;
         mainLoopStarted = mainLoopOnly;
@@ -338,6 +339,7 @@ public class C2FPatternConverter {
     private void applyLegato(){
         if(legatoToActivate && !sustainedNotePlayed){
             sustainedNotePlayed = true;
+            sustainOngoing = true;
         }else if(legatoToActivate && !legatoActivated){
             currentRow.getEffectList().add(new Effect(0xEA,0xFF));
             legatoActivated = true;
@@ -410,6 +412,7 @@ public class C2FPatternConverter {
             playCounter++;
             released = true;
             releasePlayed = true;
+            sustainOngoing = false;
         }else{
             rowList.add(currentRow);
             currentRow = new Row();
@@ -433,14 +436,14 @@ public class C2FPatternConverter {
     }
     
     private void applyVibrato(){
-        if(!vibratoTriggered && vibratoDelay>0){
+        if(vibratoDelay>0 && !vibratoOngoing){
             if(vibratoCounter>=(vibratoDelay)){
                 if(channelType==TYPE_FM){
                     applyYmVibrato();
                 }else{
                     applyPsgVibrato();
                 }
-                vibratoTriggered = true;
+                vibratoOngoing = true;
                 vibratoCounter = 0;
             } else{
                 vibratoCounter++;
@@ -543,10 +546,10 @@ public class C2FPatternConverter {
     }
     
     private void applyVibratoEnd(){
-        if(vibratoTriggered && channelType!=TYPE_DAC){
+        if(vibratoOngoing && channelType!=TYPE_DAC && !sustainOngoing){
             stopVibrato();
-            vibratoTriggered = false;
-        }        
+        }     
+        vibratoOngoing = false;   
     }
     
     private void stopVibrato(){
