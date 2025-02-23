@@ -159,7 +159,7 @@ public class C2FFileConverter {
         int longestIntroChannel = getLongestChannel(introPatterns);
         int longestChannel = getLongestChannel(concatenatedPatterns);
         int longestIntroChannelMainLoopLength = mainLoopPatterns[longestIntroChannel].getRows().length;
-        if(maxIntroLength>0 && longestIntroChannel!=longestChannel
+        if(longestIntroChannel!=longestChannel
                 && longestIntroChannelMainLoopLength>0){
             int maxLength = concatenatedPatterns[longestChannel].getRows().length;
             int mainLoopStartPosition = converters[longestIntroChannel].getMainLoopStartPosition();
