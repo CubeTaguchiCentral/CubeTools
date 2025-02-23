@@ -73,7 +73,7 @@ public class C2FPatternConverter {
     private int newNoteValue = 0;
     private int previousNoteValue = 0;
     private int playLength = 0;
-    private int currentPlayLength = 0;
+    private int currentNotePlayLength = 0;
     private int nextNoteLengthDecrement = 0;
     private int playCounter = 0;
     private int newVolume = 0;
@@ -81,19 +81,21 @@ public class C2FPatternConverter {
     private int newInstrument = 0;
     private int currentInstrument = 0;
     private int vibratoDelay = -1;
+    private int currentNoteVibratoDelay = -1;
     private int vibratoIndex = 0;
     private int vibratoCounter = 0;
     private boolean vibratoOngoing = false;
+    private boolean sustainVibrato = false;
     private boolean noRelease = false;
+    private boolean legatoToActivateAfterCurrentNote = false;
+    private boolean legatoToActivate = false;
+    private boolean legatoToDeactivateAfterCurrentNote = false;
+    private boolean legatoToDeactivate = false;
     private int release = 0;
     private int releaseCounter = 0;
     private boolean released = false;
-    private boolean legatoToActivate = false;
+    private boolean previousNoteReleased = false;
     private boolean sustainOngoing = false;
-    private boolean sustainedNotePlayed = false;
-    private boolean legatoActivated = false;
-    private boolean legatoToDeactivate = true;
-    private boolean releasePlayed = true;
     private int detune = -1;
     private int newPanning = -1;
     private int currentPanning = -1;
@@ -120,10 +122,12 @@ public class C2FPatternConverter {
         CubeCommand[] ccs = cch.getCcs();
         this.channelType = channelType;
         vibratoOngoing = mainLoopOnly;
-        legatoToDeactivate = true;
-        releasePlayed = true;
         mainLoopStarted = mainLoopOnly;
         currentRow = new Row();
+        if(mainLoopOnly){
+            stopVibrato();
+            stopLegato();
+        }
         while(cursor<ccs.length){
             CubeCommand cc = ccs[cursor];
             if(cc instanceof MainLoopStart || cc instanceof RepeatStart /* Edge case */ ){
@@ -159,23 +163,25 @@ public class C2FPatternConverter {
                 }else{
                     applyNote(cc);
                 }
-                applyVibratoEnd();
                 applyDetune();
                 applyInstrument();
                 applyVolume();
                 applyPanning();
                 applyPortamento();
+                applyVibratoEnd();
                 applyLegato();
+                sustainVibrato = false;
                 rowList.add(currentRow);
-                currentPlayLength = playLength;
+                currentNoteVibratoDelay = vibratoDelay;
+                currentNotePlayLength = playLength;
                 if(nextNoteLengthDecrement>0){
-                    currentPlayLength-=nextNoteLengthDecrement;
-                    if(vibratoDelay>0){
-                        vibratoDelay-=nextNoteLengthDecrement;
+                    currentNotePlayLength-=nextNoteLengthDecrement;
+                    if(currentNoteVibratoDelay>0){
+                        currentNoteVibratoDelay-=nextNoteLengthDecrement;
                     }
                     nextNoteLengthDecrement = 0;
                 }
-                if(currentPlayLength==0){
+                if(currentNotePlayLength==0){
                     /* Managing tracker limitation here :
                     Cube uses 0-length note as a portamento starting point, while trackers can't have 0-length notes.
                     Apply note followed immediately by new note with decreased playLength. */ 
@@ -186,10 +192,12 @@ public class C2FPatternConverter {
                 vibratoCounter = playCounter;
                 releaseCounter = playCounter;
                 released = false;
-                while(playCounter<currentPlayLength){
+                while(playCounter<currentNotePlayLength){
                     applyVibrato();
                     applyRelease();
+                    playCounter++;
                 }
+                previousNoteReleased = released;
                 playCounter=0;
             }else if(cc instanceof Wait || cc instanceof WaitL){
                 applyWait(cc);
@@ -249,16 +257,16 @@ public class C2FPatternConverter {
         if((sr.getValue()&0x80)!=0){
             sustain();
         }else{
-            noRelease = false;
+            if(noRelease){
+                noRelease = false;
+                legatoToDeactivateAfterCurrentNote = true;
+            }
         }
-        legatoToDeactivate = true;
     }
 
     private void sustain() {
         noRelease = true;
-        sustainedNotePlayed = false;
-        legatoActivated = false;
-        legatoToActivate = true;
+        legatoToActivateAfterCurrentNote = true;
     }
 
     private void vol(CubeCommand cc) {
@@ -298,7 +306,9 @@ public class C2FPatternConverter {
         if(cc instanceof NoteL){
             playLength = 0xFF & ((NoteL)cc).getLength();
         }
-        currentRow.setNote(new FNote(newNoteValue));
+        if(!sustainOngoing || (newNoteValue!=previousNoteValue)){
+            currentRow.setNote(new FNote(newNoteValue));
+        }
     }
     
     private void applySample(CubeCommand cc){
@@ -309,7 +319,7 @@ public class C2FPatternConverter {
         if(cc instanceof SampleL){
             playLength = 0xFF & ((SampleL)cc).getLength();
         }
-        currentRow.setNote(new FNote(C2FPitch.C4.getFurnaceValue()));        
+        currentRow.setNote(new FNote(C2FPitch.C4.getFurnaceValue()));       
     }
     
     private void applyPsgNote(CubeCommand cc){
@@ -320,7 +330,9 @@ public class C2FPatternConverter {
         if(cc instanceof PsgNoteL){
             playLength = 0xFF & ((PsgNoteL)cc).getLength();
         }
-        currentRow.setNote(new FNote(newNoteValue));        
+        if(!noRelease || (newNoteValue!=previousNoteValue)){
+            currentRow.setNote(new FNote(newNoteValue));
+        }        
     }
 
     private void applyWait(CubeCommand cc){
@@ -340,22 +352,6 @@ public class C2FPatternConverter {
             playCounter++;
         }
         playCounter=0;        
-    }
-    
-    private void applyLegato(){
-        if(legatoToActivate && !sustainedNotePlayed){
-            sustainedNotePlayed = true;
-            sustainOngoing = true;
-        }else if(legatoToActivate && !legatoActivated){
-            currentRow.getEffectList().add(new Effect(0xEA,0xFF));
-            legatoActivated = true;
-            legatoToActivate = false;
-        }
-        if(legatoToDeactivate && releasePlayed){
-            currentRow.getEffectList().add(new Effect(0xEA,0x00));
-            legatoToDeactivate = false;
-            releasePlayed = false;
-        }        
     }
     
     private void applyInstrument(){
@@ -391,13 +387,13 @@ public class C2FPatternConverter {
     }
     
     private void applyPortamento(){
-        if(slide>0){
-            if(released=true){
+        if(slide>0 && (newNoteValue!=previousNoteValue) && previousNoteValue!=0){
+            if((previousNoteReleased || release==0)&&nextNoteLengthDecrement==0){      
                 /* Managing Furnace limitation : portamento expects previous note to be active, not released.
-                Apply last note again, followed immediately by new note with decreased playLength */                
+                Apply last note again, followed immediately by new note with decreased playLength */
                 currentRow.setNote(new FNote(previousNoteValue));
                 rowList.add(currentRow);
-                currentPlayLength = playLength;
+                currentNotePlayLength = playLength;
                 nextNoteLengthDecrement++;
                 currentRow = new Row();
                 currentRow.setNote(new FNote(newNoteValue));
@@ -409,24 +405,54 @@ public class C2FPatternConverter {
         }        
     }
     
+    private void applyVibratoEnd(){
+        if(vibratoOngoing && channelType!=TYPE_DAC && (previousNoteReleased || release==0) && !sustainVibrato){
+            stopVibrato(); 
+        }      
+    }
+    
+    private void stopVibrato(){
+        currentRow.getEffectList().add(new Effect(0x04,0x00));
+        vibratoOngoing = false; 
+    } 
+    
+    private void applyLegato(){
+        if(legatoToActivateAfterCurrentNote){
+            legatoToActivate = true;
+            legatoToActivateAfterCurrentNote = false;
+        }else if(legatoToActivate){
+            currentRow.getEffectList().add(new Effect(0xEA,0xFF));
+            legatoToActivate = false;
+        }
+        if(legatoToDeactivate){
+            stopLegato();
+            legatoToDeactivate = false;
+        }else if(legatoToDeactivateAfterCurrentNote){
+            legatoToDeactivate = true;
+            legatoToDeactivateAfterCurrentNote = false;
+        }
+    }
+    
+    private void stopLegato(){
+        currentRow.getEffectList().add(new Effect(0xEA,0x00));
+    }
+    
     public void applyRelease(){
-        if(releaseCounter>=(currentPlayLength-release)){
+        if(releaseCounter>=(currentNotePlayLength-release)){
             if(!noRelease){
                 currentRow.setNote(new FNote(NOTE_RELEASE));
                 sustainOngoing = false;
+                released = true;
             }else{
                 sustainOngoing = true;
+                released = false;
             }
             rowList.add(currentRow);
             currentRow = new Row();
             releaseCounter=0;
-            playCounter++;
-            released = true;
-            releasePlayed = true;
         }else{
             rowList.add(currentRow);
             currentRow = new Row();
-            playCounter++;
             if(!released){
                 releaseCounter++;
             }
@@ -446,8 +472,8 @@ public class C2FPatternConverter {
     }
     
     private void applyVibrato(){
-        if(vibratoDelay>0 && !vibratoOngoing){
-            if(vibratoCounter>=(vibratoDelay)){
+        if((currentNoteVibratoDelay>0 || vibratoIndex!=0) && !vibratoOngoing){
+            if(vibratoCounter>=(currentNoteVibratoDelay)){
                 if(channelType==TYPE_FM){
                     applyYmVibrato();
                 }else{
@@ -459,7 +485,7 @@ public class C2FPatternConverter {
                 vibratoCounter++;
             }
         }        
-    }
+    } 
     
     public void applyPsgVibrato(){
         
@@ -553,17 +579,6 @@ public class C2FPatternConverter {
                 break;
         }
         */
-    }
-    
-    private void applyVibratoEnd(){
-        if(vibratoOngoing && channelType!=TYPE_DAC && !sustainOngoing){
-            stopVibrato();
-        }     
-        vibratoOngoing = false;   
-    }
-    
-    private void stopVibrato(){
-        currentRow.getEffectList().add(new Effect(0x04,0x00));
-    }   
+    } 
     
 }
