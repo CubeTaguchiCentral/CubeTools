@@ -61,9 +61,10 @@ public class PsgToneChannel extends CubeChannel {
             }else if((cmd&0xFF)==0xFC){
                 cmdLength = 2;
                 byte b1 = data[cursor+1];
-                ccs.add(new SetRelease((byte)(b1&0x7F)));
-                if((b1&0x80)>0){
+                if((b1&0xFF)==0x80){
                     ccs.add(new Sustain());
+                }else{
+                    ccs.add(new SetRelease(b1));
                 }
             }else if((cmd&0xFF)==0xFB){
                 cmdLength = 2;
