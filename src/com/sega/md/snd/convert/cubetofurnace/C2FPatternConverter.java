@@ -84,6 +84,7 @@ public class C2FPatternConverter {
     private int vibratoIndex = 0;
     private int vibratoCounter = 0;
     private boolean vibratoOngoing = false;
+    private boolean noRelease = false;
     private int release = 0;
     private int releaseCounter = 0;
     private boolean released = false;
@@ -151,7 +152,7 @@ public class C2FPatternConverter {
             }else if(cc instanceof SetRelease){
                 setRelease(cc);
             }else if(cc instanceof Sustain){
-                sustain(cc);
+                sustain();
             }else if((cc instanceof Note || cc instanceof NoteL || cc instanceof Sample || cc instanceof SampleL || cc instanceof PsgNote || cc instanceof PsgNoteL)){
                 if(cc instanceof Sample || cc instanceof SampleL){
                     applySample(cc);
@@ -244,12 +245,17 @@ public class C2FPatternConverter {
 
     private void setRelease(CubeCommand cc) {
         SetRelease sr = (SetRelease) cc;
-        release = sr.getValue();
+        release = sr.getValue()&0x7F;
+        if((sr.getValue()&0x80)!=0){
+            sustain();
+        }else{
+            noRelease = false;
+        }
         legatoToDeactivate = true;
     }
 
-    private void sustain(CubeCommand cc) {
-        release = 0;
+    private void sustain() {
+        noRelease = true;
         sustainedNotePlayed = false;
         legatoActivated = false;
         legatoToActivate = true;
@@ -405,14 +411,18 @@ public class C2FPatternConverter {
     
     public void applyRelease(){
         if(releaseCounter>=(currentPlayLength-release)){
-            currentRow.setNote(new FNote(NOTE_RELEASE));
+            if(!noRelease){
+                currentRow.setNote(new FNote(NOTE_RELEASE));
+                sustainOngoing = false;
+            }else{
+                sustainOngoing = true;
+            }
             rowList.add(currentRow);
             currentRow = new Row();
             releaseCounter=0;
             playCounter++;
             released = true;
             releasePlayed = true;
-            sustainOngoing = false;
         }else{
             rowList.add(currentRow);
             currentRow = new Row();
