@@ -13,7 +13,6 @@ import com.sega.md.snd.formats.cube.command.CountedLoopEnd;
 import com.sega.md.snd.formats.cube.command.CountedLoopStart;
 import com.sega.md.snd.formats.cube.command.MainLoopEnd;
 import com.sega.md.snd.formats.cube.command.MainLoopStart;
-import com.sega.md.snd.formats.cube.command.NoSlide;
 import com.sega.md.snd.formats.cube.command.PsgInst;
 import com.sega.md.snd.formats.cube.command.PsgNote;
 import com.sega.md.snd.formats.cube.command.PsgNoteL;
@@ -23,9 +22,7 @@ import com.sega.md.snd.formats.cube.command.RepeatSection2Start;
 import com.sega.md.snd.formats.cube.command.RepeatSection3Start;
 import com.sega.md.snd.formats.cube.command.RepeatStart;
 import com.sega.md.snd.formats.cube.command.SetRelease;
-import com.sega.md.snd.formats.cube.command.SetSlide;
 import com.sega.md.snd.formats.cube.command.Shifting;
-import com.sega.md.snd.formats.cube.command.Stereo;
 import com.sega.md.snd.formats.cube.command.Sustain;
 import com.sega.md.snd.formats.cube.command.Vibrato;
 import com.sega.md.snd.formats.cube.command.Wait;
@@ -64,10 +61,9 @@ public class PsgToneChannel extends CubeChannel {
             }else if((cmd&0xFF)==0xFC){
                 cmdLength = 2;
                 byte b1 = data[cursor+1];
+                ccs.add(new SetRelease((byte)(b1&0x7F)));
                 if((b1&0x80)>0){
                     ccs.add(new Sustain());
-                }else{
-                    ccs.add(new SetRelease(b1));
                 }
             }else if((cmd&0xFF)==0xFB){
                 cmdLength = 2;
