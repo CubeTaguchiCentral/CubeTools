@@ -167,9 +167,9 @@ public class C2FPatternConverter {
                 applyInstrument();
                 applyVolume();
                 applyPanning();
+                applyLegato();
                 applyPortamento();
                 applyVibratoEnd();
-                applyLegato();
                 sustainVibrato = false;
                 rowList.add(currentRow);
                 currentNoteVibratoDelay = vibratoDelay;
