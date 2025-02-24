@@ -85,7 +85,6 @@ public class C2FPatternConverter {
     private int vibratoIndex = 0;
     private int vibratoCounter = 0;
     private boolean vibratoOngoing = false;
-    private boolean sustainVibrato = false;
     private boolean noRelease = false;
     private boolean legatoToActivateAfterCurrentNote = false;
     private boolean legatoToActivate = false;
@@ -168,9 +167,8 @@ public class C2FPatternConverter {
                 applyVolume();
                 applyPanning();
                 applyLegato();
-                applyPortamento();
                 applyVibratoEnd();
-                sustainVibrato = false;
+                applyPortamento();
                 rowList.add(currentRow);
                 currentNoteVibratoDelay = vibratoDelay;
                 currentNotePlayLength = playLength;
@@ -406,7 +404,7 @@ public class C2FPatternConverter {
     }
     
     private void applyVibratoEnd(){
-        if(vibratoOngoing && channelType!=TYPE_DAC && (previousNoteReleased || release==0) && !sustainVibrato){
+        if(vibratoOngoing && channelType!=TYPE_DAC && (previousNoteReleased || release==0)){
             stopVibrato(); 
         }      
     }
