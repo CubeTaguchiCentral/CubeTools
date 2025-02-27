@@ -399,7 +399,7 @@ public class C2FPatternConverter {
     }
     
     private void applyPortamento(){
-        if(slide>0 && (newNoteValue!=previousNoteValue) && previousNoteValue!=0){
+        if(slide>0 && (newNoteValue!=previousNoteValue) && previousNoteValue!=0 && playLength>0){
             if((previousNoteReleased || release==0)&&nextNoteLengthDecrement==0){      
                 /* Managing Furnace limitation : portamento expects previous note to be active, not released.
                 Apply last note again, followed immediately by new note with decreased playLength */
