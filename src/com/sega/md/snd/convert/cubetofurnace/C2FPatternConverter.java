@@ -235,7 +235,16 @@ public class C2FPatternConverter {
 
     private void shifting(CubeCommand cc) {
         Shifting s = (Shifting) cc;
-        detune = ((s.getValue()&0x30)>>4)+3;
+        /* Incomplete conversion due to Furnace limitations of command 0x53
+        Detune command description : 
+        53 xy Set detune (x: operator from 1 to 4 (0 for all ops); y: detune where 3 is center)
+        */
+        int offset = ((s.getValue()&0x60)>>5);
+        if((s.getValue()&0x70)==0){
+            detune = 3 + offset;
+        }else{
+            detune = 3 - offset;
+        }
     }
 
     private void vibrato(CubeCommand cc) {
