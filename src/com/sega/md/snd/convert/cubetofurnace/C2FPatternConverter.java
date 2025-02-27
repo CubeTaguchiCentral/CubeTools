@@ -198,6 +198,11 @@ public class C2FPatternConverter {
                 previousNoteReleased = released;
                 playCounter=0;
             }else if(cc instanceof Wait || cc instanceof WaitL){
+                applyDetune();
+                applyInstrument();
+                applyVolume();
+                applyPanning();
+                applyLegato();
                 applyWait(cc);
             }else if(cc instanceof YmTimer){
                 ymTimer(cc);
@@ -339,7 +344,7 @@ public class C2FPatternConverter {
         }
         playCounter = 0;
         if(channelType==TYPE_PSGTONE){
-            currentRow.setNote(new FNote(NOTE_OFF));
+            //currentRow.setNote(new FNote(NOTE_OFF));
         }
         rowList.add(currentRow);
         currentRow = new Row();
