@@ -12,7 +12,7 @@ import static com.sega.md.snd.formats.furnace.file.section.SongInfoBlock.LOOP_MO
 import com.sega.md.snd.formats.furnace.pattern.Effect;
 import com.sega.md.snd.formats.furnace.pattern.FNote;
 import com.sega.md.snd.formats.furnace.pattern.Pattern;
-import static com.sega.md.snd.formats.furnace.pattern.Pattern.MACRO_RELEASE;
+import static com.sega.md.snd.formats.furnace.pattern.Pattern.NOTE_OFF;
 import com.sega.md.snd.formats.furnace.pattern.Row;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -130,7 +130,7 @@ public class C2FFileConverter {
             List<Row> rowList = new ArrayList();
             rowList.addAll(Arrays.asList(rows));
             Row row = new Row();
-            row.setNote(new FNote(MACRO_RELEASE));
+            row.setNote(new FNote(NOTE_OFF));
             rowList.add(row);
             patterns[i].setRows(rowList.toArray(new Row[0]));
         }
