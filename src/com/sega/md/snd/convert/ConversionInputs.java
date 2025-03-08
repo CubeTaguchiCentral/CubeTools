@@ -19,6 +19,7 @@ public class ConversionInputs {
     private String gameName;
     private String romFilePath;
     private int[] musicBankOffsets;
+    private int driverOffset;
     private int inRamPreloadOffset;
     private int[] ymInstruments;
     private boolean ssgEg;
@@ -26,6 +27,7 @@ public class ConversionInputs {
     private boolean multiBankSampleTableFormat;
     private int[] sampleBankOffsets;
     private String[] targetFolders;
+    private int psgInstruments;
     
     public ConversionInputs(String line){
         line = line.trim();
@@ -37,21 +39,23 @@ public class ConversionInputs {
         for(int i=0;i<musicBankOffsets.length;i++){
             musicBankOffsets[i] = Integer.parseInt(musicBankOffsetStrings[i], 16);
         }
-        inRamPreloadOffset = Integer.parseInt(params[3], 16);
-        String[] ymInstrumentsOffsetStrings = params[4].split(",");
+        driverOffset = Integer.parseInt(params[3], 16);
+        inRamPreloadOffset = Integer.parseInt(params[4], 16);
+        String[] ymInstrumentsOffsetStrings = params[5].split(",");
         ymInstruments = new int[ymInstrumentsOffsetStrings.length];
         for(int i=0;i<ymInstruments.length;i++){
             ymInstruments[i] = Integer.parseInt(ymInstrumentsOffsetStrings[i], 16);
         }
-        ssgEg = Boolean.parseBoolean(params[5]);
-        sampleTableOffset = Integer.parseInt(params[6], 16);
-        multiBankSampleTableFormat = Boolean.parseBoolean(params[7]);
-        String[] sampleBankOffsetStrings = params[8].split(",");
+        ssgEg = Boolean.parseBoolean(params[6]);
+        sampleTableOffset = Integer.parseInt(params[7], 16);
+        multiBankSampleTableFormat = Boolean.parseBoolean(params[8]);
+        String[] sampleBankOffsetStrings = params[9].split(",");
         sampleBankOffsets = new int[sampleBankOffsetStrings.length];
         for(int i=0;i<sampleBankOffsets.length;i++){
             sampleBankOffsets[i] = Integer.parseInt(sampleBankOffsetStrings[i], 16);
         }
-        targetFolders = params[9].split(",");
+        targetFolders = params[10].split(",");
+        psgInstruments = Integer.parseInt(params[11], 16);
     }
     
     public static ConversionInputs[] importConversionInputs(String filePath){
@@ -95,6 +99,14 @@ public class ConversionInputs {
 
     public void setMusicBankOffsets(int[] musicBankOffsets) {
         this.musicBankOffsets = musicBankOffsets;
+    }
+
+    public int getDriverOffset() {
+        return driverOffset;
+    }
+
+    public void setDriverOffset(int driverOffset) {
+        this.driverOffset = driverOffset;
     }
 
     public int getInRamPreloadOffset() {
@@ -151,6 +163,14 @@ public class ConversionInputs {
 
     public void setTargetFolders(String[] targetFolders) {
         this.targetFolders = targetFolders;
+    }
+
+    public int getPsgInstruments() {
+        return psgInstruments;
+    }
+
+    public void setPsgInstruments(int psgInstruments) {
+        this.psgInstruments = psgInstruments;
     }
     
     

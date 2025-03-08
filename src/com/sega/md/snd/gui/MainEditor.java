@@ -423,7 +423,7 @@ public class MainEditor extends javax.swing.JFrame {
                     .addComponent(jLabel51))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel39, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 12, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jTabbedPane4.addTab("ROM File", jPanel12);
@@ -909,7 +909,7 @@ public class MainEditor extends javax.swing.JFrame {
                     jPanel2Layout.setVerticalGroup(
                         jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 195, Short.MAX_VALUE)
+                            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
                     );
@@ -921,7 +921,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel52.setText("ROM File :");
 
-                    jTextField40.setText("C:\\SEGADEV\\SOUNDRESEARCH\\CUBEter\\Crusader of Centy\\Crusader of Centy.bin");
+                    jTextField40.setText("C:\\SEGADEV\\GITHUB\\CubeCentral\\CubeAssets\\Dr Robotnik's Mean Bean Machine\\Dr Robotnik's Mean Bean Machine.bin");
                     jTextField40.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField40ActionPerformed(evt);
@@ -944,7 +944,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel53.setText("Pointer Table :");
 
-                    jTextField43.setText("1F8000");
+                    jTextField43.setText("F937C");
                     jTextField43.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField43ActionPerformed(evt);
@@ -959,7 +959,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel57.setText("0x");
 
-                    jTextField44.setText("1F7000");
+                    jTextField44.setText("F8000");
                     jTextField44.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField44ActionPerformed(evt);
@@ -970,7 +970,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel59.setText("0x");
 
-                    jTextField45.setText("1EF5BB");
+                    jTextField45.setText("F74E4");
                     jTextField45.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField45ActionPerformed(evt);
@@ -981,7 +981,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel61.setText("0x");
 
-                    jTextField46.setText("1D8000,1E0000,1E8000");
+                    jTextField46.setText("B0000,E8000");
                     jTextField46.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField46ActionPerformed(evt);
@@ -995,7 +995,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel63.setText("0x");
 
-                    jTextField47.setText("03");
+                    jTextField47.setText("17");
                     jTextField47.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField47ActionPerformed(evt);
@@ -1105,7 +1105,7 @@ public class MainEditor extends javax.swing.JFrame {
                                 .addComponent(jLabel56)
                                 .addComponent(jLabel57)
                                 .addComponent(jCheckBox1))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
                             .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jTextField45, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jLabel58)
@@ -1168,7 +1168,7 @@ public class MainEditor extends javax.swing.JFrame {
                                 .addComponent(jButton35))
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(jButton36)
-                            .addContainerGap(93, Short.MAX_VALUE))
+                            .addContainerGap(81, Short.MAX_VALUE))
                     );
 
                     jTabbedPane1.addTab("Binary Entry File", jPanel11);
@@ -1181,7 +1181,7 @@ public class MainEditor extends javax.swing.JFrame {
                     );
                     jPanel3Layout.setVerticalGroup(
                         jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jTabbedPane1)
+                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
                     );
 
                     jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Export to :"));
@@ -1628,7 +1628,7 @@ public class MainEditor extends javax.swing.JFrame {
                     jPanel1Layout.setVerticalGroup(
                         jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 195, Short.MAX_VALUE)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
                     );
@@ -1959,7 +1959,7 @@ public class MainEditor extends javax.swing.JFrame {
         for(int i=0;i<sampleBanksOffsets.length;i++){
             sampleBanksOffsets[i] = Integer.parseInt(sampleBanksOffsetStrings[i], 16);
         }
-        ccm.importMusicEntriesFromBinaryMusicBank(filePath, ptOffset, ramPreloadOffset, ymInstOffset, ssgEg, sampleEntriesOffset, multipleBanksFormat, sampleBanksOffsets);
+        ccm.importMusicEntriesFromBinaryMusicBank(filePath, ptOffset, ramPreloadOffset, 0, ymInstOffset, 0, ssgEg, sampleEntriesOffset, multipleBanksFormat, sampleBanksOffsets);
     }//GEN-LAST:event_jButton41ActionPerformed
 
     private void jButton40ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton40ActionPerformed
@@ -2004,7 +2004,7 @@ public class MainEditor extends javax.swing.JFrame {
         for(int i=0;i<sampleBanksOffsets.length;i++){
             sampleBanksOffsets[i] = Integer.parseInt(sampleBanksOffsetStrings[i], 16);
         }
-        ccm.importMusicEntryFromBinaryMusicBank(filePath, ptOffset, ramPreloadOffset, entryIndex, ymInstOffset, ssgEg, sampleEntriesOffset, multipleBanksFormat, sampleBanksOffsets);
+        ccm.importMusicEntryFromBinaryMusicBank(filePath, ptOffset, ramPreloadOffset, entryIndex, 0, ymInstOffset, 0, ssgEg, sampleEntriesOffset, multipleBanksFormat, sampleBanksOffsets);
     }//GEN-LAST:event_jButton43ActionPerformed
 
     private void jTextField43ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField43ActionPerformed

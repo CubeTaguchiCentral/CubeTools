@@ -5,20 +5,14 @@
  */
 package com.sega.md.snd.convert.io;
 
-import com.sega.md.snd.formats.cube.CubeChannel;
-import com.sega.md.snd.formats.cube.CubeCommand;
 import com.sega.md.snd.formats.cube.MusicEntry;
-import com.sega.md.snd.formats.cube.MusicEntry;
-import com.sega.md.snd.formats.cube.Pitch;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,10 +27,10 @@ public class CubeBankManager {
     public static final int SAMPLE_ENTRY_SIZE_MULTI_BANK = 8;
     
     public static MusicEntry importMusicEntry(String filePath, int ptOffset, int index) throws Exception{
-        return importMusicEntry(filePath, ptOffset, 0, index, 0, true);
+        return importMusicEntry(filePath, ptOffset, 0, index, 0, 0, 0, true);
     }
        
-    public static MusicEntry importMusicEntry(String filePath, int ptOffset, int ramPreloadOffset, int index, int ymInstOffset, boolean ssgEg) throws Exception{
+    public static MusicEntry importMusicEntry(String filePath, int ptOffset, int ramPreloadOffset, int index, int driverOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg) throws Exception{
         MusicEntry me = null;
         try{
             File f = new File(filePath);
@@ -57,7 +51,7 @@ public class CubeBankManager {
             if(ramPreloadOffset!=0){
                 baseOffset = musicEntryOffset - ramPreloadOffset;
             }
-            me = new MusicEntry(data, musicEntryOffset, baseOffset, ymInstOffset, ssgEg);
+            me = new MusicEntry(data, musicEntryOffset, baseOffset, driverOffset, ymInstOffset, psgInstOffset, ssgEg);
         } catch (IOException ex) {
             Logger.getLogger(CubeBankManager.class.getName()).log(Level.SEVERE, null, ex);
         }

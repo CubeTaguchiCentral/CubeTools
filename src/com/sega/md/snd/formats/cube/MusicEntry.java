@@ -5,6 +5,7 @@
  */
 package com.sega.md.snd.formats.cube;
 
+import static com.sega.md.snd.convert.io.CubeBankManager.BANK_SIZE;
 import com.sega.md.snd.formats.cube.channel.DacChannel;
 import com.sega.md.snd.formats.cube.channel.PsgNoiseChannel;
 import com.sega.md.snd.formats.cube.channel.PsgToneChannel;
@@ -13,6 +14,7 @@ import com.sega.md.snd.formats.cube.command.Inst;
 import com.sega.md.snd.formats.cube.command.MainLoopStart;
 import com.sega.md.snd.formats.cube.command.Note;
 import com.sega.md.snd.formats.cube.command.NoteL;
+import com.sega.md.snd.formats.cube.command.PsgInst;
 import com.sega.md.snd.formats.cube.command.RepeatStart;
 import com.sega.md.snd.formats.cube.command.Sample;
 import com.sega.md.snd.formats.cube.command.SampleL;
@@ -35,9 +37,11 @@ import java.util.logging.Logger;
  */
 public class MusicEntry {
     
+    public static final int BANK_SIZE = 0x8000;
     public static final int YM_INSTRUMENT_SIZE = 29;
     public static final int YM_INSTRUMENT_SIZE_NOSSGEG = 25;
     public static final int YM_INSTRUMENT_CHUNK_SIZE = 16;
+    public static final int PSG_INSTRUMENT_CHUNK_SIZE = 8;
     
     
     String name;
@@ -45,6 +49,7 @@ public class MusicEntry {
     byte ymTimerBValue = 0;
     CubeChannel[] channels = new CubeChannel[10];
     byte[][] ymInstruments;
+    byte[][] psgInstruments;
     boolean ssgEgAvailable = true;
     byte[][] sampleEntries;
     boolean multiSampleBank = true;
@@ -82,7 +87,7 @@ public class MusicEntry {
         this.channels = channels;
     }
     
-    public MusicEntry(byte [] data, int entryOffset, int baseOffset, int ymInstOffset, boolean ssgEg){
+    public MusicEntry(byte [] data, int entryOffset, int baseOffset, int driverOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg){
         this(data, entryOffset, baseOffset);
         this.setSsgEgAvailable(ssgEg);
         if(ymInstOffset!=0){
@@ -104,7 +109,36 @@ public class MusicEntry {
                     break;
                 }
             } 
-        }       
+        } 
+        if(psgInstOffset!=0){
+            int maxPsgInstrumentIndex = 0;
+            int psgInstrumentIndex = findMaxPsgInstrumentIndex();
+            if(psgInstrumentIndex>maxPsgInstrumentIndex){
+                maxPsgInstrumentIndex = psgInstrumentIndex;
+            }
+            int chunkCount = (maxPsgInstrumentIndex / PSG_INSTRUMENT_CHUNK_SIZE) + 1;
+            maxPsgInstrumentIndex = chunkCount * PSG_INSTRUMENT_CHUNK_SIZE;
+            psgInstruments = new byte[maxPsgInstrumentIndex][];
+            for(int i=0;i<maxPsgInstrumentIndex;i++){
+                try{         
+                    int pointer = (((data[psgInstOffset + 2*i + 1])&0x7F)<<8) + ((data[psgInstOffset + 2*i])&0xFF);
+                    int instrumentOffset = driverOffset + pointer;
+                    int instrumentEndOffset = instrumentOffset;
+                    boolean attackDone = false;
+                    while(!((data[instrumentEndOffset]&0x80)!=0 && attackDone)){
+                        if((data[instrumentEndOffset]&0x80)!=0){
+                            attackDone = true;
+                        }
+                        instrumentEndOffset++;
+                    }
+                    psgInstruments[i] = Arrays.copyOfRange(data, instrumentOffset, instrumentEndOffset+1);
+                }catch(Exception e){
+                    e.printStackTrace();
+                    psgInstruments = Arrays.copyOfRange(psgInstruments, 0, i);
+                    break;
+                }
+            } 
+        } 
     }
     
     public MusicEntry(byte [] data, int entryOffset, int baseOffset){
@@ -246,6 +280,14 @@ public class MusicEntry {
     public void setYmInstruments(byte[][] ymInstruments) {
         this.ymInstruments = ymInstruments;
     }
+
+    public byte[][] getPsgInstruments() {
+        return psgInstruments;
+    }
+
+    public void setPsgInstruments(byte[][] psgInstruments) {
+        this.psgInstruments = psgInstruments;
+    }
     
     public List<Integer> getYmInstrumentList(){
         Set<Integer> instSet = new HashSet();
@@ -312,17 +354,13 @@ public class MusicEntry {
         return hasIntro;
     }   
     
-    public int findMaxSampleIndex(){
+    public int findMaxYmInstrumentIndex(){
         int maxIndex = 0;
-        for(CubeChannel cch : channels){
+        for(int i=0;i<6;i++){
+            CubeChannel cch = channels[i];
             for(CubeCommand cc : cch.getCcs()){
-                if(cc instanceof Sample || cc instanceof SampleL){
-                    int index = 0;
-                    if(cc instanceof Sample){
-                        index = ((Sample)cc).getSample();
-                    } else{
-                        index = ((SampleL)cc).getSample();
-                    }
+                if(cc instanceof Inst){
+                    int index = ((Inst)cc).getValue();
                     if(index>maxIndex){
                         maxIndex = index;
                     }
@@ -332,12 +370,32 @@ public class MusicEntry {
         return maxIndex;
     }
     
-    public int findMaxYmInstrumentIndex(){
+    public int findMaxSampleIndex(){
         int maxIndex = 0;
-        for(CubeChannel cch : channels){
+        CubeChannel cch = channels[5];
+        for(CubeCommand cc : cch.getCcs()){
+            if(cc instanceof Sample || cc instanceof SampleL){
+                int index = 0;
+                if(cc instanceof Sample){
+                    index = ((Sample)cc).getSample();
+                } else{
+                    index = ((SampleL)cc).getSample();
+                }
+                if(index>maxIndex){
+                    maxIndex = index;
+                }
+            }
+        }
+        return maxIndex;
+    }
+    
+    public int findMaxPsgInstrumentIndex(){
+        int maxIndex = 0;
+        for(int i=6;i<channels.length-1;i++){
+            CubeChannel cch = channels[i];
             for(CubeCommand cc : cch.getCcs()){
-                if(cc instanceof Inst){
-                    int index = ((Inst)cc).getValue();
+                if(cc instanceof PsgInst){
+                    int index = (((PsgInst)cc).getValue()&0xF0)>>4;
                     if(index>maxIndex){
                         maxIndex = index;
                     }

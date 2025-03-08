@@ -76,6 +76,7 @@ public class C2FFileConverter {
 
         C2FYmInstrumentConverter.convertYmInstruments(me, ff);
         C2FSampleConverter.convertSamples(me, ff);
+        C2FPsgInstrumentConverter.convertPsgInstruments(me, ff);
         
         return ff;
     }
