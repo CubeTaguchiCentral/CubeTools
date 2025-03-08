@@ -921,7 +921,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel52.setText("ROM File :");
 
-                    jTextField40.setText("C:\\SEGADEV\\GITHUB\\CubeCentral\\CubeAssets\\Dr Robotnik's Mean Bean Machine\\Dr Robotnik's Mean Bean Machine.bin");
+                    jTextField40.setText("C:\\SEGADEV\\SOUNDRESEARCH\\CUBE\\Space Invaders 91\\Space Invaders 91.bin");
                     jTextField40.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField40ActionPerformed(evt);
@@ -944,7 +944,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel53.setText("Pointer Table :");
 
-                    jTextField43.setText("F937C");
+                    jTextField43.setText("34000");
                     jTextField43.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField43ActionPerformed(evt);
@@ -959,7 +959,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel57.setText("0x");
 
-                    jTextField44.setText("F8000");
+                    jTextField44.setText("38036");
                     jTextField44.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField44ActionPerformed(evt);
@@ -970,7 +970,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel59.setText("0x");
 
-                    jTextField45.setText("F74E4");
+                    jTextField45.setText("38A50");
                     jTextField45.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField45ActionPerformed(evt);
@@ -981,7 +981,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel61.setText("0x");
 
-                    jTextField46.setText("B0000,E8000");
+                    jTextField46.setText("38000");
                     jTextField46.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField46ActionPerformed(evt);
@@ -995,7 +995,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel63.setText("0x");
 
-                    jTextField47.setText("17");
+                    jTextField47.setText("10");
                     jTextField47.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField47ActionPerformed(evt);
@@ -1006,7 +1006,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel65.setText("0x");
 
-                    jTextField48.setText("0");
+                    jTextField48.setText("1800");
                     jTextField48.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField48ActionPerformed(evt);
@@ -1189,7 +1189,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel15.setText("ASM Music Entry File : ");
 
-                    jTextField15.setText("CC:\\SEGADEV\\SOUNDRESEARCH\\CUBEter\\Crusader of Centy\\03.asm");
+                    jTextField15.setText("C:\\SEGADEV\\SOUNDRESEARCH\\CUBE\\Space Invaders 91\\output.asm");
                     jTextField15.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField15ActionPerformed(evt);

@@ -54,6 +54,10 @@ public class PsgToneChannel extends CubeChannel {
                     System.out.println("Unsupported command at offset 0x"+Integer.toHexString(cursor)+" : $"+String.format("%02x", cmd)+String.format("%02x", b1)+String.format("%02x", b2));
                     break;
                 }
+            }else if((cmd&0xFF)==0xFE){
+                /* Edge case happening in a few early games
+                Command is ignored by sound driver */                
+                cmdLength = 2;
             }else if((cmd&0xFF)==0xFD){
                 cmdLength = 2;
                 byte b1 = data[cursor+1];
