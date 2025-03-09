@@ -5,7 +5,6 @@
  */
 package com.sega.md.snd.convert;
 
-import com.sega.md.snd.convert.cubetofurnace.C2FConversionInputs;
 import com.sega.md.snd.convert.io.CubeAsmManager;
 import com.sega.md.snd.convert.io.CubeBankManager;
 import com.sega.md.snd.convert.io.CubeEntryManager;
@@ -217,7 +216,7 @@ public class CubeConversionManager {
     
     public void massExportFromBinaryMusicBankToFurnaceFiles(String inputFilePath, String templateFilePath){
         System.out.println("CubeConversionManager.massExportFromBinaryMusicBankToFurnaceFiles() - Exporting ...");
-        C2FConversionInputs[] cis = C2FConversionInputs.importConversionInputs(inputFilePath);
+        ConversionInputs[] cis = ConversionInputs.importConversionInputs(inputFilePath);
         String inputFileFolder = inputFilePath.substring(0, inputFilePath.lastIndexOf(File.separator)+1);
         for(int i=0;i<cis.length;i++){
             String gameName = cis[i].getGameName();

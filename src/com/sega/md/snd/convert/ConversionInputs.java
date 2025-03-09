@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sega.md.snd.convert.cubetofurnace;
+package com.sega.md.snd.convert;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.Scanner;
  *
  * @author Wiz
  */
-public class C2FConversionInputs {
+public class ConversionInputs {
     
     private String gameName;
     private String romFilePath;
@@ -30,7 +30,7 @@ public class C2FConversionInputs {
     private boolean multiBankSampleTableFormat;
     private int[] sampleBankOffsets;
     
-    public C2FConversionInputs(String line){
+    public ConversionInputs(String line){
         line = line.trim();
         String[] params = line.split(";");
         gameName = params[0];
@@ -60,22 +60,22 @@ public class C2FConversionInputs {
         }
     }
     
-    public static C2FConversionInputs[] importConversionInputs(String filePath){
-        C2FConversionInputs[] cis = null;
-        List<C2FConversionInputs> ciList = new ArrayList();            
+    public static ConversionInputs[] importConversionInputs(String filePath){
+        ConversionInputs[] cis = null;
+        List<ConversionInputs> ciList = new ArrayList();            
         File file = new File(filePath);
         try{
             Scanner scan = new Scanner(file);
             while(scan.hasNext()){
                 String line = scan.nextLine();
                 if(!line.startsWith("#")){
-                    ciList.add(new C2FConversionInputs(line));
+                    ciList.add(new ConversionInputs(line));
                 }
             }
         }catch(Exception e){
             e.printStackTrace();
         }
-        cis = ciList.toArray(new C2FConversionInputs[0]);
+        cis = ciList.toArray(new ConversionInputs[0]);
         return cis;
     }
 
