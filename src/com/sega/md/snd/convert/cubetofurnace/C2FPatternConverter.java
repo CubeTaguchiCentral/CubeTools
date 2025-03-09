@@ -7,6 +7,7 @@ package com.sega.md.snd.convert.cubetofurnace;
 
 import com.sega.md.snd.formats.cube.CubeChannel;
 import com.sega.md.snd.formats.cube.CubeCommand;
+import com.sega.md.snd.formats.cube.MusicEntry;
 import com.sega.md.snd.formats.cube.command.ChannelEnd;
 import com.sega.md.snd.formats.cube.command.Inst;
 import com.sega.md.snd.formats.cube.command.MainLoopEnd;
@@ -51,7 +52,7 @@ public class C2FPatternConverter {
     public static final int YM2612_CHANNEL_SAMPLE_CYCLES = 6*24;
     public static final float YM2612_OUTPUT_RATE = YM2612_INPUT_FREQUENCY / YM2612_CHANNEL_SAMPLE_CYCLES;
     
-    public static final int[] YM_LEVELS = {0x70, 0x60, 0x50, 0x40, 0x38, 0x30, 0x2A, 0x26, 0x20, 0x1C, 0x18, 0x14, 0x10, 0xB, 0x8, 0x4};    
+    public static final byte[] DEFAULT_YM_LEVELS = {0x70, 0x60, 0x50, 0x40, 0x38, 0x30, 0x2A, 0x26, 0x20, 0x1C, 0x18, 0x14, 0x10, 0xB, 0x8, 0x4};    
     
     public static final int PATTERN_LENGTH = 256;
     
@@ -67,6 +68,7 @@ public class C2FPatternConverter {
     public static final int PSG_INSTRUMENT_OFFSET = 0xA0;
     public static final int SAMPLE_INSTRUMENT_OFFSET = 0xC0;
     
+    private MusicEntry me;
     private Row[] rows;
     
     private int channelType = 0;
@@ -115,7 +117,8 @@ public class C2FPatternConverter {
         return converters;
     }
         
-    public Pattern convertCubeChannelToFurnacePattern(CubeChannel cch, int channelType, boolean introOnly, boolean mainLoopOnly){
+    public Pattern convertCubeChannelToFurnacePattern(MusicEntry me, CubeChannel cch, int channelType, boolean introOnly, boolean mainLoopOnly){
+        this.me = me;
         Pattern p = new Pattern();
         rowList = new ArrayList();
         CubeCommand[] ccs = cch.getCcs();
@@ -374,9 +377,10 @@ public class C2FPatternConverter {
     }
     
     private void applyVolume(){
+        byte[] ymLevels = (me.getYmLevels()!=null)?me.getYmLevels():DEFAULT_YM_LEVELS;
         if(channelType!=TYPE_DAC && newVolume!=currentVolume){
             if(channelType==TYPE_FM){
-                currentRow.setVolume(new Volume(0x7F-YM_LEVELS[newVolume]));
+                currentRow.setVolume(new Volume(0x7F-(ymLevels[newVolume]&0xFF)));
             }else{
                 currentRow.setVolume(new Volume(newVolume));
             }

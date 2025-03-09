@@ -38,6 +38,7 @@ import java.util.logging.Logger;
 public class MusicEntry {
     
     public static final int BANK_SIZE = 0x8000;
+    public static final int YM_LEVELS_LENGTH = 16;
     public static final int YM_INSTRUMENT_SIZE = 29;
     public static final int YM_INSTRUMENT_SIZE_NOSSGEG = 25;
     public static final int YM_INSTRUMENT_CHUNK_SIZE = 16;
@@ -48,6 +49,8 @@ public class MusicEntry {
     boolean ym6InDacMode = false;
     byte ymTimerBValue = 0;
     CubeChannel[] channels = new CubeChannel[10];
+    byte[][] pitchEffects;
+    byte[] ymLevels;
     byte[][] ymInstruments;
     byte[][] psgInstruments;
     boolean ssgEgAvailable = true;
@@ -87,9 +90,15 @@ public class MusicEntry {
         this.channels = channels;
     }
     
-    public MusicEntry(byte [] data, int entryOffset, int baseOffset, int driverOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg){
+    public MusicEntry(byte [] data, int entryOffset, int baseOffset, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg){
         this(data, entryOffset, baseOffset);
         this.setSsgEgAvailable(ssgEg);
+        if(pitchEffectsOffset!=0){
+            
+        }
+        if(ymLevelsOffset!=0){
+            ymLevels = Arrays.copyOfRange(data, ymLevelsOffset, ymLevelsOffset+YM_LEVELS_LENGTH);
+        }
         if(ymInstOffset!=0){
             int instrumentSize = ssgEg?YM_INSTRUMENT_SIZE:YM_INSTRUMENT_SIZE_NOSSGEG;
             int maxYmInstrumentIndex = 0;
@@ -272,22 +281,6 @@ public class MusicEntry {
             channels[i].optimize();
         }
     }
-
-    public byte[][] getYmInstruments() {
-        return ymInstruments;
-    }
-
-    public void setYmInstruments(byte[][] ymInstruments) {
-        this.ymInstruments = ymInstruments;
-    }
-
-    public byte[][] getPsgInstruments() {
-        return psgInstruments;
-    }
-
-    public void setPsgInstruments(byte[][] psgInstruments) {
-        this.psgInstruments = psgInstruments;
-    }
     
     public List<Integer> getYmInstrumentList(){
         Set<Integer> instSet = new HashSet();
@@ -403,6 +396,38 @@ public class MusicEntry {
             }
         }
         return maxIndex;
+    }
+
+    public byte[][] getPitchEffects() {
+        return pitchEffects;
+    }
+
+    public void setPitchEffects(byte[][] pitchEffects) {
+        this.pitchEffects = pitchEffects;
+    }
+
+    public byte[] getYmLevels() {
+        return ymLevels;
+    }
+
+    public void setYmLevels(byte[] ymLevels) {
+        this.ymLevels = ymLevels;
+    }
+
+    public byte[][] getYmInstruments() {
+        return ymInstruments;
+    }
+
+    public void setYmInstruments(byte[][] ymInstruments) {
+        this.ymInstruments = ymInstruments;
+    }
+
+    public byte[][] getPsgInstruments() {
+        return psgInstruments;
+    }
+
+    public void setPsgInstruments(byte[][] psgInstruments) {
+        this.psgInstruments = psgInstruments;
     }
 
     public byte[][] getSampleEntries() {

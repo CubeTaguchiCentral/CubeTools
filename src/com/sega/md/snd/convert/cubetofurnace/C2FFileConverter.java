@@ -83,21 +83,21 @@ public class C2FFileConverter {
     
     public static Pattern[] convertPatterns(MusicEntry me, C2FPatternConverter[] converters, boolean introOnly, boolean mainLoopOnly){
         Pattern[] patterns = new Pattern[CHANNEL_COUNT];
-        patterns[0] = converters[0].convertCubeChannelToFurnacePattern(me.getChannels()[0], Pattern.TYPE_FM, introOnly, mainLoopOnly);
-        patterns[1] = converters[1].convertCubeChannelToFurnacePattern(me.getChannels()[1], Pattern.TYPE_FM, introOnly, mainLoopOnly);
-        patterns[2] = converters[2].convertCubeChannelToFurnacePattern(me.getChannels()[2], Pattern.TYPE_FM, introOnly, mainLoopOnly);
-        patterns[3] = converters[3].convertCubeChannelToFurnacePattern(me.getChannels()[3], Pattern.TYPE_FM, introOnly, mainLoopOnly);
-        patterns[4] = converters[4].convertCubeChannelToFurnacePattern(me.getChannels()[4], Pattern.TYPE_FM, introOnly, mainLoopOnly);
+        patterns[0] = converters[0].convertCubeChannelToFurnacePattern(me, me.getChannels()[0], Pattern.TYPE_FM, introOnly, mainLoopOnly);
+        patterns[1] = converters[1].convertCubeChannelToFurnacePattern(me, me.getChannels()[1], Pattern.TYPE_FM, introOnly, mainLoopOnly);
+        patterns[2] = converters[2].convertCubeChannelToFurnacePattern(me, me.getChannels()[2], Pattern.TYPE_FM, introOnly, mainLoopOnly);
+        patterns[3] = converters[3].convertCubeChannelToFurnacePattern(me, me.getChannels()[3], Pattern.TYPE_FM, introOnly, mainLoopOnly);
+        patterns[4] = converters[4].convertCubeChannelToFurnacePattern(me, me.getChannels()[4], Pattern.TYPE_FM, introOnly, mainLoopOnly);
         if(!me.isYm6InDacMode()){
-            patterns[5] = converters[5].convertCubeChannelToFurnacePattern(me.getChannels()[5], Pattern.TYPE_FM, introOnly, mainLoopOnly);
+            patterns[5] = converters[5].convertCubeChannelToFurnacePattern(me, me.getChannels()[5], Pattern.TYPE_FM, introOnly, mainLoopOnly);
         }else{
-            patterns[5] = converters[5].convertCubeChannelToFurnacePattern(me.getChannels()[5], Pattern.TYPE_DAC, introOnly, mainLoopOnly);
+            patterns[5] = converters[5].convertCubeChannelToFurnacePattern(me, me.getChannels()[5], Pattern.TYPE_DAC, introOnly, mainLoopOnly);
         }
-        patterns[6] = converters[6].convertCubeChannelToFurnacePattern(me.getChannels()[6], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
-        patterns[7] = converters[7].convertCubeChannelToFurnacePattern(me.getChannels()[7], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
+        patterns[6] = converters[6].convertCubeChannelToFurnacePattern(me, me.getChannels()[6], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
+        patterns[7] = converters[7].convertCubeChannelToFurnacePattern(me, me.getChannels()[7], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
         /*patterns[8] = new Pattern();*/
         patterns[9] = new Pattern();
-        patterns[8] = converters[8].convertCubeChannelToFurnacePattern(me.getChannels()[8], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
+        patterns[8] = converters[8].convertCubeChannelToFurnacePattern(me, me.getChannels()[8], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
         /*patterns[9] = converters[9].convertCubeChannelToFurnacePattern(me.getChannels()[9], Pattern.TYPE_PSGNOISE, introOnly, mainLoopOnly);*/
         return patterns;
     }

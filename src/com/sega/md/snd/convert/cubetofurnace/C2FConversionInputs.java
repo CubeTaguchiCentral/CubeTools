@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sega.md.snd.convert;
+package com.sega.md.snd.convert.cubetofurnace;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,22 +14,23 @@ import java.util.Scanner;
  *
  * @author Wiz
  */
-public class ConversionInputs {
+public class C2FConversionInputs {
     
     private String gameName;
     private String romFilePath;
     private int[] musicBankOffsets;
     private int driverOffset;
+    private int pitchEffectsOffset;
+    private int ymLevelsOffset;
+    private int psgInstruments;
     private int inRamPreloadOffset;
     private int[] ymInstruments;
     private boolean ssgEg;
     private int sampleTableOffset;
     private boolean multiBankSampleTableFormat;
     private int[] sampleBankOffsets;
-    private String[] targetFolders;
-    private int psgInstruments;
     
-    public ConversionInputs(String line){
+    public C2FConversionInputs(String line){
         line = line.trim();
         String[] params = line.split(";");
         gameName = params[0];
@@ -40,40 +41,41 @@ public class ConversionInputs {
             musicBankOffsets[i] = Integer.parseInt(musicBankOffsetStrings[i], 16);
         }
         driverOffset = Integer.parseInt(params[3], 16);
-        inRamPreloadOffset = Integer.parseInt(params[4], 16);
-        String[] ymInstrumentsOffsetStrings = params[5].split(",");
+        pitchEffectsOffset = Integer.parseInt(params[4], 16);
+        ymLevelsOffset = Integer.parseInt(params[5], 16);
+        psgInstruments = Integer.parseInt(params[6], 16);
+        inRamPreloadOffset = Integer.parseInt(params[7], 16);
+        String[] ymInstrumentsOffsetStrings = params[8].split(",");
         ymInstruments = new int[ymInstrumentsOffsetStrings.length];
         for(int i=0;i<ymInstruments.length;i++){
             ymInstruments[i] = Integer.parseInt(ymInstrumentsOffsetStrings[i], 16);
         }
-        ssgEg = Boolean.parseBoolean(params[6]);
-        sampleTableOffset = Integer.parseInt(params[7], 16);
-        multiBankSampleTableFormat = Boolean.parseBoolean(params[8]);
-        String[] sampleBankOffsetStrings = params[9].split(",");
+        ssgEg = Boolean.parseBoolean(params[9]);
+        sampleTableOffset = Integer.parseInt(params[10], 16);
+        multiBankSampleTableFormat = Boolean.parseBoolean(params[11]);
+        String[] sampleBankOffsetStrings = params[12].split(",");
         sampleBankOffsets = new int[sampleBankOffsetStrings.length];
         for(int i=0;i<sampleBankOffsets.length;i++){
             sampleBankOffsets[i] = Integer.parseInt(sampleBankOffsetStrings[i], 16);
         }
-        targetFolders = params[10].split(",");
-        psgInstruments = Integer.parseInt(params[11], 16);
     }
     
-    public static ConversionInputs[] importConversionInputs(String filePath){
-        ConversionInputs[] cis = null;
-        List<ConversionInputs> ciList = new ArrayList();            
+    public static C2FConversionInputs[] importConversionInputs(String filePath){
+        C2FConversionInputs[] cis = null;
+        List<C2FConversionInputs> ciList = new ArrayList();            
         File file = new File(filePath);
         try{
             Scanner scan = new Scanner(file);
             while(scan.hasNext()){
                 String line = scan.nextLine();
                 if(!line.startsWith("#")){
-                    ciList.add(new ConversionInputs(line));
+                    ciList.add(new C2FConversionInputs(line));
                 }
             }
         }catch(Exception e){
             e.printStackTrace();
         }
-        cis = ciList.toArray(new ConversionInputs[0]);
+        cis = ciList.toArray(new C2FConversionInputs[0]);
         return cis;
     }
 
@@ -107,6 +109,30 @@ public class ConversionInputs {
 
     public void setDriverOffset(int driverOffset) {
         this.driverOffset = driverOffset;
+    }
+
+    public int getPitchEffectsOffset() {
+        return pitchEffectsOffset;
+    }
+
+    public void setPitchEffectsOffset(int pitchEffectsOffset) {
+        this.pitchEffectsOffset = pitchEffectsOffset;
+    }
+
+    public int getYmLevelsOffset() {
+        return ymLevelsOffset;
+    }
+
+    public void setYmLevelsOffset(int ymLevelsOffset) {
+        this.ymLevelsOffset = ymLevelsOffset;
+    }
+
+    public int getPsgInstruments() {
+        return psgInstruments;
+    }
+
+    public void setPsgInstruments(int psgInstruments) {
+        this.psgInstruments = psgInstruments;
     }
 
     public int getInRamPreloadOffset() {
@@ -155,22 +181,6 @@ public class ConversionInputs {
 
     public void setSampleBankOffsets(int[] sampleBankOffsets) {
         this.sampleBankOffsets = sampleBankOffsets;
-    }
-
-    public String[] getTargetFolders() {
-        return targetFolders;
-    }
-
-    public void setTargetFolders(String[] targetFolders) {
-        this.targetFolders = targetFolders;
-    }
-
-    public int getPsgInstruments() {
-        return psgInstruments;
-    }
-
-    public void setPsgInstruments(int psgInstruments) {
-        this.psgInstruments = psgInstruments;
     }
     
     
