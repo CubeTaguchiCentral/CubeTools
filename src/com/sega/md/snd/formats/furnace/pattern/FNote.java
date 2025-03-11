@@ -28,12 +28,15 @@ public class FNote {
     public String produceClipboardOutput(){
         String clipboard="";
         switch(value){
-            case (byte)0xFF:
-                clipboard+="===";
-                break;
-            case (byte)0xFE: 
+            case (byte)0xB4: 
                 clipboard+="OFF";
                 break;   
+            case (byte)0xB5:
+                clipboard+="===";
+                break;
+            case (byte)0xB6:
+                clipboard+="REL";
+                break;
             default:
                 clipboard+=Pitch.valueOf(value).getStringValue();
                 break;

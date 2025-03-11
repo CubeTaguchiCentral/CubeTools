@@ -65,9 +65,9 @@ public class C2FPatternConverter {
     public static final int TYPE_PSGTONE = 2;
     public static final int TYPE_PSGNOISE = 3;
     
-    public static final byte NOTE_OFF = (byte)180;
-    public static final byte NOTE_RELEASE = (byte)181;
-    public static final byte MACRO_RELEASE = (byte)182;
+    public static final byte NOTE_OFF = (byte)0xB4;
+    public static final byte NOTE_RELEASE = (byte)0xB5;
+    public static final byte MACRO_RELEASE = (byte)0xB6;
     
     public static final int PSG_INSTRUMENT_OFFSET = 0xA0;
     public static final int SAMPLE_INSTRUMENT_OFFSET = 0xC0;
