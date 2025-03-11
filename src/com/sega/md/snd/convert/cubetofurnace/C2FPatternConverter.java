@@ -362,8 +362,10 @@ public class C2FPatternConverter {
             playLength = 0xFF & ((WaitL)cc).getValue();
         }
         playCounter = 0;
-        if(channelType==TYPE_PSGTONE){
-            //currentRow.setNote(new FNote(NOTE_OFF));
+        if(channelType==TYPE_FM){
+            currentRow.setNote(new FNote(NOTE_RELEASE));
+        }else if(channelType==TYPE_PSGTONE){
+            currentRow.setNote(new FNote(NOTE_RELEASE));
         }
         rowList.add(currentRow);
         currentRow = new Row();
