@@ -18,6 +18,7 @@ import com.sega.md.snd.formats.cube.command.PsgInst;
 import com.sega.md.snd.formats.cube.command.RepeatStart;
 import com.sega.md.snd.formats.cube.command.Sample;
 import com.sega.md.snd.formats.cube.command.SampleL;
+import com.sega.md.snd.formats.cube.command.Vibrato;
 import com.sega.md.snd.formats.cube.command.Wait;
 import com.sega.md.snd.formats.cube.command.WaitL;
 import java.io.ByteArrayOutputStream;
@@ -43,6 +44,7 @@ public class MusicEntry {
     public static final int YM_INSTRUMENT_SIZE_NOSSGEG = 25;
     public static final int YM_INSTRUMENT_CHUNK_SIZE = 16;
     public static final int PSG_INSTRUMENT_CHUNK_SIZE = 8;
+    public static final int PITCH_EFFECT_CHUNK_SIZE = 8;
     
     
     String name;
@@ -94,7 +96,29 @@ public class MusicEntry {
         this(data, entryOffset, baseOffset);
         this.setSsgEgAvailable(ssgEg);
         if(pitchEffectsOffset!=0){
-            
+            int maxPitchEffectIndex = 0;
+            int pitchEffectIndex = findMaxPitchEffectIndex();
+            if(pitchEffectIndex>maxPitchEffectIndex){
+                maxPitchEffectIndex = pitchEffectIndex;
+            }
+            int chunkCount = (maxPitchEffectIndex / PITCH_EFFECT_CHUNK_SIZE) + 1;
+            maxPitchEffectIndex = chunkCount * PITCH_EFFECT_CHUNK_SIZE;
+            pitchEffects = new byte[maxPitchEffectIndex][];
+            for(int i=0;i<maxPitchEffectIndex;i++){
+                try{         
+                    int pointer = (((data[pitchEffectsOffset + 2*i + 1])&0x7F)<<8) + ((data[pitchEffectsOffset + 2*i])&0xFF);
+                    int pitchEffectOffset = driverOffset + pointer;
+                    int pitchEffectEndOffset = pitchEffectOffset;
+                    while((data[pitchEffectEndOffset]&0xFF)!=0x80){
+                        pitchEffectEndOffset++;
+                    }
+                    pitchEffects[i] = Arrays.copyOfRange(data, pitchEffectOffset, pitchEffectEndOffset);
+                }catch(Exception e){
+                    e.printStackTrace();
+                    pitchEffects = Arrays.copyOfRange(pitchEffects, 0, i);
+                    break;
+                }
+            } 
         }
         if(ymLevelsOffset!=0){
             ymLevels = Arrays.copyOfRange(data, ymLevelsOffset, ymLevelsOffset+YM_LEVELS_LENGTH);
@@ -389,6 +413,22 @@ public class MusicEntry {
             for(CubeCommand cc : cch.getCcs()){
                 if(cc instanceof PsgInst){
                     int index = (((PsgInst)cc).getValue()&0xF0)>>4;
+                    if(index>maxIndex){
+                        maxIndex = index;
+                    }
+                }
+            }
+        }
+        return maxIndex;
+    }
+    
+    public int findMaxPitchEffectIndex(){
+        int maxIndex = 0;
+        for(int i=0;i<channels.length-1;i++){
+            CubeChannel cch = channels[i];
+            for(CubeCommand cc : cch.getCcs()){
+                if(cc instanceof Vibrato){
+                    int index = (((Vibrato)cc).getValue()&0xF0)>>4;
                     if(index>maxIndex){
                         maxIndex = index;
                     }

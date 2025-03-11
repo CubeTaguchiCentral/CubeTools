@@ -39,13 +39,17 @@ import com.sega.md.snd.formats.furnace.pattern.Pattern;
 import com.sega.md.snd.formats.furnace.pattern.Row;
 import com.sega.md.snd.formats.furnace.pattern.Volume;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
  * @author Wiz
  */
 public class C2FPatternConverter {
+    
+    //public static Set<String> unrecognizedPitchEffectStrings = new HashSet();
     
     public static final int MD_CRYSTAL_FREQUENCY = 53693175;
     public static final float YM2612_INPUT_FREQUENCY = MD_CRYSTAL_FREQUENCY / 7;
@@ -70,6 +74,8 @@ public class C2FPatternConverter {
     
     private MusicEntry me;
     private Row[] rows;
+    
+    private String[] pitchEffectStrings;
     
     private int channelType = 0;
     private int newNoteValue = 0;
@@ -119,6 +125,7 @@ public class C2FPatternConverter {
         
     public Pattern convertCubeChannelToFurnacePattern(MusicEntry me, CubeChannel cch, int channelType, boolean introOnly, boolean mainLoopOnly){
         this.me = me;
+        producePitchEffectStrings(me);
         Pattern p = new Pattern();
         rowList = new ArrayList();
         CubeCommand[] ccs = cch.getCcs();
@@ -511,90 +518,111 @@ public class C2FPatternConverter {
     
     public void applyYmVibrato(){
         
-        currentRow.getEffectList().add(new Effect(0x04,0x52));
-
-        //TODO implement vibratos and slides depending on the game's pitch effect table 
-        /*
-          $FB xy     Load Vibrato x, triggered at FNote Length 2*y
-        */
-        /*
-        SF2 table :
-        
-        PITCH_EFFECT_0:  db  0, 80h
-        PITCH_EFFECT_1:  db -16, 16, 16, -16, 80h
-        PITCH_EFFECT_2:  db -3, -3, -1,  1,  3,  3,  3,  1, -1, -3, 80h
-        PITCH_EFFECT_3:  db -2, -2, -1,  1,  2,  2,  2,  1, -1, -2, 80h
-        PITCH_EFFECT_4:  db -1, -1,  0,  1,  1,  1,  1,  0, -1, -1, 80h
-        PITCH_EFFECT_5:  db -1,  0,  0,  1,  0,  1,  0,  0, -1,  0, 80h
-        PITCH_EFFECT_6:  db  2, 80h
-        PITCH_EFFECT_7:  db -2, 80h
-        PITCH_EFFECT_8:  db  4, 80h
-        PITCH_EFFECT_9:  db -4, 80h
-        PITCH_EFFECT_A:  db  8, 80h
-        PITCH_EFFECT_B:  db -8, 80h
-        PITCH_EFFECT_C:  db 16, 80h
-        PITCH_EFFECT_D:  db -16, 80h
-        PITCH_EFFECT_E:  db 32, 80h
-        PITCH_EFFECT_F:  db -32, 80h
-        */
-        /*
-        switch(vibratoIndex){
-            case 0x1:
-                currentRow.getEffectList().add(new Effect(0xE3,0x06));
+        switch(pitchEffectStrings[vibratoIndex]){
+            case "0":
+                /* No effect */
+                break;           
+            case "2":
+                currentRow.getEffectList().add(new Effect(0xE3,0x04));
                 currentRow.getEffectList().add(new Effect(0x04,0x2F));
+                break; 
+            case "-2":
+                currentRow.getEffectList().add(new Effect(0xE3,0x05));
+                currentRow.getEffectList().add(new Effect(0x04,0x2F));
+                break; 
+            case "4":
+                currentRow.getEffectList().add(new Effect(0xE3,0x04));
+                currentRow.getEffectList().add(new Effect(0x04,0x4F));
                 break;
-            case 0x2:
+            case "-4":
+                currentRow.getEffectList().add(new Effect(0xE3,0x05));
+                currentRow.getEffectList().add(new Effect(0x04,0x4F));
+                break; 
+            case "8":
+                currentRow.getEffectList().add(new Effect(0xE3,0x04));
+                currentRow.getEffectList().add(new Effect(0x04,0x8F));
+                break;
+            case "-8":
+                currentRow.getEffectList().add(new Effect(0xE3,0x05));
+                currentRow.getEffectList().add(new Effect(0x04,0x8F));
+                break;
+            case "16":
+                currentRow.getEffectList().add(new Effect(0xE3,0x04));
+                currentRow.getEffectList().add(new Effect(0x04,0xCF));
+                break; 
+            case "-16":
+                currentRow.getEffectList().add(new Effect(0xE3,0x05));
+                currentRow.getEffectList().add(new Effect(0x04,0xCF));
+                break; 
+            case "32":
+                currentRow.getEffectList().add(new Effect(0xE3,0x04));
+                currentRow.getEffectList().add(new Effect(0x04,0xFF));
+                break; 
+            case "-32":
+                currentRow.getEffectList().add(new Effect(0xE3,0x05));
+                currentRow.getEffectList().add(new Effect(0x04,0xFF));
+                break;  
+            case "-1,0,0,1,0,1,0,0,-1,0":
                 currentRow.getEffectList().add(new Effect(0xE3,0x00));
-                currentRow.getEffectList().add(new Effect(0x04,0x53));
-                break;
-            case 0x3:
+                currentRow.getEffectList().add(new Effect(0x04,0x21));
+                break;    
+            case "-1,-1,0,1,1,1,1,0,-1,-1":
+                currentRow.getEffectList().add(new Effect(0xE3,0x00));
+                currentRow.getEffectList().add(new Effect(0x04,0x51));
+                break;   
+            case "-2,-2,-1,1,2,2,2,1,-1,-2":
                 currentRow.getEffectList().add(new Effect(0xE3,0x00));
                 currentRow.getEffectList().add(new Effect(0x04,0x52));
-                break;
-            case 0x4:
+                break;   
+            case "-3,-3,-1,1,3,3,3,1,-1,-3":
                 currentRow.getEffectList().add(new Effect(0xE3,0x00));
                 currentRow.getEffectList().add(new Effect(0x04,0x52));
-                break;
-            case 0x5:
+                break;  
+            case "-5,-4,-3,5,7,7,5,-3,-4,-5":
                 currentRow.getEffectList().add(new Effect(0xE3,0x00));
-                currentRow.getEffectList().add(new Effect(0x04,0x32));
-                break;
-            case 0x6:
-                currentRow.getEffectList().add(new Effect(0xE1,0x1F));
-                break;
-            case 0x7:
-                currentRow.getEffectList().add(new Effect(0xE2,0x1F));
-                break;
-            case 0x8:
-                currentRow.getEffectList().add(new Effect(0xE1,0x2F));
-                break;
-            case 0x9:
-                currentRow.getEffectList().add(new Effect(0xE2,0x2F));
-                break;
-            case 0xA:
-                currentRow.getEffectList().add(new Effect(0xE1,0x4F));
-                break;
-            case 0xB:
-                currentRow.getEffectList().add(new Effect(0xE2,0x4F));
-                break;
-            case 0xC:
-                currentRow.getEffectList().add(new Effect(0xE1,0x8F));
-                break;
-            case 0xD:
-                currentRow.getEffectList().add(new Effect(0xE2,0x8F));
-                break;
-            case 0xE:
-                currentRow.getEffectList().add(new Effect(0xE1,0xFF));
-                break;
-            case 0xF:
-                currentRow.getEffectList().add(new Effect(0xE2,0xFF));
-                break;
+                currentRow.getEffectList().add(new Effect(0x04,0x56));
+                break;  
+            case "-7,-5,7,10,7,-5,-7":
+                currentRow.getEffectList().add(new Effect(0xE3,0x00));
+                currentRow.getEffectList().add(new Effect(0x04,0x38));
+                break;   
+            case "-5,-10,-5,0,5,10,5,0":
+                currentRow.getEffectList().add(new Effect(0xE3,0x03));
+                currentRow.getEffectList().add(new Effect(0x04,0x4A));
+                break;   
+            case "-7,-6,9,8,9,-6,-7":
+                currentRow.getEffectList().add(new Effect(0xE3,0x03));
+                currentRow.getEffectList().add(new Effect(0x04,0x38));
+                break;   
+            case "-16,16,16,-16":
+                currentRow.getEffectList().add(new Effect(0xE3,0x06));
+                currentRow.getEffectList().add(new Effect(0x04,0xF8));
+                break;   
+            case "-16,-16,11,21,21,11,-16,-16":
+                currentRow.getEffectList().add(new Effect(0xE3,0x00));
+                currentRow.getEffectList().add(new Effect(0x04,0x4F));
+                break;   
+            case "-15,-12,-10,20,17,17,20,-10,-12,-15": 
+                currentRow.getEffectList().add(new Effect(0xE3,0x00));
+                currentRow.getEffectList().add(new Effect(0x04,0x5F));
+                break;   
             default:
-                currentRow.getEffectList().add(new Effect(0xE3,0x00));
-                currentRow.getEffectList().add(new Effect(0x04,0x52));
+                //unrecognizedPitchEffectStrings.add(pitchEffectStrings[vibratoIndex]);
                 break;
         }
-        */
+
     } 
+    
+    private void producePitchEffectStrings(MusicEntry me){
+        pitchEffectStrings = new String[me.getPitchEffects().length];
+        for(int i=0;i<pitchEffectStrings.length;i++){
+            StringBuilder sb = new StringBuilder();
+            for(int j=0;j<me.getPitchEffects()[i].length;j++){
+                sb.append(Integer.toString(me.getPitchEffects()[i][j]));
+                sb.append(",");
+            }
+            pitchEffectStrings[i] = sb.substring(0, sb.length()-1);
+        }
+    }
     
 }

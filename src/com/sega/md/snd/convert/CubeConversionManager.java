@@ -5,6 +5,7 @@
  */
 package com.sega.md.snd.convert;
 
+import com.sega.md.snd.convert.cubetofurnace.C2FPatternConverter;
 import com.sega.md.snd.convert.io.CubeAsmManager;
 import com.sega.md.snd.convert.io.CubeBankManager;
 import com.sega.md.snd.convert.io.CubeEntryManager;
@@ -255,6 +256,12 @@ public class CubeConversionManager {
                 System.out.println("... "+gameName+" music bank "+(j)+" exported.");
             }
         }    
+        /*
+        System.out.println("Unrecognized pitch effect strings : ");
+        for(String s : C2FPatternConverter.unrecognizedPitchEffectStrings){
+            System.out.println(s);
+        }
+        */
         System.out.println("CubeConversionManager.massExportFromBinaryMusicBankToFurnaceFiles() - ... Done.");
     }
     
