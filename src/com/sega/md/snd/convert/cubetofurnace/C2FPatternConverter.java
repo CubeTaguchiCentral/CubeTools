@@ -582,19 +582,19 @@ public class C2FPatternConverter {
                 break;  
             case "-5,-4,-3,5,7,7,5,-3,-4,-5":
                 currentRow.getEffectList().add(new Effect(0xE3,0x00));
-                currentRow.getEffectList().add(new Effect(0x04,0x56));
+                currentRow.getEffectList().add(new Effect(0x04,0x53));
                 break;  
             case "-7,-5,7,10,7,-5,-7":
                 currentRow.getEffectList().add(new Effect(0xE3,0x00));
-                currentRow.getEffectList().add(new Effect(0x04,0x38));
+                currentRow.getEffectList().add(new Effect(0x04,0x54));
                 break;   
             case "-5,-10,-5,0,5,10,5,0":
                 currentRow.getEffectList().add(new Effect(0xE3,0x03));
-                currentRow.getEffectList().add(new Effect(0x04,0x4A));
+                currentRow.getEffectList().add(new Effect(0x04,0x44));
                 break;   
             case "-7,-6,9,8,9,-6,-7":
                 currentRow.getEffectList().add(new Effect(0xE3,0x03));
-                currentRow.getEffectList().add(new Effect(0x04,0x38));
+                currentRow.getEffectList().add(new Effect(0x04,0x34));
                 break;   
             case "-16,16,16,-16":
                 currentRow.getEffectList().add(new Effect(0xE3,0x06));
