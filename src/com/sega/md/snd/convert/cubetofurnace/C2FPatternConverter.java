@@ -120,7 +120,10 @@ public class C2FPatternConverter {
     private boolean released = false;
     private boolean previousNoteReleased = false;
     private boolean sustainOngoing = false;
-    private int detune = -1;
+    private int currentDetune = 3;
+    private int newDetune = 3;
+    private int shifting = 0;
+    private boolean shiftDown = false;
     private int newPanning = -1;
     private int currentPanning = -1;
     private int slide = 0;
@@ -272,12 +275,8 @@ public class C2FPatternConverter {
         Furnace detune command description : 
         53 xy Set detune (x: operator from 1 to 4 (0 for all ops); y: detune where 3 is center)
         */
-        int offset = ((s.getValue()&0x60)>>5);
-        if((s.getValue()&0x70)==0){
-            detune = 3 + offset;
-        }else{
-            detune = 3 - offset;
-        }
+        int detuneValue = ((s.getValue()&0x70)>>4);
+        newDetune = 3 + detuneValue;
     }
 
     private void vibrato(CubeCommand cc) {
@@ -420,10 +419,10 @@ public class C2FPatternConverter {
         }        
     }
     
-    private void applyDetune(){
-        if(detune>=0){
-            currentRow.getEffectList().add(new Effect(0x53,0x00+detune));
-            detune=-1;
+    private void applyDetune(){     
+        if(newDetune!=currentDetune){
+            currentRow.getEffectList().add(new Effect(0x53,newDetune));
+            currentDetune = newDetune;
         }        
     }
     
