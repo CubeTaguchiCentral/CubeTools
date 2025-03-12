@@ -76,6 +76,23 @@ public class C2FPatternConverter {
     private Row[] rows;
     
     private String[] pitchEffectStrings = {
+        "0",
+        "-16,16,16,-16",
+        "-3,-3,-1,1,3,3,3,1,-1,-3",
+        "-2,-2,-1,1,2,2,2,1,-1,-2",
+        "-1,-1,0,1,1,1,1,0,-1,-1",
+        "-1,0,0,1,0,1,0,0,-1,0",
+        "2",
+        "-2",
+        "4",
+        "-4",
+        "8",
+        "-8",
+        "16",
+        "-16",
+        "32",
+        "-32"
+    };
     
     private int channelType = 0;
     private int newNoteValue = 0;
@@ -640,10 +657,15 @@ public class C2FPatternConverter {
     } 
     
     private void producePitchEffectStrings(MusicEntry me){
-            StringBuilder sb = new StringBuilder();
-            for(int j=0;j<me.getPitchEffects()[i].length;j++){
-                sb.append(Integer.toString(me.getPitchEffects()[i][j]));
-                sb.append(",");
+        if(me.getPitchEffects()!=null){
+            pitchEffectStrings = new String[me.getPitchEffects().length];
+            for(int i=0;i<pitchEffectStrings.length;i++){
+                StringBuilder sb = new StringBuilder();
+                for(int j=0;j<me.getPitchEffects()[i].length;j++){
+                    sb.append(Integer.toString(me.getPitchEffects()[i][j]));
+                    sb.append(",");
+                }
+                pitchEffectStrings[i] = sb.substring(0, sb.length()-1);
             }
         }
     }
