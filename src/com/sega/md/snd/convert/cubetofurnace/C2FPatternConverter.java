@@ -173,6 +173,7 @@ public class C2FPatternConverter {
                     applyNote(cc);
                 }
                 applyDetune();
+                applyShifting(newNoteValue);
                 applyInstrument();
                 applyVolume();
                 applyPanning();
@@ -245,8 +246,13 @@ public class C2FPatternConverter {
 
     private void shifting(CubeCommand cc) {
         Shifting s = (Shifting) cc;
-        /* Incomplete conversion due to Furnace limitations of command 0x53
-        Detune command description : 
+        shiftDown = ((s.getValue()&0x80)!=0);
+        shifting = (byte)(shiftDown?(0xF0+(s.getValue()&0x0F)):(s.getValue()&0x0F));
+        if(shifting!=0){
+            System.out.println("Note shift : "+shifting);
+        }
+        /* Incomplete detune conversion due to Furnace limitations of command 0x53
+        Furnace detune command description : 
         53 xy Set detune (x: operator from 1 to 4 (0 for all ops); y: detune where 3 is center)
         */
         int offset = ((s.getValue()&0x60)>>5);
@@ -404,6 +410,21 @@ public class C2FPatternConverter {
         }        
     }
     
+    private void applyShifting(int baseNote){
+        if(channelType==TYPE_FM||channelType==TYPE_PSGTONE){
+            if(currentRow.getNote()!=null){
+                /*if(shifting>0){
+                    int effect = shiftDown?0xE9:0xE8;
+                    currentRow.getEffectList().add(new Effect(effect,shifting));
+                }*/
+                /* Managing Furnace limitation : portamento doesn't take a no-delay quick legato as note target
+                Instead, shift note directly */
+                int targetNoteValue = baseNote + shifting;
+                currentRow.setNote(new FNote(targetNoteValue));
+            }
+        }
+    }
+    
     private void applyPanning(){
         if(newPanning!=currentPanning){
             currentRow.getEffectList().add(new Effect(0x80,newPanning));
@@ -416,15 +437,18 @@ public class C2FPatternConverter {
             if((previousNoteReleased || release==0)&&nextNoteLengthDecrement==0){      
                 /* Managing Furnace limitation : portamento expects previous note to be active, not released.
                 Apply last note again, followed immediately by new note with decreased playLength */
-                currentRow.setNote(new FNote(previousNoteValue));
+                //currentRow.setNote(new FNote(previousNoteValue));
+                applyShifting(previousNoteValue);
                 rowList.add(currentRow);
                 currentNotePlayLength = playLength;
                 nextNoteLengthDecrement++;
                 currentRow = new Row();
                 currentRow.setNote(new FNote(newNoteValue));
                 currentRow.getEffectList().add(new Effect(0x03,slide));
+                applyShifting(newNoteValue);
             }else{
                 currentRow.setNote(new FNote(newNoteValue));
+                applyShifting(newNoteValue);
                 currentRow.getEffectList().add(new Effect(0x03,slide));
             }
         }        
