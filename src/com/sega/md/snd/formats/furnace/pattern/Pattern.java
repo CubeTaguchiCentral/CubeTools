@@ -222,9 +222,4 @@ public class Pattern {
         this.rows = rows;
     }
     
-    public static int calculateTicksPersSecond(byte ymTimerB, int speed){  
-        float timerPeriod = (8*144) * (PATTERN_LENGTH - (0xFF&ymTimerB)) / (YM2612_INPUT_FREQUENCY/2);
-        float timerFrequency = 1/timerPeriod * speed;
-        return Math.round(timerFrequency);
-    }
 }

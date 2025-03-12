@@ -71,7 +71,7 @@ public class C2FFileConverter {
         ff.getSongInfo().setOrdersLength((short)(0xFFFF&orderLength));
 
         ff.getSongInfo().setPatternLength((short)PATTERN_LENGTH);
-        int ticksPerSecond = C2FPatternConverter.calculateTicksPersSecond(me.getYmTimerBValue(), ff.getSongInfo().getSpeed1());
+        int ticksPerSecond = C2FPatternConverter.calculateTicksPersSecond(me.getYmTimerBValue(), me.getYmTimerBIncrement(), ff.getSongInfo().getSpeed1());
         ff.getSongInfo().setTicksPerSecond(ticksPerSecond);
 
         C2FYmInstrumentConverter.convertYmInstruments(me, ff);

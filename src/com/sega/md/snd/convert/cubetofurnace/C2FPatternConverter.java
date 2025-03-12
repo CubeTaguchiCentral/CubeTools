@@ -268,9 +268,6 @@ public class C2FPatternConverter {
         Shifting s = (Shifting) cc;
         shiftDown = ((s.getValue()&0x80)!=0);
         shifting = (byte)(shiftDown?(0xF0+(s.getValue()&0x0F)):(s.getValue()&0x0F));
-        if(shifting!=0){
-            System.out.println("Note shift : "+shifting);
-        }
         /* Incomplete detune conversion due to Furnace limitations of command 0x53
         Furnace detune command description : 
         53 xy Set detune (x: operator from 1 to 4 (0 for all ops); y: detune where 3 is center)
@@ -331,7 +328,7 @@ public class C2FPatternConverter {
 
     private void ymTimer(CubeCommand cc) {
         YmTimer yt = (YmTimer) cc;
-        currentRow.getEffectList().add(new Effect(0xC0,calculateTicksPersSecond(yt.getValue(),1)));
+        currentRow.getEffectList().add(new Effect(0xC0,calculateTicksPersSecond(yt.getValue(),0,1)));
     }
     
     private void applyNote(CubeCommand cc){
@@ -524,8 +521,8 @@ public class C2FPatternConverter {
         }        
     }
     
-    public static int calculateTicksPersSecond(byte ymTimerB, int speed){  
-        float timerPeriod = (8*144) * (PATTERN_LENGTH - (0xFF&ymTimerB)) / (YM2612_INPUT_FREQUENCY/2);
+    public static int calculateTicksPersSecond(byte ymTimerB, int ymTimerBIncrement, int speed){  
+        float timerPeriod = (8*144) * (PATTERN_LENGTH - ((0xFF&ymTimerB)+ymTimerBIncrement)) / (YM2612_INPUT_FREQUENCY/2);
         float timerFrequency = 1/timerPeriod * speed;
         int ticksPerSecond = Math.round(timerFrequency);
         //System.out.println("Timer B value "+Integer.toString(0xFF&ymTimerB)+" -> "+ticksPerSecond+" ticks per second");

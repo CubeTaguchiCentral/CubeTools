@@ -50,6 +50,7 @@ public class MusicEntry {
     String name;
     boolean ym6InDacMode = false;
     byte ymTimerBValue = 0;
+    int ymTimerBIncrement = 0;
     CubeChannel[] channels = new CubeChannel[10];
     byte[][] pitchEffects;
     byte[] ymLevels;
@@ -92,8 +93,9 @@ public class MusicEntry {
         this.channels = channels;
     }
     
-    public MusicEntry(byte [] data, int entryOffset, int baseOffset, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg){
+    public MusicEntry(byte [] data, int entryOffset, int baseOffset, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int ymTimerBIncrement){
         this(data, entryOffset, baseOffset);
+        this.ymTimerBIncrement = ymTimerBIncrement;
         this.setSsgEgAvailable(ssgEg);
         if(pitchEffectsOffset!=0){
             int maxPitchEffectIndex = 0;
@@ -179,6 +181,9 @@ public class MusicEntry {
             ym6InDacMode = true;
         }else{
             ym6InDacMode = false;
+        }
+        if(data[entryOffset+2]!=0){
+            System.out.println("Music byte 2 : "+String.format("%02x", data[entryOffset+2]));
         }
         ymTimerBValue = data[entryOffset+3];
         int channelOffset = baseOffset + (((data[entryOffset+4 + 2*0 + 1])&0xFF)<<8) + ((data[entryOffset+4 + 2*0])&0xFF);
@@ -492,6 +497,14 @@ public class MusicEntry {
 
     public void setSsgEgAvailable(boolean ssgEg) {
         this.ssgEgAvailable = ssgEg;
+    }
+
+    public int getYmTimerBIncrement() {
+        return ymTimerBIncrement;
+    }
+
+    public void setYmTimerBIncrement(int ymTimerBIncrement) {
+        this.ymTimerBIncrement = ymTimerBIncrement;
     }
 
     public boolean isMultiSampleBank() {

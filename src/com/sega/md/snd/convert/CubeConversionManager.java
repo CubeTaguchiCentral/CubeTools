@@ -28,10 +28,10 @@ public class CubeConversionManager {
     
     MusicEntry[] mes = new MusicEntry[32];
     
-    public void importMusicEntryFromBinaryMusicBank(String filePath, int ptOffset, int ramPreloadOffset, int index, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int sampleEntriesOffset, boolean multipleBanksFormat, int[] sampleBanksOffsets){
+    public void importMusicEntryFromBinaryMusicBank(String filePath, int ptOffset, int ramPreloadOffset, int index, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int ymTimerBIncrement, int sampleEntriesOffset, boolean multipleBanksFormat, int[] sampleBanksOffsets){
         System.out.println("CubeConversionManager.importMusicEntryFromBinaryMusicBank() - Importing ...");
         try{        
-            mes[0] = CubeBankManager.importMusicEntry(filePath, ptOffset, ramPreloadOffset, index, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstOffset, psgInstOffset, ssgEg);
+            mes[0] = CubeBankManager.importMusicEntry(filePath, ptOffset, ramPreloadOffset, index, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstOffset, psgInstOffset, ssgEg, ymTimerBIncrement);
             mes[0].factorizeIdenticalChannels();
             mes[0].hasMainLoop();
             mes[0].hasIntro();
@@ -47,12 +47,12 @@ public class CubeConversionManager {
         System.out.println("CubeConversionManager.importMusicEntryFromBinaryMusicBank() - ... Done.");
     }
     
-    public void importMusicEntriesFromBinaryMusicBank(String filePath, int ptOffset, int ramPreloadOffset, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int sampleEntriesOffset, boolean multipleBanksFormat, int[] sampleBanksOffsets){
+    public void importMusicEntriesFromBinaryMusicBank(String filePath, int ptOffset, int ramPreloadOffset, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int ymTimerBIncrement, int sampleEntriesOffset, boolean multipleBanksFormat, int[] sampleBanksOffsets){
         System.out.println("CubeConversionManager.importMusicEntryFromBinaryMusicBank() - Importing ...");
         int maxSampleIndex = 0;      
         for(int i=0;i<mes.length;i++){
             try{
-                mes[i] = CubeBankManager.importMusicEntry(filePath, ptOffset, ramPreloadOffset, i+1, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstOffset, psgInstOffset, ssgEg);
+                mes[i] = CubeBankManager.importMusicEntry(filePath, ptOffset, ramPreloadOffset, i+1, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstOffset, psgInstOffset, ssgEg, ymTimerBIncrement);
                 mes[i].factorizeIdenticalChannels();
                 mes[i].hasMainLoop();
                 mes[i].hasIntro();
@@ -228,6 +228,7 @@ public class CubeConversionManager {
             int ymLevelsOffset = driverOffset + cis[i].getYmLevelsOffset();
             int psgInstruments = driverOffset + cis[i].getPsgInstruments();
             int inRamPreloadOffset = cis[i].getInRamPreloadOffset();
+            int ymTimerBIncrement = cis[i].getYmTimerBIncrement();
             int[] ymInstruments = cis[i].getYmInstruments();
             boolean ssgEg = cis[i].isSsgEg();
             int sampleTableOffset = cis[i].getSampleTableOffset();
@@ -244,7 +245,7 @@ public class CubeConversionManager {
                 if(ymInstruments.length>j){
                     ymInstrumentsOffset = ymInstruments[j];
                 }
-                importMusicEntriesFromBinaryMusicBank(completRomFilepath, musicBankOffsets[j], inRamPreloadOffset, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstrumentsOffset, psgInstruments, ssgEg, sampleTableOffset, multiBankSampleTableFormat, sampleBankOffsets);
+                importMusicEntriesFromBinaryMusicBank(completRomFilepath, musicBankOffsets[j], inRamPreloadOffset, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstrumentsOffset, psgInstruments, ssgEg, ymTimerBIncrement, sampleTableOffset, multiBankSampleTableFormat, sampleBankOffsets);
                 System.out.println("... "+gameName+" music bank "+(j)+" imported.");
                 String completeAsmOutputFilePath = completRomFilepath.substring(0, completRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_ASM + File.separator + targetFolders[j];
                 exportMusicEntriesAsAsm(completeAsmOutputFilePath, DEFAULT_ASM_MUSIC_ENTRY_NAME, false, false);

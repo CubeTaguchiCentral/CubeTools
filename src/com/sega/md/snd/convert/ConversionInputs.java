@@ -24,6 +24,7 @@ public class ConversionInputs {
     private int ymLevelsOffset;
     private int psgInstruments;
     private int inRamPreloadOffset;
+    private int ymTimerBIncrement;
     private int[] ymInstruments;
     private boolean ssgEg;
     private int sampleTableOffset;
@@ -45,15 +46,16 @@ public class ConversionInputs {
         ymLevelsOffset = Integer.parseInt(params[5], 16);
         psgInstruments = Integer.parseInt(params[6], 16);
         inRamPreloadOffset = Integer.parseInt(params[7], 16);
-        String[] ymInstrumentsOffsetStrings = params[8].split(",");
+        ymTimerBIncrement = Integer.parseInt(params[8], 16);
+        String[] ymInstrumentsOffsetStrings = params[9].split(",");
         ymInstruments = new int[ymInstrumentsOffsetStrings.length];
         for(int i=0;i<ymInstruments.length;i++){
             ymInstruments[i] = Integer.parseInt(ymInstrumentsOffsetStrings[i], 16);
         }
-        ssgEg = Boolean.parseBoolean(params[9]);
-        sampleTableOffset = Integer.parseInt(params[10], 16);
-        multiBankSampleTableFormat = Boolean.parseBoolean(params[11]);
-        String[] sampleBankOffsetStrings = params[12].split(",");
+        ssgEg = Boolean.parseBoolean(params[10]);
+        sampleTableOffset = Integer.parseInt(params[11], 16);
+        multiBankSampleTableFormat = Boolean.parseBoolean(params[12]);
+        String[] sampleBankOffsetStrings = params[13].split(",");
         sampleBankOffsets = new int[sampleBankOffsetStrings.length];
         for(int i=0;i<sampleBankOffsets.length;i++){
             sampleBankOffsets[i] = Integer.parseInt(sampleBankOffsetStrings[i], 16);
@@ -141,6 +143,14 @@ public class ConversionInputs {
 
     public void setInRamPreloadOffset(int inRamPreloadOffset) {
         this.inRamPreloadOffset = inRamPreloadOffset;
+    }
+
+    public int getYmTimerBIncrement() {
+        return ymTimerBIncrement;
+    }
+
+    public void setYmTimerBIncrement(int ymTimerBIncrement) {
+        this.ymTimerBIncrement = ymTimerBIncrement;
     }
 
     public int[] getYmInstruments() {
