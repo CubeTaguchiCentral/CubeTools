@@ -1959,7 +1959,7 @@ public class MainEditor extends javax.swing.JFrame {
         for(int i=0;i<sampleBanksOffsets.length;i++){
             sampleBanksOffsets[i] = Integer.parseInt(sampleBanksOffsetStrings[i], 16);
         }
-        ccm.importMusicEntriesFromBinaryMusicBank(filePath, ptOffset, ramPreloadOffset, 0, 0, 0, ymInstOffset, 0, ssgEg, sampleEntriesOffset, multipleBanksFormat, sampleBanksOffsets);
+        ccm.importMusicEntriesFromBinaryMusicBank(filePath, ptOffset, ramPreloadOffset, 0, 0, 0, ymInstOffset, 0, ssgEg, 0, sampleEntriesOffset, multipleBanksFormat, sampleBanksOffsets);
     }//GEN-LAST:event_jButton41ActionPerformed
 
     private void jButton40ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton40ActionPerformed
@@ -2004,7 +2004,7 @@ public class MainEditor extends javax.swing.JFrame {
         for(int i=0;i<sampleBanksOffsets.length;i++){
             sampleBanksOffsets[i] = Integer.parseInt(sampleBanksOffsetStrings[i], 16);
         }
-        ccm.importMusicEntryFromBinaryMusicBank(filePath, ptOffset, ramPreloadOffset, entryIndex, 0, 0, 0, ymInstOffset, 0, ssgEg, sampleEntriesOffset, multipleBanksFormat, sampleBanksOffsets);
+        ccm.importMusicEntryFromBinaryMusicBank(filePath, ptOffset, ramPreloadOffset, entryIndex, 0, 0, 0, ymInstOffset, 0, ssgEg, 0, sampleEntriesOffset, multipleBanksFormat, sampleBanksOffsets);
     }//GEN-LAST:event_jButton43ActionPerformed
 
     private void jTextField43ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField43ActionPerformed
