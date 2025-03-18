@@ -386,9 +386,6 @@ public class C2FPatternConverter {
         }else if(channelType==TYPE_PSGTONE){
             currentRow.setNote(new FNote(NOTE_RELEASE));
         }
-        rowList.add(currentRow);
-        currentRow = new Row();
-        playCounter++;
         while(playCounter<playLength){
             rowList.add(currentRow);
             currentRow = new Row();
