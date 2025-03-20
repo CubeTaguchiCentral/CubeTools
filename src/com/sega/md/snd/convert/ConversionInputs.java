@@ -30,6 +30,8 @@ public class ConversionInputs {
     private int sampleTableOffset;
     private boolean multiBankSampleTableFormat;
     private int[] sampleBankOffsets;
+    private int sfxOffset;
+    private int sfxCount;
     
     public ConversionInputs(String line){
         line = line.trim();
@@ -59,6 +61,10 @@ public class ConversionInputs {
         sampleBankOffsets = new int[sampleBankOffsetStrings.length];
         for(int i=0;i<sampleBankOffsets.length;i++){
             sampleBankOffsets[i] = Integer.parseInt(sampleBankOffsetStrings[i], 16);
+        }
+        if(params.length>14){
+            sfxOffset = Integer.parseInt(params[14], 16);
+            sfxCount = Integer.parseInt(params[15], 10);
         }
     }
     
@@ -191,6 +197,22 @@ public class ConversionInputs {
 
     public void setSampleBankOffsets(int[] sampleBankOffsets) {
         this.sampleBankOffsets = sampleBankOffsets;
+    }
+
+    public int getSfxOffset() {
+        return sfxOffset;
+    }
+
+    public void setSfxOffset(int sfxOffset) {
+        this.sfxOffset = sfxOffset;
+    }
+
+    public int getSfxCount() {
+        return sfxCount;
+    }
+
+    public void setSfxCount(int sfxCount) {
+        this.sfxCount = sfxCount;
     }
     
     

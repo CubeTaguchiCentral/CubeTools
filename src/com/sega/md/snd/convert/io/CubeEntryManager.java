@@ -57,7 +57,7 @@ public class CubeEntryManager {
             byte[] data = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
             me = new MusicEntry(data, 0, 0);
         } catch (IOException ex) {
-            Logger.getLogger(CubeBankManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CubeBinaryManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return me;
     }

@@ -26,13 +26,12 @@ public class C2FYmInstrumentConverter {
         0b1111
     };
     
-    public static void convertYmInstruments(MusicEntry me, FurnaceFile ff){
-        byte[][] cubeInstruments = me.getYmInstruments();
+    public static void convertYmInstruments(byte[][] cubeInstruments, boolean ssgEg, FurnaceFile ff){
         //ff.setInstruments(new InstrumentBlock[cubeInstruments.length]);
         for(int i=0;i<cubeInstruments.length;i++){
             Feature[] newFeatures = new Feature[2];
             newFeatures[0] = new Feature("yminst"+String.format("%02d", i));
-            newFeatures[1] = convertCubeInstrumentToFurnaceFeature(cubeInstruments[i], me.isSsgEgAvailable());
+            newFeatures[1] = convertCubeInstrumentToFurnaceFeature(cubeInstruments[i], ssgEg);
             /*if(ff.getInstruments()[i]==null){
                 ff.getInstruments()[i] = new InstrumentBlock();
             }*/

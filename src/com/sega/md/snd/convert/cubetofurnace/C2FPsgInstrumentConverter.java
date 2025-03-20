@@ -17,14 +17,13 @@ public class C2FPsgInstrumentConverter {
     
     public static final int FURNACE_TEMPLATE_FILE_PSG_INSTRUMENT_INDEX_OFFSET = 0xA0;
     
-    public static void convertPsgInstruments(MusicEntry me, FurnaceFile ff){
-        byte[][] cubeInstruments = me.getPsgInstruments();
+    public static void convertPsgInstruments(byte[][] cubeInstruments, FurnaceFile ff){
         //ff.setInstruments(new InstrumentBlock[cubeInstruments.length]);
         if(cubeInstruments!=null){
             for(int i=0;i<cubeInstruments.length;i++){
                 Feature[] newFeatures = new Feature[2];
                 newFeatures[0] = new Feature("psginst"+String.format("%02d", i));
-                newFeatures[1] = convertCubeInstrumentToFurnaceFeature(cubeInstruments[i], me.isSsgEgAvailable());
+                newFeatures[1] = convertCubeInstrumentToFurnaceFeature(cubeInstruments[i]);
                 //newFeatures[2] = new Feature("EN", (short)0, new byte[0]);
                 /*if(ff.getInstruments()[i]==null){
                     ff.getInstruments()[i] = new InstrumentBlock();
@@ -35,7 +34,7 @@ public class C2FPsgInstrumentConverter {
         }
     }
     
-    public static Feature convertCubeInstrumentToFurnaceFeature(byte[] cubeInstrument, boolean ssgEg){
+    public static Feature convertCubeInstrumentToFurnaceFeature(byte[] cubeInstrument){
         String code = "MA";
         int cubeInstrumentLength = cubeInstrument.length;
         int release = 0;

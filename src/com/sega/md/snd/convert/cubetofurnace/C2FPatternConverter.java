@@ -72,7 +72,6 @@ public class C2FPatternConverter {
     public static final int PSG_INSTRUMENT_OFFSET = 0xA0;
     public static final int SAMPLE_INSTRUMENT_OFFSET = 0xC0;
     
-    private MusicEntry me;
     private Row[] rows;
     
     private String[] pitchEffectStrings = {
@@ -94,6 +93,7 @@ public class C2FPatternConverter {
         "-32"
     };
     
+    private byte[] ymLevels;
     private int channelType = 0;
     private int newNoteValue = 0;
     private int previousNoteValue = 0;
@@ -143,9 +143,9 @@ public class C2FPatternConverter {
         return converters;
     }
         
-    public Pattern convertCubeChannelToFurnacePattern(MusicEntry me, CubeChannel cch, int channelType, boolean introOnly, boolean mainLoopOnly){
-        this.me = me;
-        producePitchEffectStrings(me);
+    public Pattern convertCubeChannelToFurnacePattern(byte[] ymLevels, byte[][] pitchEffects, CubeChannel cch, int channelType, boolean introOnly, boolean mainLoopOnly){
+        this.ymLevels = (ymLevels!=null)?ymLevels:DEFAULT_YM_LEVELS;
+        producePitchEffectStrings(pitchEffects);
         Pattern p = new Pattern();
         rowList = new ArrayList();
         CubeCommand[] ccs = cch.getCcs();
@@ -402,7 +402,6 @@ public class C2FPatternConverter {
     }
     
     private void applyVolume(){
-        byte[] ymLevels = (me.getYmLevels()!=null)?me.getYmLevels():DEFAULT_YM_LEVELS;
         if(channelType!=TYPE_DAC && newVolume!=currentVolume){
             if(channelType==TYPE_FM){
                 currentRow.setVolume(new Volume(0x7F-(ymLevels[newVolume]&0xFF)));
@@ -649,13 +648,13 @@ public class C2FPatternConverter {
 
     } 
     
-    private void producePitchEffectStrings(MusicEntry me){
-        if(me.getPitchEffects()!=null){
-            pitchEffectStrings = new String[me.getPitchEffects().length];
+    private void producePitchEffectStrings(byte[][] pitchEffects){
+        if(pitchEffects!=null){
+            pitchEffectStrings = new String[pitchEffects.length];
             for(int i=0;i<pitchEffectStrings.length;i++){
                 StringBuilder sb = new StringBuilder();
-                for(int j=0;j<me.getPitchEffects()[i].length;j++){
-                    sb.append(Integer.toString(me.getPitchEffects()[i][j]));
+                for(int j=0;j<pitchEffects[i].length;j++){
+                    sb.append(Integer.toString(pitchEffects[i][j]));
                     sb.append(",");
                 }
                 pitchEffectStrings[i] = sb.substring(0, sb.length()-1);

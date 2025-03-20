@@ -7,10 +7,8 @@ package com.sega.md.snd.convert.io;
 
 import com.sega.md.snd.formats.furnace.clipboard.FurnaceClipboardProducer;
 import com.sega.md.snd.formats.cube.MusicEntry;
-import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.concatenatePatterns;
-import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.convertPatterns;
-import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.fillChannelsAndApplyLoop;
-import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.fillChannelsToMaxLength;
+import com.sega.md.snd.convert.cubetofurnace.C2FMusicFileConverter;
+import com.sega.md.snd.convert.cubetofurnace.C2FSfxFileConverter;
 import com.sega.md.snd.convert.cubetofurnace.C2FPatternConverter;
 import com.sega.md.snd.formats.furnace.pattern.Pattern;
 import java.io.IOException;
@@ -19,7 +17,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static com.sega.md.snd.convert.cubetofurnace.C2FFileConverter.applyChannelEnds;
+import static com.sega.md.snd.convert.cubetofurnace.C2FMusicFileConverter.applyChannelEnds;
+import com.sega.md.snd.formats.cube.SfxEntry;
 import com.sega.md.snd.formats.furnace.pattern.Effect;
 
 /**
@@ -42,17 +41,49 @@ public class FurnaceClipboardManager {
             C2FPatternConverter[] converters = C2FPatternConverter.instantiateConverterArray(CHANNEL_COUNT);
             Pattern[] patterns = null;
             if(!me.hasMainLoop() && !me.hasRepeatLoop()){
-                patterns = convertPatterns(me, converters, false, false);
+                patterns = C2FMusicFileConverter.convertPatterns(me, converters, false, false);
                 applyChannelEnds(patterns);
             }else{         
-                Pattern[] introPatterns = convertPatterns(me, converters, true, false);
-                Pattern[] mainLoopPatterns = convertPatterns(me, converters, false, true);
-                patterns = concatenatePatterns(introPatterns, mainLoopPatterns);
-                fillChannelsAndApplyLoop(introPatterns, mainLoopPatterns, patterns, converters);
+                Pattern[] introPatterns = C2FMusicFileConverter.convertPatterns(me, converters, true, false);
+                Pattern[] mainLoopPatterns = C2FMusicFileConverter.convertPatterns(me, converters, false, true);
+                patterns = C2FMusicFileConverter.concatenatePatterns(introPatterns, mainLoopPatterns);
+                C2FMusicFileConverter.fillChannelsAndApplyLoop(introPatterns, mainLoopPatterns, patterns, converters);
             } 
-            fillChannelsToMaxLength(patterns);
+            C2FMusicFileConverter.fillChannelsToMaxLength(patterns);
         
             if(!me.hasMainLoop() && !me.hasRepeatLoop()){
+                patterns[0].getRows()[patterns[0].getRows().length-1].getEffectList().add(new Effect(0xFF,0x00));
+            }
+            pw.print(FurnaceClipboardProducer.produceClipboardOutput(patterns, PATTERN_LENGTH));
+            pw.close();
+            System.out.println("FurnaceClipboardManager() - Furnace Clipboard exported.");
+        } catch (IOException ex) {
+            Logger.getLogger(FurnaceClipboardManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static void exportSfxEntryAsFurnaceClipboard(SfxEntry se, String filePath){
+        try {
+            System.out.println("FurnaceClipboardManager() - Exporting Furnace Clipboard ...");
+            Path path = Paths.get(filePath);
+            PrintWriter pw;
+            pw = new PrintWriter(path.toString(),System.getProperty("file.encoding"));
+
+            /* Stateful converters */
+            C2FPatternConverter[] converters = C2FPatternConverter.instantiateConverterArray(CHANNEL_COUNT);
+            Pattern[] patterns = null;
+            if(!se.hasMainLoop() && !se.hasRepeatLoop()){
+                patterns = C2FSfxFileConverter.convertPatterns(se, converters, false, false);
+                applyChannelEnds(patterns);
+            }else{         
+                Pattern[] introPatterns = C2FSfxFileConverter.convertPatterns(se, converters, true, false);
+                Pattern[] mainLoopPatterns = C2FSfxFileConverter.convertPatterns(se, converters, false, true);
+                patterns = C2FSfxFileConverter.concatenatePatterns(introPatterns, mainLoopPatterns);
+                C2FSfxFileConverter.fillChannelsAndApplyLoop(introPatterns, mainLoopPatterns, patterns, converters);
+            } 
+            C2FSfxFileConverter.fillChannelsToMaxLength(patterns);
+        
+            if(!se.hasMainLoop() && !se.hasRepeatLoop()){
                 patterns[0].getRows()[patterns[0].getRows().length-1].getEffectList().add(new Effect(0xFF,0x00));
             }
             pw.print(FurnaceClipboardProducer.produceClipboardOutput(patterns, PATTERN_LENGTH));

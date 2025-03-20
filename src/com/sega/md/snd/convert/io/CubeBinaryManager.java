@@ -6,6 +6,7 @@
 package com.sega.md.snd.convert.io;
 
 import com.sega.md.snd.formats.cube.MusicEntry;
+import com.sega.md.snd.formats.cube.SfxEntry;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +21,7 @@ import java.util.logging.Logger;
  *
  * @author Wiz
  */
-public class CubeBankManager {
+public class CubeBinaryManager {
     
     public static final int BANK_SIZE = 0x8000;
     public static final int SAMPLE_ENTRY_SIZE = 6;
@@ -53,9 +54,31 @@ public class CubeBankManager {
             }
             me = new MusicEntry(data, musicEntryOffset, baseOffset, driverOffset,  pitchEffectsOffset, ymLevelsOffset, ymInstOffset, psgInstOffset, ssgEg, ymTimerBIncrement);
         } catch (IOException ex) {
-            Logger.getLogger(CubeBankManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CubeBinaryManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return me;
+    }
+       
+    public static SfxEntry importSfxEntry(String filePath, int ptOffset, int ramPreloadOffset, int index, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int ymTimerBIncrement, byte averageYmTimerBValue) throws Exception{
+        SfxEntry se = null;
+        try{
+            File f = new File(filePath);
+            byte[] data = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
+            int bankBaseOffset = ptOffset - (ptOffset % BANK_SIZE);
+            index--;
+            byte offsetLow = data[ptOffset + 2*index];
+            byte offsetHigh = data[ptOffset + 2*index + 1];
+            int offset = ((offsetHigh&0xFF)<<8) + (offsetLow&0xFF);
+            int baseOffset = bankBaseOffset - BANK_SIZE;
+            if(driverOffset<ptOffset && ptOffset<(driverOffset+0x2000)){
+                baseOffset = driverOffset;
+            }
+            int sfxEntryOffset = baseOffset + offset;
+            se = new SfxEntry(data, sfxEntryOffset, baseOffset, driverOffset,  pitchEffectsOffset, ymLevelsOffset, ymInstOffset, psgInstOffset, ssgEg, ymTimerBIncrement, averageYmTimerBValue);
+        } catch (IOException ex) {
+            Logger.getLogger(CubeBinaryManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return se;
     }
     
     public static byte[][] importSampleEntries(String filePath, int sampleEntriesOffset, boolean multiSampleBank, int maxSampleIndex){
@@ -68,7 +91,7 @@ public class CubeBankManager {
                 sampleEntries[i] = Arrays.copyOfRange(data, sampleEntriesOffset+i*sampleEntrySize, sampleEntriesOffset+i*sampleEntrySize+sampleEntrySize);
             }
         } catch (IOException ex) {
-            Logger.getLogger(CubeBankManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CubeBinaryManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return sampleEntries;
     }
@@ -82,7 +105,7 @@ public class CubeBankManager {
                 sampleBanks[i] = Arrays.copyOfRange(data, sampleBanksOffsets[i], sampleBanksOffsets[i]+0x8000);
             }
         } catch (IOException ex) {
-            Logger.getLogger(CubeBankManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CubeBinaryManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return sampleBanks;
     }
@@ -99,7 +122,7 @@ public class CubeBankManager {
             System.arraycopy(data, bankBaseOffset+BANK_SIZE, dataAfterMusicBank, 0, dataAfterMusicBank.length);
             MusicEntry[] mes = new MusicEntry[32];
             for(int i=0;i<32;i++){
-                mes[i] = CubeBankManager.importMusicEntry(filePath, ptOffset, i+1);
+                mes[i] = CubeBinaryManager.importMusicEntry(filePath, ptOffset, i+1);
             }
             mes[index-1] = me;
             byte[][] meBytes = new byte[32][];
@@ -132,7 +155,7 @@ public class CubeBankManager {
             Path path = Paths.get(nf.getAbsolutePath());
             Files.write(path,data);   
         } catch (Exception ex) {
-            Logger.getLogger(CubeBankManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CubeBinaryManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         

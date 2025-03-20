@@ -6,6 +6,7 @@
 package com.sega.md.snd.convert.cubetofurnace;
 
 import com.sega.md.snd.formats.cube.MusicEntry;
+import com.sega.md.snd.formats.cube.SfxEntry;
 import com.sega.md.snd.formats.furnace.file.FurnaceFile;
 import com.sega.md.snd.formats.furnace.file.section.PatternBlock;
 import static com.sega.md.snd.formats.furnace.file.section.SongInfoBlock.LOOP_MODALITY_HARD_RESET;
@@ -23,31 +24,35 @@ import java.util.List;
  *
  * @author Wiz
  */
-public class C2FFileConverter {
+public class C2FSfxFileConverter {
     
-    private static final int CHANNEL_COUNT = 10;
+    private static final int TEMPLATE_FILE_CHANNEL_COUNT = 10;
+    private static final int SFX_TYPE_1_CHANNEL_COUNT = 10;
+    private static final int SFX_TYPE_2_CHANNEL_COUNT = 3;
     private static final int PATTERN_LENGTH = 256;
     
-    public static FurnaceFile convertMusicEntry(MusicEntry me, FurnaceFile ff){
+    public static FurnaceFile convertSfxEntry(SfxEntry se, FurnaceFile ff){
 
+        int channelCount = se.getType()==1?SFX_TYPE_1_CHANNEL_COUNT:SFX_TYPE_2_CHANNEL_COUNT;
+        
         /* Stateful converters for intro+loop case */
-        C2FPatternConverter[] converters = C2FPatternConverter.instantiateConverterArray(CHANNEL_COUNT);
+        C2FPatternConverter[] converters = C2FPatternConverter.instantiateConverterArray(channelCount);
 
         Pattern[] patterns = null;
-        if(!me.hasMainLoop() && !me.hasRepeatLoop()){
+        if(!se.hasMainLoop() && !se.hasRepeatLoop()){
             ff.getSongInfo().setLoopModality(LOOP_MODALITY_HARD_RESET);
-            patterns = convertPatterns(me, converters, false, false);
+            patterns = convertPatterns(se, converters, false, false);
             applyChannelEnds(patterns);
         }else{         
-            Pattern[] introPatterns = convertPatterns(me, converters, true, false);
-            Pattern[] mainLoopPatterns = convertPatterns(me, converters, false, true);
+            Pattern[] introPatterns = convertPatterns(se, converters, true, false);
+            Pattern[] mainLoopPatterns = convertPatterns(se, converters, false, true);
             patterns = concatenatePatterns(introPatterns, mainLoopPatterns);
             fillChannelsAndApplyLoop(introPatterns, mainLoopPatterns, patterns, converters);
         } 
         fillChannelsToMaxLength(patterns);
         Pattern[][] splitPatterns = splitPatterns(patterns, PATTERN_LENGTH);
         
-        if(!me.hasMainLoop() && !me.hasRepeatLoop()){
+        if(!se.hasMainLoop() && !se.hasRepeatLoop()){
             splitPatterns[0][splitPatterns[0].length-1].getRows()[PATTERN_LENGTH-1].getEffectList().add(new Effect(0xFF,0x00));
         }
         
@@ -71,40 +76,47 @@ public class C2FFileConverter {
         ff.getSongInfo().setOrdersLength((short)(0xFFFF&orderLength));
 
         ff.getSongInfo().setPatternLength((short)PATTERN_LENGTH);
-        int ticksPerSecond = C2FPatternConverter.calculateTicksPersSecond(me.getYmTimerBValue(), me.getYmTimerBIncrement(), ff.getSongInfo().getSpeed1());
+        int ticksPerSecond = C2FPatternConverter.calculateTicksPersSecond(se.getAverageYmTimerBValue(), se.getYmTimerBIncrement(), ff.getSongInfo().getSpeed1());
         ff.getSongInfo().setTicksPerSecond(ticksPerSecond);
 
-        C2FYmInstrumentConverter.convertYmInstruments(me, ff);
-        C2FSampleConverter.convertSamples(me, ff);
-        C2FPsgInstrumentConverter.convertPsgInstruments(me, ff);
+        C2FYmInstrumentConverter.convertYmInstruments(se.getYmInstruments(), se.isSsgEgAvailable(), ff);
+        C2FSampleConverter.convertSamples(se.getSampleEntries(), se.getSampleBanks(), se.isMultiSampleBank(), ff);
+        C2FPsgInstrumentConverter.convertPsgInstruments(se.getPsgInstruments(), ff);
         
         return ff;
     }
     
-    public static Pattern[] convertPatterns(MusicEntry me, C2FPatternConverter[] converters, boolean introOnly, boolean mainLoopOnly){
-        Pattern[] patterns = new Pattern[CHANNEL_COUNT];
-        patterns[0] = converters[0].convertCubeChannelToFurnacePattern(me, me.getChannels()[0], Pattern.TYPE_FM, introOnly, mainLoopOnly);
-        patterns[1] = converters[1].convertCubeChannelToFurnacePattern(me, me.getChannels()[1], Pattern.TYPE_FM, introOnly, mainLoopOnly);
-        patterns[2] = converters[2].convertCubeChannelToFurnacePattern(me, me.getChannels()[2], Pattern.TYPE_FM, introOnly, mainLoopOnly);
-        patterns[3] = converters[3].convertCubeChannelToFurnacePattern(me, me.getChannels()[3], Pattern.TYPE_FM, introOnly, mainLoopOnly);
-        patterns[4] = converters[4].convertCubeChannelToFurnacePattern(me, me.getChannels()[4], Pattern.TYPE_FM, introOnly, mainLoopOnly);
-        if(!me.isYm6InDacMode()){
-            patterns[5] = converters[5].convertCubeChannelToFurnacePattern(me, me.getChannels()[5], Pattern.TYPE_FM, introOnly, mainLoopOnly);
+    public static Pattern[] convertPatterns(SfxEntry se, C2FPatternConverter[] converters, boolean introOnly, boolean mainLoopOnly){
+        Pattern[] patterns = new Pattern[TEMPLATE_FILE_CHANNEL_COUNT];
+        if(se.getType()==1){
+            patterns[0] = converters[0].convertCubeChannelToFurnacePattern(se.getYmLevels(), se.getPitchEffects(), se.getChannels()[0], Pattern.TYPE_FM, introOnly, mainLoopOnly);
+            patterns[1] = converters[1].convertCubeChannelToFurnacePattern(se.getYmLevels(), se.getPitchEffects(), se.getChannels()[1], Pattern.TYPE_FM, introOnly, mainLoopOnly);
+            patterns[2] = converters[2].convertCubeChannelToFurnacePattern(se.getYmLevels(), se.getPitchEffects(), se.getChannels()[2], Pattern.TYPE_FM, introOnly, mainLoopOnly);
+            patterns[3] = converters[3].convertCubeChannelToFurnacePattern(se.getYmLevels(), se.getPitchEffects(), se.getChannels()[3], Pattern.TYPE_FM, introOnly, mainLoopOnly);
+            patterns[4] = converters[4].convertCubeChannelToFurnacePattern(se.getYmLevels(), se.getPitchEffects(), se.getChannels()[4], Pattern.TYPE_FM, introOnly, mainLoopOnly);
+            patterns[5] = converters[5].convertCubeChannelToFurnacePattern(se.getYmLevels(), se.getPitchEffects(), se.getChannels()[5], Pattern.TYPE_DAC, introOnly, mainLoopOnly);
+            patterns[6] = converters[6].convertCubeChannelToFurnacePattern(se.getYmLevels(), se.getPitchEffects(), se.getChannels()[6], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
+            patterns[7] = converters[7].convertCubeChannelToFurnacePattern(se.getYmLevels(), se.getPitchEffects(), se.getChannels()[7], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
+            patterns[8] = converters[8].convertCubeChannelToFurnacePattern(se.getYmLevels(), se.getPitchEffects(), se.getChannels()[8], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
+            patterns[9] = converters[9].convertCubeChannelToFurnacePattern(se.getYmLevels(), se.getPitchEffects(), se.getChannels()[9], Pattern.TYPE_PSGNOISE, introOnly, mainLoopOnly);
         }else{
-            patterns[5] = converters[5].convertCubeChannelToFurnacePattern(me, me.getChannels()[5], Pattern.TYPE_DAC, introOnly, mainLoopOnly);
+            patterns[0] = new Pattern();
+            patterns[1] = new Pattern();
+            patterns[2] = new Pattern();
+            patterns[3] = converters[0].convertCubeChannelToFurnacePattern(se.getYmLevels(), se.getPitchEffects(), se.getChannels()[0], Pattern.TYPE_FM, introOnly, mainLoopOnly);
+            patterns[4] = converters[1].convertCubeChannelToFurnacePattern(se.getYmLevels(), se.getPitchEffects(), se.getChannels()[1], Pattern.TYPE_FM, introOnly, mainLoopOnly);
+            patterns[5] = converters[2].convertCubeChannelToFurnacePattern(se.getYmLevels(), se.getPitchEffects(), se.getChannels()[2], Pattern.TYPE_DAC, introOnly, mainLoopOnly);
+            patterns[6] = new Pattern();
+            patterns[7] = new Pattern();
+            patterns[8] = new Pattern();
+            patterns[9] = new Pattern();
         }
-        patterns[6] = converters[6].convertCubeChannelToFurnacePattern(me, me.getChannels()[6], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
-        patterns[7] = converters[7].convertCubeChannelToFurnacePattern(me, me.getChannels()[7], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
-        /*patterns[8] = new Pattern();*/
-        patterns[9] = new Pattern();
-        patterns[8] = converters[8].convertCubeChannelToFurnacePattern(me, me.getChannels()[8], Pattern.TYPE_PSGTONE, introOnly, mainLoopOnly);
-        /*patterns[9] = converters[9].convertCubeChannelToFurnacePattern(me.getChannels()[9], Pattern.TYPE_PSGNOISE, introOnly, mainLoopOnly);*/
         return patterns;
     }
     
     public static Pattern[] concatenatePatterns(Pattern[] intro, Pattern[] mainLoop){
-        Pattern[] patterns = new Pattern[CHANNEL_COUNT];
-        for (int i=0;i<CHANNEL_COUNT;i++){
+        Pattern[] patterns = new Pattern[intro.length];
+        for (int i=0;i<patterns.length;i++){
             Row[] introRows = intro[i].getRows();
             Row[] mainLoopRows = mainLoop[i].getRows();
             Row[] rows = concatenate(introRows, mainLoopRows);
