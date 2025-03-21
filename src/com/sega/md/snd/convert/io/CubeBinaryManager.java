@@ -82,7 +82,7 @@ public class CubeBinaryManager {
     }
     
     public static byte[][] importSampleEntries(String filePath, int sampleEntriesOffset, boolean multiSampleBank, int maxSampleIndex){
-        byte[][] sampleEntries = new byte[Math.min(maxSampleIndex+1,12)][];
+        byte[][] sampleEntries = new byte[maxSampleIndex+1][];
         try{
             File f = new File(filePath);
             byte[] data = Files.readAllBytes(Paths.get(f.getAbsolutePath()));

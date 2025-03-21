@@ -28,6 +28,8 @@ import com.sega.md.snd.formats.furnace.pattern.Effect;
 public class FurnaceClipboardManager {
     
     private static final int CHANNEL_COUNT = 10;
+    private static final int SFX_TYPE_1_CHANNEL_COUNT = 10;
+    private static final int SFX_TYPE_2_CHANNEL_COUNT = 3;
     private static final int PATTERN_LENGTH = 256;
     
     public static void exportMusicEntryAsFurnaceClipboard(MusicEntry me, String filePath){
@@ -36,7 +38,7 @@ public class FurnaceClipboardManager {
             Path path = Paths.get(filePath);
             PrintWriter pw;
             pw = new PrintWriter(path.toString(),System.getProperty("file.encoding"));
-
+            
             /* Stateful converters */
             C2FPatternConverter[] converters = C2FPatternConverter.instantiateConverterArray(CHANNEL_COUNT);
             Pattern[] patterns = null;
@@ -69,8 +71,10 @@ public class FurnaceClipboardManager {
             PrintWriter pw;
             pw = new PrintWriter(path.toString(),System.getProperty("file.encoding"));
 
+            int channelCount = se.getType()==1?SFX_TYPE_1_CHANNEL_COUNT:SFX_TYPE_2_CHANNEL_COUNT;
+
             /* Stateful converters */
-            C2FPatternConverter[] converters = C2FPatternConverter.instantiateConverterArray(CHANNEL_COUNT);
+            C2FPatternConverter[] converters = C2FPatternConverter.instantiateConverterArray(channelCount);
             Pattern[] patterns = null;
             if(!se.hasMainLoop() && !se.hasRepeatLoop()){
                 patterns = C2FSfxFileConverter.convertPatterns(se, converters, false, false);
@@ -79,7 +83,7 @@ public class FurnaceClipboardManager {
                 Pattern[] introPatterns = C2FSfxFileConverter.convertPatterns(se, converters, true, false);
                 Pattern[] mainLoopPatterns = C2FSfxFileConverter.convertPatterns(se, converters, false, true);
                 patterns = C2FSfxFileConverter.concatenatePatterns(introPatterns, mainLoopPatterns);
-                C2FSfxFileConverter.fillChannelsAndApplyLoop(introPatterns, mainLoopPatterns, patterns, converters);
+                C2FSfxFileConverter.fillChannelsAndApplyLoop(introPatterns, mainLoopPatterns, patterns, converters, se.getType());
             } 
             C2FSfxFileConverter.fillChannelsToMaxLength(patterns);
         

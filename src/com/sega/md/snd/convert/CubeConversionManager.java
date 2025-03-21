@@ -158,8 +158,8 @@ public class CubeConversionManager {
         System.out.println("CubeConversionManager.exportSfxEntriesAsAsm() - Exporting ...");
         for(int i=0;i<ses.length;i++){    
             try{
-                ses[i].setName(name+String.format("%02d", i+1));
-                String completePath = filePath + String.format("%02d", i+1) + ".asm";
+                ses[i].setName(name+String.format("%03d", i+1));
+                String completePath = filePath + String.format("%03d", i+1) + ".asm";
                 if(unroll){
                     ses[i].unroll();
                     if(optimize){
@@ -254,7 +254,7 @@ public class CubeConversionManager {
         for(int i=0;i<ses.length;i++){  
             if(ses[i]!=null && ses[i].hasContent()){
                 try{
-                    String completePath = outputFilePath + String.format("%02d", i+1) + ".txt";
+                    String completePath = outputFilePath + String.format("%03d", i+1) + ".txt";
                     ses[i].unroll();
                     FurnaceClipboardManager.exportSfxEntryAsFurnaceClipboard(ses[i], completePath);
                     System.out.println("Exported Furnace clipboard entry "+(i+1));
@@ -297,7 +297,7 @@ public class CubeConversionManager {
         for(int i=0;i<ses.length;i++){  
             if(ses[i]!=null && ses[i].hasContent()){
                 try{
-                    String completePath = outputFilePath + String.format("%02d", i+1) + ".fur";
+                    String completePath = outputFilePath + String.format("%03d", i+1) + ".fur";
                     ses[i].unroll();
                     FurnaceFileManager.exportSfxEntryAsFurnaceFile(ses[i], templateFilePath, completePath);
                     System.out.println("Exported Furnace entry "+(i+1));
