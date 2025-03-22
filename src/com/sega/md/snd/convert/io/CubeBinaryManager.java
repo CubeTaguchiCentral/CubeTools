@@ -42,11 +42,15 @@ public class CubeBinaryManager {
             byte offsetHigh = data[ptOffset + 2*index + 1];
             int offset = ((offsetHigh&0xFF)<<8) + (offsetLow&0xFF);
             if(offset<0x8000){
-                throw new Exception("Invalid music entry offset : "+String.format("0x%04X", offset));
+                //throw new Exception("Invalid music entry offset : "+String.format("0x%04X", offset));
+                System.out.println("Invalid music entry offset : "+String.format("0x%04X", offset));
+                return null;
             }
             int musicEntryOffset = bankBaseOffset + offset - BANK_SIZE;
             if(data[musicEntryOffset]!=0){
-                throw new Exception("Not a music entry");
+                //throw new Exception("Not a music entry");
+                System.out.println("Not a music entry");
+                return null;
             }
             int baseOffset = bankBaseOffset - BANK_SIZE;
             if(ramPreloadOffset!=0){

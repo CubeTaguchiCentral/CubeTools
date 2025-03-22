@@ -56,13 +56,15 @@ public class CubeConversionManager {
         for(int i=0;i<mes.length;i++){
             try{
                 mes[i] = CubeBinaryManager.importMusicEntry(filePath, ptOffset, ramPreloadOffset, i+1, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstOffset, psgInstOffset, ssgEg, ymTimerBIncrement);
-                mes[i].factorizeIdenticalChannels();
-                mes[i].hasMainLoop();
-                mes[i].hasIntro();
-                //System.out.println("Imported entry "+(i+1));
-                int sampleIndex = mes[i].findMaxSampleIndex();
-                if(sampleIndex>maxSampleIndex){
-                    maxSampleIndex = sampleIndex;
+                if(mes[i]!=null){
+                    mes[i].factorizeIdenticalChannels();
+                    mes[i].hasMainLoop();
+                    mes[i].hasIntro();
+                    //System.out.println("Imported entry "+(i+1));
+                    int sampleIndex = mes[i].findMaxSampleIndex();
+                    if(sampleIndex>maxSampleIndex){
+                        maxSampleIndex = sampleIndex;
+                    }
                 }
             }catch(Exception e){
                 e.printStackTrace();
@@ -92,11 +94,13 @@ public class CubeConversionManager {
         for(int i=0;i<ses.length;i++){
             try{
                 ses[i] = CubeBinaryManager.importSfxEntry(filePath, sfxOffset, sfxParamSize, ramPreloadOffset, i+1, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstOffset, psgInstOffset, ssgEg, ymTimerBIncrement, averageYmTimerBValue);
-                ses[i].factorizeIdenticalChannels();
-                //System.out.println("Imported SFX entry "+(i+1));
-                int sampleIndex = ses[i].findMaxSampleIndex();
-                if(sampleIndex>maxSampleIndex){
-                    maxSampleIndex = sampleIndex;
+                if(ses[i]!=null){
+                    ses[i].factorizeIdenticalChannels();
+                    //System.out.println("Imported SFX entry "+(i+1));
+                    int sampleIndex = ses[i].findMaxSampleIndex();
+                    if(sampleIndex>maxSampleIndex){
+                        maxSampleIndex = sampleIndex;
+                    }
                 }
             }catch(Exception e){
                 e.printStackTrace();
@@ -135,21 +139,23 @@ public class CubeConversionManager {
     
     public void exportMusicEntriesAsAsm(String filePath, String name, boolean unroll, boolean optimize){
         System.out.println("CubeConversionManager.exportMusicEntryAsAsm() - Exporting ...");
-        for(int i=0;i<32;i++){    
-            try{
-                mes[i].setName(name+String.format("%02d", i+1));
-                String completePath = filePath + String.format("%02d", i+1) + ".asm";
-                if(unroll){
-                    mes[i].unroll();
-                    if(optimize){
-                        mes[i].optimize();
+        for(int i=0;i<32;i++){ 
+            if(mes[i]!=null){
+                try{
+                    mes[i].setName(name+String.format("%02d", i+1));
+                    String completePath = filePath + String.format("%02d", i+1) + ".asm";
+                    if(unroll){
+                        mes[i].unroll();
+                        if(optimize){
+                            mes[i].optimize();
+                        }
                     }
+                    CubeAsmManager.exportMusicEntryAsAsm(mes[i], completePath);
+                    System.out.println("Exported ASM entry "+(i+1));
+                }catch(Exception e){
+                    System.out.println("Error while exporting ASM entry "+(i+1)+" : "+e.getMessage());
+                    e.printStackTrace();
                 }
-                CubeAsmManager.exportMusicEntryAsAsm(mes[i], completePath);
-                System.out.println("Exported ASM entry "+(i+1));
-            }catch(Exception e){
-                System.out.println("Error while exporting ASM entry "+(i+1)+" : "+e.getMessage());
-                e.printStackTrace();
             }
         }
         System.out.println("CubeConversionManager.exportMusicEntryAsAsm() - ... Done.");
