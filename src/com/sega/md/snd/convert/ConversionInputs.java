@@ -28,6 +28,7 @@ public class ConversionInputs {
     private int[] ymInstruments;
     private boolean ssgEg;
     private int sampleTableOffset;
+    private int sampleCount;
     private boolean multiBankSampleTableFormat;
     private int[] sampleBankOffsets;
     private int sfxOffset;
@@ -56,15 +57,16 @@ public class ConversionInputs {
         }
         ssgEg = Boolean.parseBoolean(params[10]);
         sampleTableOffset = Integer.parseInt(params[11], 16);
-        multiBankSampleTableFormat = Boolean.parseBoolean(params[12]);
-        String[] sampleBankOffsetStrings = params[13].split(",");
+        sampleCount = Integer.parseInt(params[12], 10);
+        multiBankSampleTableFormat = Boolean.parseBoolean(params[13]);
+        String[] sampleBankOffsetStrings = params[14].split(",");
         sampleBankOffsets = new int[sampleBankOffsetStrings.length];
         for(int i=0;i<sampleBankOffsets.length;i++){
             sampleBankOffsets[i] = Integer.parseInt(sampleBankOffsetStrings[i], 16);
         }
-        if(params.length>14){
-            sfxOffset = Integer.parseInt(params[14], 16);
-            sfxCount = Integer.parseInt(params[15], 10);
+        if(params.length>15){
+            sfxOffset = Integer.parseInt(params[15], 16);
+            sfxCount = Integer.parseInt(params[16], 10);
         }
     }
     
@@ -181,6 +183,14 @@ public class ConversionInputs {
 
     public void setSampleTableOffset(int sampleTableOffset) {
         this.sampleTableOffset = sampleTableOffset;
+    }
+
+    public int getSampleCount() {
+        return sampleCount;
+    }
+
+    public void setSampleCount(int sampleCount) {
+        this.sampleCount = sampleCount;
     }
 
     public boolean isMultiBankSampleTableFormat() {

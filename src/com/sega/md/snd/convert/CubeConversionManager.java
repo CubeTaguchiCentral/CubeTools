@@ -30,6 +30,7 @@ public class CubeConversionManager {
     
     MusicEntry[] mes = new MusicEntry[32];
     SfxEntry[] ses;
+    int maxSampleIndex = 0;
     
     public void importMusicEntryFromBinaryMusicBank(String filePath, int ptOffset, int ramPreloadOffset, int index, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int ymTimerBIncrement, int sampleEntriesOffset, boolean multipleBanksFormat, int[] sampleBanksOffsets){
         System.out.println("CubeConversionManager.importMusicEntryFromBinaryMusicBank() - Importing ...");
@@ -50,9 +51,8 @@ public class CubeConversionManager {
         System.out.println("CubeConversionManager.importMusicEntryFromBinaryMusicBank() - ... Done.");
     }
     
-    public void importMusicEntriesFromBinaryMusicBank(String filePath, int ptOffset, int ramPreloadOffset, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int ymTimerBIncrement, int sampleEntriesOffset, boolean multipleBanksFormat, int[] sampleBanksOffsets){
-        System.out.println("CubeConversionManager.importMusicEntriesFromBinaryMusicBank() - Importing ...");
-        int maxSampleIndex = 0;      
+    public void importMusicEntriesFromBinaryMusicBank(String filePath, int ptOffset, int ramPreloadOffset, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int ymTimerBIncrement, int sampleEntriesOffset, int sampleCount, boolean multipleBanksFormat, int[] sampleBanksOffsets){
+        System.out.println("CubeConversionManager.importMusicEntriesFromBinaryMusicBank() - Importing ...");     
         for(int i=0;i<mes.length;i++){
             try{
                 mes[i] = CubeBinaryManager.importMusicEntry(filePath, ptOffset, ramPreloadOffset, i+1, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstOffset, psgInstOffset, ssgEg, ymTimerBIncrement);
@@ -70,10 +70,11 @@ public class CubeConversionManager {
             }
         }
         
+        maxSampleIndex = sampleCount!=0?sampleCount-1:maxSampleIndex;
+        byte[][] sampleEntries = CubeBinaryManager.importSampleEntries(filePath, sampleEntriesOffset, multipleBanksFormat, maxSampleIndex);
+        byte[][] sampleBanks = CubeBinaryManager.importSampleBanks(filePath, sampleBanksOffsets);
         for(int i=0;i<mes.length;i++){
             if(mes[i]!=null){
-                byte[][] sampleEntries = CubeBinaryManager.importSampleEntries(filePath, sampleEntriesOffset, multipleBanksFormat, maxSampleIndex);
-                byte[][] sampleBanks = CubeBinaryManager.importSampleBanks(filePath, sampleBanksOffsets);
                 mes[i].setSampleEntries(sampleEntries);
                 mes[i].setMultiSampleBank(multipleBanksFormat);
                 mes[i].setSampleBanks(sampleBanks);   
@@ -85,15 +86,14 @@ public class CubeConversionManager {
         System.out.println("CubeConversionManager.importMusicEntriesFromBinaryMusicBank() - ... Done.");
     }
     
-    public void importSfxEntriesFromBinary(String filePath, int sfxOffset, int ramPreloadOffset, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int ymTimerBIncrement, int sampleEntriesOffset, boolean multipleBanksFormat, int[] sampleBanksOffsets, int sfxCount, byte averageYmTimerBValue){
+    public void importSfxEntriesFromBinary(String filePath, int sfxOffset, int ramPreloadOffset, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int ymTimerBIncrement, int sampleEntriesOffset, int sampleCount, boolean multipleBanksFormat, int[] sampleBanksOffsets, int sfxCount, byte averageYmTimerBValue){
         System.out.println("CubeConversionManager.importSfxEntriesFromBinary() - Importing ...");
-        int maxSampleIndex = 0; 
         ses = new SfxEntry[sfxCount];
         for(int i=0;i<ses.length;i++){
             try{
                 ses[i] = CubeBinaryManager.importSfxEntry(filePath, sfxOffset, ramPreloadOffset, i+1, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstOffset, psgInstOffset, ssgEg, ymTimerBIncrement, averageYmTimerBValue);
                 ses[i].factorizeIdenticalChannels();
-                System.out.println("Imported SFX entry "+(i+1));
+                //System.out.println("Imported SFX entry "+(i+1));
                 int sampleIndex = ses[i].findMaxSampleIndex();
                 if(sampleIndex>maxSampleIndex){
                     maxSampleIndex = sampleIndex;
@@ -104,10 +104,11 @@ public class CubeConversionManager {
             }
         }
         
+        maxSampleIndex = sampleCount!=0?sampleCount-1:maxSampleIndex;
+        byte[][] sampleEntries = CubeBinaryManager.importSampleEntries(filePath, sampleEntriesOffset, multipleBanksFormat, maxSampleIndex);
+        byte[][] sampleBanks = CubeBinaryManager.importSampleBanks(filePath, sampleBanksOffsets);
         for(int i=0;i<ses.length;i++){
             if(ses[i]!=null){
-                byte[][] sampleEntries = CubeBinaryManager.importSampleEntries(filePath, sampleEntriesOffset, multipleBanksFormat, maxSampleIndex);
-                byte[][] sampleBanks = CubeBinaryManager.importSampleBanks(filePath, sampleBanksOffsets);
                 ses[i].setSampleEntries(sampleEntries);
                 ses[i].setMultiSampleBank(multipleBanksFormat);
                 ses[i].setSampleBanks(sampleBanks);   
@@ -326,6 +327,7 @@ public class CubeConversionManager {
             int[] ymInstruments = cis[i].getYmInstruments();
             boolean ssgEg = cis[i].isSsgEg();
             int sampleTableOffset = cis[i].getSampleTableOffset();
+            int sampleCount = cis[i].getSampleCount();
             boolean multiBankSampleTableFormat = cis[i].isMultiBankSampleTableFormat();
             int[] sampleBankOffsets = cis[i].getSampleBankOffsets();
             String[] targetFolders = new String[musicBankOffsets.length];
@@ -343,7 +345,7 @@ public class CubeConversionManager {
                 if(ymInstruments.length>j){
                     ymInstrumentsOffset = ymInstruments[j];
                 }
-                importMusicEntriesFromBinaryMusicBank(completeRomFilepath, musicBankOffsets[j], inRamPreloadOffset, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstrumentsOffset, psgInstruments, ssgEg, ymTimerBIncrement, sampleTableOffset, multiBankSampleTableFormat, sampleBankOffsets);
+                importMusicEntriesFromBinaryMusicBank(completeRomFilepath, musicBankOffsets[j], inRamPreloadOffset, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstrumentsOffset, psgInstruments, ssgEg, ymTimerBIncrement, sampleTableOffset, sampleCount, multiBankSampleTableFormat, sampleBankOffsets);
                 System.out.println("... "+gameName+" music bank "+(j)+" imported.");
                 for(int k=0;k<mes.length;k++){
                     if(mes[k]!=null){
@@ -362,17 +364,14 @@ public class CubeConversionManager {
             }
             byte averageYmTimerBValue = (byte)(0xFF & (ymTimerBValues / ymTimerBValueCount) );
             System.out.println("Importing "+gameName+" SFX ...");
-            importSfxEntriesFromBinary(completeRomFilepath, sfxOffset, inRamPreloadOffset, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstruments[0], psgInstruments, ssgEg, ymTimerBIncrement, sampleTableOffset, multiBankSampleTableFormat, sampleBankOffsets, sfxCount, averageYmTimerBValue);
+            importSfxEntriesFromBinary(completeRomFilepath, sfxOffset, inRamPreloadOffset, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstruments[0], psgInstruments, ssgEg, ymTimerBIncrement, sampleTableOffset, sampleCount, multiBankSampleTableFormat, sampleBankOffsets, sfxCount, averageYmTimerBValue);
             String completeAsmOutputFilePath = completeRomFilepath.substring(0, completeRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_ASM + File.separator + ".\\sfx\\";
             exportSfxEntriesAsAsm(completeAsmOutputFilePath, DEFAULT_ASM_SFX_ENTRY_NAME, false, false);
             String completeFurnaceClipboardOutputFilePath = completeRomFilepath.substring(0, completeRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_FURNACE_CLIPBOARD + File.separator + ".\\sfx\\";
             exportSfxEntriesAsFurnaceClipboards(completeFurnaceClipboardOutputFilePath);
             String completeFurnaceOutputFilePath = completeRomFilepath.substring(0, completeRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_FURNACE + File.separator + ".\\sfx\\";
-            System.out.println("Exporting "+gameName+" music bank ...");
             exportSfxEntriesAsFurnaceFiles(templateFilePath, completeFurnaceOutputFilePath);
-            System.out.println("... "+gameName+" music bank exported.");
-            
-                     
+            System.out.println("... "+gameName+" SFX exported.");
         }    
         /*
         System.out.println("Unrecognized pitch effect strings : ");
