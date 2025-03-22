@@ -86,12 +86,12 @@ public class CubeConversionManager {
         System.out.println("CubeConversionManager.importMusicEntriesFromBinaryMusicBank() - ... Done.");
     }
     
-    public void importSfxEntriesFromBinary(String filePath, int sfxOffset, int ramPreloadOffset, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int ymTimerBIncrement, int sampleEntriesOffset, int sampleCount, boolean multipleBanksFormat, int[] sampleBanksOffsets, int sfxCount, byte averageYmTimerBValue){
+    public void importSfxEntriesFromBinary(String filePath, int sfxOffset, int ramPreloadOffset, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int ymTimerBIncrement, int sampleEntriesOffset, int sampleCount, boolean multipleBanksFormat, int[] sampleBanksOffsets, int sfxCount, int sfxParamSize, byte averageYmTimerBValue){
         System.out.println("CubeConversionManager.importSfxEntriesFromBinary() - Importing ...");
         ses = new SfxEntry[sfxCount];
         for(int i=0;i<ses.length;i++){
             try{
-                ses[i] = CubeBinaryManager.importSfxEntry(filePath, sfxOffset, ramPreloadOffset, i+1, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstOffset, psgInstOffset, ssgEg, ymTimerBIncrement, averageYmTimerBValue);
+                ses[i] = CubeBinaryManager.importSfxEntry(filePath, sfxOffset, sfxParamSize, ramPreloadOffset, i+1, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstOffset, psgInstOffset, ssgEg, ymTimerBIncrement, averageYmTimerBValue);
                 ses[i].factorizeIdenticalChannels();
                 //System.out.println("Imported SFX entry "+(i+1));
                 int sampleIndex = ses[i].findMaxSampleIndex();
@@ -335,6 +335,7 @@ public class CubeConversionManager {
                 targetFolders[b] = ".\\bank"+b+"\\";
             }
             int sfxOffset = cis[i].getSfxOffset();
+            int sfxParamSize = cis[i].getSfxParamSize();
             int sfxCount = cis[i].getSfxCount();
             int ymTimerBValues = 0;
             int ymTimerBValueCount = 0;
@@ -364,7 +365,7 @@ public class CubeConversionManager {
             }
             byte averageYmTimerBValue = (byte)(0xFF & (ymTimerBValues / ymTimerBValueCount) );
             System.out.println("Importing "+gameName+" SFX ...");
-            importSfxEntriesFromBinary(completeRomFilepath, sfxOffset, inRamPreloadOffset, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstruments[0], psgInstruments, ssgEg, ymTimerBIncrement, sampleTableOffset, sampleCount, multiBankSampleTableFormat, sampleBankOffsets, sfxCount, averageYmTimerBValue);
+            importSfxEntriesFromBinary(completeRomFilepath, sfxOffset, inRamPreloadOffset, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstruments[0], psgInstruments, ssgEg, ymTimerBIncrement, sampleTableOffset, sampleCount, multiBankSampleTableFormat, sampleBankOffsets, sfxCount, sfxParamSize, averageYmTimerBValue);
             String completeAsmOutputFilePath = completeRomFilepath.substring(0, completeRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_ASM + File.separator + ".\\sfx\\";
             exportSfxEntriesAsAsm(completeAsmOutputFilePath, DEFAULT_ASM_SFX_ENTRY_NAME, false, false);
             String completeFurnaceClipboardOutputFilePath = completeRomFilepath.substring(0, completeRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_FURNACE_CLIPBOARD + File.separator + ".\\sfx\\";

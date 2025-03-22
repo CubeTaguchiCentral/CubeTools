@@ -59,15 +59,15 @@ public class CubeBinaryManager {
         return me;
     }
        
-    public static SfxEntry importSfxEntry(String filePath, int ptOffset, int ramPreloadOffset, int index, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int ymTimerBIncrement, byte averageYmTimerBValue) throws Exception{
+    public static SfxEntry importSfxEntry(String filePath, int ptOffset, int sfxParamSize, int ramPreloadOffset, int index, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int ymTimerBIncrement, byte averageYmTimerBValue) throws Exception{
         SfxEntry se = null;
         try{
             File f = new File(filePath);
             byte[] data = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
             int bankBaseOffset = ptOffset - (ptOffset % BANK_SIZE);
             index--;
-            byte offsetLow = data[ptOffset + 2*index];
-            byte offsetHigh = data[ptOffset + 2*index + 1];
+            byte offsetLow = data[ptOffset + (2+sfxParamSize)*index + sfxParamSize];
+            byte offsetHigh = data[ptOffset + (2+sfxParamSize)*index + sfxParamSize + 1];
             int offset = ((offsetHigh&0xFF)<<8) + (offsetLow&0xFF);
             int baseOffset = bankBaseOffset - BANK_SIZE;
             if(driverOffset<ptOffset && ptOffset<(driverOffset+0x2000)){
