@@ -7,6 +7,8 @@ package com.sega.md.snd.convert.cubetofurnace;
 
 import com.sega.md.snd.formats.cube.MusicEntry;
 import com.sega.md.snd.formats.furnace.file.FurnaceFile;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,16 +22,20 @@ import java.util.TreeSet;
 public class C2FSampleConverter {
     
     public static void convertSamples(byte[][] sampleEntries, byte[][] sampleBanks, boolean isMultiSampleBank, FurnaceFile ff){
-        SortedSet<Byte>  bankIndexes = new TreeSet();
-        if(isMultiSampleBank){
-            for(int i=0;i<sampleEntries.length;i++){
+        SortedSet<String> playbackPeriods = new TreeSet();
+        SortedSet<Byte> bankIndexes = new TreeSet();
+        for(int i=0;i<sampleEntries.length;i++){
+            playbackPeriods.add(String.format("%02x",sampleEntries[i][0]));
+            if(isMultiSampleBank){
                 bankIndexes.add(sampleEntries[i][2]);
             }
         }
         List<Byte> bankIndexList = new ArrayList(bankIndexes);
         
+        //System.out.println("PCM playback periods : "+String.join(",", playbackPeriods));
+        
         for(int i=0;i<sampleEntries.length;i++){
-            int period = (sampleEntries[i][0] / 15)+1;
+            int period = sampleEntries[i][0];
             int bankIndex = isMultiSampleBank?bankIndexList.indexOf(sampleEntries[i][2]) : 0;
             byte b5 = sampleEntries[i][3+(isMultiSampleBank?2:0)];
             byte b4 = sampleEntries[i][2+(isMultiSampleBank?2:0)];
@@ -43,15 +49,28 @@ public class C2FSampleConverter {
             int offset = i7 + i6;
             byte[] bank = sampleBanks[bankIndex];
             byte[] baseSample = Arrays.copyOfRange(bank, offset, offset+length);
-            byte[] targetSample = new byte[baseSample.length*period]; 
-            for(int j=0;j<targetSample.length;j++){
-                targetSample[j] = (byte)(0xFF & (0x80 + baseSample[j/period]));
+            //byte[] targetSample = new byte[baseSample.length*period];
+            int periodCounter = 0;
+            int sampleCursor = 0;
+            ByteBuffer bb = ByteBuffer.allocate(length);
+            int bbLength = 0;
+            bb.position(0);
+            while(sampleCursor<baseSample.length){
+                //targetSample[j] = (byte)(0xFF & (0x80 + baseSample[j/period]));
+                bb.put((byte)(0xFF & (0x80 + baseSample[sampleCursor])));
+                sampleCursor++;
             }
+            int rateReducingFactor = period-1;
+            if(rateReducingFactor>0x20){
+                rateReducingFactor = rateReducingFactor/2;
+            }
+            int rate = 13250 - (300*(rateReducingFactor));
+            byte[] targetSample = bb.slice(0,bbLength).array();
             ff.getSamples()[i].setDepth((byte)8);
             ff.getSamples()[i].setRawData(targetSample);
             ff.getSamples()[i].setLength(length);
-            ff.getSamples()[i].setC4Rate(13250);
-            ff.getSamples()[i].setCompatibilityRate(13250);
+            ff.getSamples()[i].setC4Rate(rate);
+            ff.getSamples()[i].setCompatibilityRate(rate);
         }
     }
     
