@@ -60,17 +60,13 @@ public class C2FSampleConverter {
                 bb.put((byte)(0xFF & (0x80 + baseSample[sampleCursor])));
                 sampleCursor++;
             }
-            int rateReducingFactor = period-1;
-            if(rateReducingFactor>0x20){
-                rateReducingFactor = rateReducingFactor/2;
-            }
-            int rate = 13250 - (300*(rateReducingFactor));
+            int rateComputedByOffsetPowerLawEquation = (int)(3012000 * Math.pow(period - (-32.07),-1.573) + 1005);
             byte[] targetSample = bb.slice(0,bbLength).array();
             ff.getSamples()[i].setDepth((byte)8);
             ff.getSamples()[i].setRawData(targetSample);
             ff.getSamples()[i].setLength(length);
-            ff.getSamples()[i].setC4Rate(rate);
-            ff.getSamples()[i].setCompatibilityRate(rate);
+            ff.getSamples()[i].setC4Rate(rateComputedByOffsetPowerLawEquation);
+            ff.getSamples()[i].setCompatibilityRate(rateComputedByOffsetPowerLawEquation);
         }
     }
     
