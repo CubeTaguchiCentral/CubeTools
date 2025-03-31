@@ -60,7 +60,7 @@ public class C2FSampleConverter {
                 bb.put((byte)(0xFF & (0x80 + baseSample[sampleCursor])));
                 sampleCursor++;
             }
-            int rateComputedByOffsetPowerLawEquation = (int)(3012000 * Math.pow(period - (-32.07),-1.573) + 1005);
+            int rateComputedByOffsetPowerLawEquation = computePlaybackRate(period);
             byte[] targetSample = bb.slice(0,bbLength).array();
             ff.getSamples()[i].setDepth((byte)8);
             ff.getSamples()[i].setRawData(targetSample);
@@ -68,6 +68,17 @@ public class C2FSampleConverter {
             ff.getSamples()[i].setC4Rate(rateComputedByOffsetPowerLawEquation);
             ff.getSamples()[i].setCompatibilityRate(rateComputedByOffsetPowerLawEquation);
         }
+    }
+    
+    /* "Power Law with Offsets" equation approximated with following inputs :
+    Cube period : target Furnace rate
+    1 : 13250
+    20 : 7000
+    40 : 4600
+    80 : 2800
+    */
+    private static int computePlaybackRate(int period){ 
+        return (int)(3012000 * Math.pow(period - (-32.07),-1.573) + 1005);
     }
     
 }
