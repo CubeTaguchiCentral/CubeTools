@@ -12,6 +12,7 @@ import com.sega.md.snd.convert.io.CubeEntryManager;
 import com.sega.md.snd.convert.io.FurnaceClipboardManager;
 import com.sega.md.snd.convert.io.FurnaceFileManager;
 import com.sega.md.snd.formats.cube.MusicEntry;
+import com.sega.md.snd.formats.cube.SampleEntry;
 import com.sega.md.snd.formats.cube.SfxEntry;
 import java.io.File;
 
@@ -210,6 +211,15 @@ public class CubeConversionManager {
         System.out.println("CubeConversionManager.exportMusicEntryAsBinary() - ... Done.");
     }
     
+    public void exportSampleBanks(SampleEntry[] sampleEntries, String filePath){
+        System.out.println("CubeConversionManager.exportSampleBanks() - Exporting ...");
+        for(int i=0;i<sampleEntries.length;i++){        
+            String completePath = filePath + String.format("%02d", i+1) + ".bin";
+            CubeEntryManager.exportMusicEntryAsBinary(mes[i], completePath);
+        }        
+        System.out.println("CubeConversionManager.exportSampleBanks() - ... Done.");
+    }
+    
     public void importMusicEntryFromBinaryFile(String filePath){
         System.out.println("CubeConversionManager.importMusicEntryFromBinaryFile() - Importing ...");
         mes[0] = CubeEntryManager.importMusicEntry(filePath);
@@ -378,7 +388,14 @@ public class CubeConversionManager {
             exportSfxEntriesAsFurnaceClipboards(completeFurnaceClipboardOutputFilePath);
             String completeFurnaceOutputFilePath = completeRomFilepath.substring(0, completeRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_FURNACE + File.separator + ".\\sfx\\";
             exportSfxEntriesAsFurnaceFiles(templateFilePath, completeFurnaceOutputFilePath);
-            System.out.println("... "+gameName+" SFX exported.");
+            System.out.println("... "+gameName+" SFX exported.");            
+            String assetsOutputFilePath = completeRomFilepath.substring(0, completeRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_ASM + File.separator + ".\\assets\\";
+            SampleEntry[] sampleEntries = SampleEntry.parseSampleEntries(ses[0].getSampleEntries(),multiBankSampleTableFormat);
+            String sampleEntriesOutputFilePath = assetsOutputFilePath + File.separator + "pcm_samples.asm";
+            CubeAsmManager.exportSampleEntriesAsAsm(sampleEntries, sampleEntriesOutputFilePath);
+            //ses[0].get
+            exportSfxEntriesAsFurnaceFiles(templateFilePath, completeFurnaceOutputFilePath);
+            System.out.println("... "+gameName+" assets exported.");
         }    
         /*
         System.out.println("Unrecognized pitch effect strings : ");
