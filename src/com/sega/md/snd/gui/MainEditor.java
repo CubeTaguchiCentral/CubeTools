@@ -44,6 +44,7 @@ public class MainEditor extends javax.swing.JFrame {
             jFileChooser1.setCurrentDirectory(workingDirectory);
             jFileChooser2.setCurrentDirectory(workingDirectory);
             MainEditor.currentMainEditor = this;
+            jTabbedPane5.setSelectedIndex(4);
             //jTabbedPane1.remove(jPanel2);
             //jTabbedPane1.remove(jPanel16);
         } catch (URISyntaxException ex) {
