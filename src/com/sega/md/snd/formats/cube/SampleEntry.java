@@ -158,15 +158,7 @@ public class SampleEntry {
         int sampleBankIndex = ses[sampleIndex].isMultibank()?ses[sampleIndex].getBankIndexList().indexOf((byte)(ses[sampleIndex].getBankIndex())) : 0;
         byte[] bank = ses[sampleIndex].getSampleBanks()[sampleBankIndex];
         byte[] baseSample = Arrays.copyOfRange(bank, (ses[sampleIndex].getOffset()&0x7FFF), (ses[sampleIndex].getOffset()&0x7FFF)+(ses[sampleIndex].getLength()&0xFFFF));
-        int sampleCursor = 0;
-        ByteBuffer bb = ByteBuffer.allocate(ses[sampleIndex].getLength());
-        int bbLength = 0;
-        bb.position(0);
-        while(sampleCursor<baseSample.length){
-            bb.put((byte)(0xFF & (0x80 + baseSample[sampleCursor])));
-            sampleCursor++;
-        }
-        return bb.slice(0,bbLength).array();
+        return baseSample;
         
     }
     
