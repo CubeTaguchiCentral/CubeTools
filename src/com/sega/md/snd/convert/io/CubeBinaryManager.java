@@ -6,6 +6,7 @@
 package com.sega.md.snd.convert.io;
 
 import com.sega.md.snd.formats.cube.MusicEntry;
+import com.sega.md.snd.formats.cube.SampleEntry;
 import com.sega.md.snd.formats.cube.SfxEntry;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -14,6 +15,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -113,6 +116,23 @@ public class CubeBinaryManager {
         }
         return sampleBanks;
     }
+    
+    public static void exportSamples(String basePath, SampleEntry[] ses){
+        try{
+            Set<String> identifiers = new HashSet();
+            for(int i=0;i<ses.length;i++){
+                SampleEntry se = ses[i];
+                if(identifiers.add(se.getIdentifierString())){
+                    File nf = new File(basePath+se.getFilenameString());
+                    Path path = Paths.get(nf.getAbsolutePath());
+                    Files.write(path,SampleEntry.getSample(ses, i)); 
+                }
+                
+            }  
+        } catch (Exception ex) {
+            Logger.getLogger(CubeBinaryManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    } 
     
     public static void exportMusicEntry(MusicEntry me, String filePath, int ptOffset, int index){
         

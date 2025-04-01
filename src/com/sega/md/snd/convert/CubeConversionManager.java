@@ -390,9 +390,10 @@ public class CubeConversionManager {
             exportSfxEntriesAsFurnaceFiles(templateFilePath, completeFurnaceOutputFilePath);
             System.out.println("... "+gameName+" SFX exported.");            
             String assetsOutputFilePath = completeRomFilepath.substring(0, completeRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_ASM + File.separator + ".\\assets\\";
-            SampleEntry[] sampleEntries = SampleEntry.parseSampleEntries(ses[0].getSampleEntries(),multiBankSampleTableFormat);
+            SampleEntry[] sampleEntries = SampleEntry.parseSampleEntries(ses[0].getSampleEntries(),ses[0].getSampleBanks(), sampleBankOffsets, multiBankSampleTableFormat);
             String sampleEntriesOutputFilePath = assetsOutputFilePath + File.separator + "pcm_samples.asm";
             CubeAsmManager.exportSampleEntriesAsAsm(sampleEntries, sampleEntriesOutputFilePath);
+            CubeBinaryManager.exportSamples(assetsOutputFilePath, sampleEntries);
             //ses[0].get
             exportSfxEntriesAsFurnaceFiles(templateFilePath, completeFurnaceOutputFilePath);
             System.out.println("... "+gameName+" assets exported.");
