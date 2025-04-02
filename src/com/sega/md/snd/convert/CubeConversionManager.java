@@ -394,6 +394,8 @@ public class CubeConversionManager {
             String sampleEntriesOutputFilePath = assetsOutputFilePath + File.separator + "pcm_samples.asm";
             CubeAsmManager.exportSampleEntriesAsAsm(sampleEntries, sampleEntriesOutputFilePath);
             CubeBinaryManager.exportSamples(assetsOutputFilePath, sampleEntries);
+            String ymInstrumentsEntriesOutputFilePath = assetsOutputFilePath + File.separator + "yminstruments.bin";
+            CubeBinaryManager.exportYmInstruments(ymInstrumentsEntriesOutputFilePath, ses[0].getYmInstruments(), ssgEg);
             //ses[0].get
             exportSfxEntriesAsFurnaceFiles(templateFilePath, completeFurnaceOutputFilePath);
             System.out.println("... "+gameName+" assets exported.");

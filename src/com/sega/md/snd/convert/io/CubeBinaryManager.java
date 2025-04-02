@@ -29,6 +29,8 @@ public class CubeBinaryManager {
     public static final int BANK_SIZE = 0x8000;
     public static final int SAMPLE_ENTRY_SIZE = 6;
     public static final int SAMPLE_ENTRY_SIZE_MULTI_BANK = 8;
+    public static final int YM_INSTRUMENT_SIZE = 29;
+    public static final int YM_INSTRUMENT_SIZE_NOSSGEG = 25;
     
     public static MusicEntry importMusicEntry(String filePath, int ptOffset, int index) throws Exception{
         return importMusicEntry(filePath, ptOffset, 0, index, 0, 0, 0, 0, 0, true, 0);
@@ -129,6 +131,21 @@ public class CubeBinaryManager {
                 }
                 
             }  
+        } catch (Exception ex) {
+            Logger.getLogger(CubeBinaryManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    } 
+    
+    public static void exportYmInstruments(String filePath, byte[][] yminstruments, boolean ssgEg){
+        try{
+            int instrumentSize = ssgEg?YM_INSTRUMENT_SIZE:YM_INSTRUMENT_SIZE_NOSSGEG;
+            File nf = new File(filePath);
+            Path path = Paths.get(nf.getAbsolutePath());
+            byte[] bytes = new byte[yminstruments.length*instrumentSize];
+            for(int i=0;i<yminstruments.length;i++){
+                System.arraycopy(yminstruments[i], 0, bytes, i*instrumentSize, instrumentSize);
+            }  
+            Files.write(path,bytes); 
         } catch (Exception ex) {
             Logger.getLogger(CubeBinaryManager.class.getName()).log(Level.SEVERE, null, ex);
         }
