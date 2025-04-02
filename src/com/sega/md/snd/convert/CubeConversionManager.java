@@ -355,6 +355,7 @@ public class CubeConversionManager {
             int sfxCount = cis[i].getSfxCount();
             int ymTimerBValues = 0;
             int ymTimerBValueCount = 0;
+            byte[][] yminstruments = new byte[0][];
             for(int j=0;j<musicBankOffsets.length;j++){
                 System.out.println("Importing "+gameName+" music bank "+(j)+" ...");
                 mes = new MusicEntry[32];
@@ -368,6 +369,9 @@ public class CubeConversionManager {
                     if(mes[k]!=null){
                         ymTimerBValues+=0xFF&mes[k].getYmTimerBValue();
                         ymTimerBValueCount++;
+                        if(mes[k].getYmInstruments().length>yminstruments.length){
+                            yminstruments = mes[k].getYmInstruments();
+                        }
                     }
                 }
                 String completeAsmOutputFilePath = completeRomFilepath.substring(0, completeRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_ASM + File.separator + targetFolders[j];
@@ -380,7 +384,7 @@ public class CubeConversionManager {
                 System.out.println("... "+gameName+" music bank "+(j)+" exported.");
             }
             byte averageYmTimerBValue = (byte)(0xFF & (ymTimerBValues / ymTimerBValueCount) );
-            System.out.println("Importing "+gameName+" SFX ...");
+            System.out.println("Exporting "+gameName+" SFX ...");
             importSfxEntriesFromBinary(completeRomFilepath, sfxOffset, inRamPreloadOffset, driverOffset, pitchEffectsOffset, ymLevelsOffset, ymInstruments[0], psgInstruments, ssgEg, ymTimerBIncrement, sampleTableOffset, sampleCount, multiBankSampleTableFormat, sampleBankOffsets, sfxCount, sfxParamSize, averageYmTimerBValue);
             String completeAsmOutputFilePath = completeRomFilepath.substring(0, completeRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_ASM + File.separator + ".\\sfx\\";
             exportSfxEntriesAsAsm(completeAsmOutputFilePath, DEFAULT_ASM_SFX_ENTRY_NAME, false, false);
@@ -394,10 +398,19 @@ public class CubeConversionManager {
             String sampleEntriesOutputFilePath = assetsOutputFilePath + File.separator + "pcm_samples.asm";
             CubeAsmManager.exportSampleEntriesAsAsm(sampleEntries, sampleEntriesOutputFilePath);
             CubeBinaryManager.exportSamples(assetsOutputFilePath, sampleEntries);
+            System.out.println("Exporting "+gameName+" YM instruments ...");
             String ymInstrumentsEntriesOutputFilePath = assetsOutputFilePath + File.separator + "yminstruments.bin";
-            CubeBinaryManager.exportYmInstruments(ymInstrumentsEntriesOutputFilePath, ses[0].getYmInstruments(), ssgEg);
-            //ses[0].get
-            exportSfxEntriesAsFurnaceFiles(templateFilePath, completeFurnaceOutputFilePath);
+            CubeBinaryManager.exportYmInstrumentsToSingleFile(ymInstrumentsEntriesOutputFilePath, ses[0].getYmInstruments(), ssgEg);
+            String ymInstrumentsIndividualEntriesOutputPath = assetsOutputFilePath + File.separator + ".\\yminstruments\\";
+            for(int k=0;k<ses.length;k++){
+                if(ses[k]!=null){
+                    if(ses[k].getYmInstruments().length>yminstruments.length){
+                        yminstruments = ses[k].getYmInstruments();
+                    }
+                }
+            }
+            CubeBinaryManager.exportYmInstrumentsToIndividualFiles(ymInstrumentsIndividualEntriesOutputPath, yminstruments, mes, ses);
+            System.out.println("... "+gameName+" YM instruments exported. ("+yminstruments.length+")");    
             System.out.println("... "+gameName+" assets exported.");
         }    
         /*

@@ -11,11 +11,14 @@ import com.sega.md.snd.formats.cube.SfxEntry;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -134,9 +137,63 @@ public class CubeBinaryManager {
         } catch (Exception ex) {
             Logger.getLogger(CubeBinaryManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public static void exportYmInstrumentsToIndividualFiles(String basePath, byte[][] yminstruments, MusicEntry[] mes, SfxEntry[] ses){
+        try{
+            for(int i=0;i<yminstruments.length;i++){
+                File nf = new File(basePath+"yminstrument"+String.format("%03d",i)+".bin");
+                Path path = Paths.get(nf.getAbsolutePath());
+                Files.write(path,yminstruments[i]); 
+            }
+            Set<Integer> usedYmInstrumentIndexes = new HashSet();
+            for(int i=0;i<mes.length;i++){
+                usedYmInstrumentIndexes.addAll(mes[i].getUsedYmInstrumentIndexes());
+            }
+            for(int i=0;i<ses.length;i++){
+                usedYmInstrumentIndexes.addAll(ses[i].getUsedYmInstrumentIndexes());
+            }
+            List<Integer> unusedYmInstrumentIndexes = new ArrayList();
+            for(int i=0;i<yminstruments.length;i++){
+                if(!usedYmInstrumentIndexes.contains(i)){
+                    unusedYmInstrumentIndexes.add(i);
+                }
+            }
+            String usedIndexesString = new ArrayList(usedYmInstrumentIndexes).toString();
+            String unusedIndexesString = unusedYmInstrumentIndexes.toString();
+            Path path = Paths.get(basePath+"yminstruments.asm");
+            PrintWriter pw;
+            pw = new PrintWriter(path.toString(),System.getProperty("file.encoding"));
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n");
+            sb.append("; ");
+            sb.append(usedYmInstrumentIndexes.size());
+            sb.append(" used YM instrument indexes : ");
+            sb.append(usedIndexesString);
+            sb.append("\n");
+            sb.append("; ");
+            sb.append(unusedYmInstrumentIndexes.size());
+            sb.append(" unused YM instrument indexes : ");
+            sb.append(unusedIndexesString);
+            sb.append("\n");
+            sb.append("\n");
+            for(int i=0;i<yminstruments.length;i++){
+                sb.append("    incbin \"yminstrument");
+                sb.append(String.format("%03d",i));
+                sb.append(".bin\"");
+                if(unusedYmInstrumentIndexes.contains(i)){
+                    sb.append(" ; unused");
+                }
+                sb.append("\n");
+            }            
+            pw.print(sb.toString());
+            pw.close();
+        } catch (Exception ex) {
+            Logger.getLogger(CubeBinaryManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
     } 
     
-    public static void exportYmInstruments(String filePath, byte[][] yminstruments, boolean ssgEg){
+    public static void exportYmInstrumentsToSingleFile(String filePath, byte[][] yminstruments, boolean ssgEg){
         try{
             int instrumentSize = ssgEg?YM_INSTRUMENT_SIZE:YM_INSTRUMENT_SIZE_NOSSGEG;
             File nf = new File(filePath);

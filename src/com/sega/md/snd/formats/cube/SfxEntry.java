@@ -518,4 +518,17 @@ public class SfxEntry {
         return false;
     }
     
+    public Set<Integer> getUsedYmInstrumentIndexes(){
+        Set<Integer> usedYmInstrumentIndexes = new HashSet();
+        for(int i=0;i<Math.min(6, channels.length);i++){
+            CubeChannel cch = channels[i];
+            for(CubeCommand cc : cch.getCcs()){
+                if(cc instanceof Inst){
+                    usedYmInstrumentIndexes.add(((Inst)cc).getValue()&0xff);
+                }
+            }
+        }
+        return usedYmInstrumentIndexes;
+    }
+    
 }

@@ -132,6 +132,7 @@ public class MusicEntry {
             if(ymInstrumentIndex>maxYmInstrumentIndex){
                 maxYmInstrumentIndex = ymInstrumentIndex;
             }
+            System.out.println("maxYmInstrumentIndex="+maxYmInstrumentIndex);
             int chunkCount = (maxYmInstrumentIndex / YM_INSTRUMENT_CHUNK_SIZE) + 1;
             maxYmInstrumentIndex = chunkCount * YM_INSTRUMENT_CHUNK_SIZE;
             ymInstruments = new byte[maxYmInstrumentIndex][];
@@ -522,6 +523,19 @@ public class MusicEntry {
             }
         }            
         return false;
+    }
+    
+    public Set<Integer> getUsedYmInstrumentIndexes(){
+        Set<Integer> usedYmInstrumentIndexes = new HashSet();
+        for(int i=0;i<6;i++){
+            CubeChannel cch = channels[i];
+            for(CubeCommand cc : cch.getCcs()){
+                if(cc instanceof Inst){
+                    usedYmInstrumentIndexes.add(((Inst)cc).getValue()&0xff);
+                }
+            }
+        }
+        return usedYmInstrumentIndexes;
     }
     
 }
