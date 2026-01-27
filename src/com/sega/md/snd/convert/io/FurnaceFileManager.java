@@ -24,16 +24,34 @@ import java.util.logging.Logger;
  */
 public class FurnaceFileManager {
            
-    public static MusicEntry importFurnaceFile(String filePath){
-        MusicEntry me = null;
+    public static FurnaceFile importFurnaceFile(String filePath){
+        FurnaceFile ff = null;
         try{
             File f = new File(filePath);
-            byte[] data = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
+            byte[] inputData = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
+            ff = new FurnaceFile(inputData);
         } catch (IOException ex) {
             Logger.getLogger(CubeBinaryManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return me;
+        return ff;
     }
+    
+    public static void exportFurnaceFile(FurnaceFile ff, String outputFilePath){
+        try {
+            System.out.println("FurnaceFileManager() - Exporting Furnace File ...");
+            
+            File file = new File(outputFilePath);
+            Path path = Paths.get(file.getAbsolutePath());
+            byte[] outputData = ff.toByteArray();
+            Files.write(path,outputData);
+            
+            System.out.println("FurnaceFileManager() - Furnace File exported.");
+        } catch (IOException ex) {
+            Logger.getLogger(FurnaceFileManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
     
     public static void exportMusicEntryAsFurnaceFile(MusicEntry me, String templateFilePath, String outputFilePath){
         try {
@@ -45,10 +63,7 @@ public class FurnaceFileManager {
             
             ff = C2FMusicFileConverter.convertMusicEntry(me, ff);
             
-            File file = new File(outputFilePath);
-            Path path = Paths.get(file.getAbsolutePath());
-            byte[] outputData = ff.toByteArray();
-            Files.write(path,outputData);
+            exportFurnaceFile(ff, outputFilePath);
             
             System.out.println("FurnaceFileManager() - Furnace File exported.");
         } catch (IOException ex) {
@@ -66,10 +81,7 @@ public class FurnaceFileManager {
             
             ff = C2FSfxFileConverter.convertSfxEntry(se, ff);
             
-            File file = new File(outputFilePath);
-            Path path = Paths.get(file.getAbsolutePath());
-            byte[] outputData = ff.toByteArray();
-            Files.write(path,outputData);
+            exportFurnaceFile(ff, outputFilePath);
             
             System.out.println("FurnaceFileManager() - Furnace File exported.");
         } catch (IOException ex) {

@@ -250,11 +250,6 @@ public class FurnaceFile {
                 baos.writeBytes(chipFlagsBlocks[i].toByteArray());
             }
         }
-        for(int i=0;i<chipFlagsBlocks.length;i++){
-            if(chipFlagsBlocks[i]!=null){
-                baos.writeBytes(chipFlagsBlocks[i].toByteArray());
-            }
-        }
         for(int i=0;i<assetDirectoriesBlocks.length;i++){
             if(assetDirectoriesBlocks[i]!=null){
                 baos.writeBytes(assetDirectoriesBlocks[i].toByteArray());

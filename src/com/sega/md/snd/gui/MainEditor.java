@@ -173,6 +173,11 @@ public class MainEditor extends javax.swing.JFrame {
         jTextField22 = new javax.swing.JTextField();
         jButton35 = new javax.swing.JButton();
         jButton36 = new javax.swing.JButton();
+        jPanel13 = new javax.swing.JPanel();
+        jLabel23 = new javax.swing.JLabel();
+        jTextField23 = new javax.swing.JTextField();
+        jButton55 = new javax.swing.JButton();
+        jButton57 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel14 = new javax.swing.JPanel();
@@ -220,7 +225,7 @@ public class MainEditor extends javax.swing.JFrame {
         jFileChooser2.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("SF2CubeConversionManager");
+        setTitle("CubeConversionManager");
 
         jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder("Console"));
         jPanel7.setToolTipText("");
@@ -815,7 +820,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel69.setText("Template Furnace File : ");
 
-                    jTextField51.setText("C:\\SEGADEV\\GITHUB\\CubeCentral\\CubeAssets\\template.fur");
+                    jTextField51.setText("C:\\SEGADEV\\GITHUB\\CubeCentral\\CubeAssets\\template0683.fur");
                     jTextField51.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField51ActionPerformed(evt);
@@ -1173,6 +1178,59 @@ public class MainEditor extends javax.swing.JFrame {
                     );
 
                     jTabbedPane1.addTab("Binary Entry File", jPanel11);
+
+                    jLabel23.setText("File :");
+
+                    jTextField23.setText("C:\\SEGADEV\\GITHUB\\CubeCentral\\CubeAssets\\template0683.fur");
+                    jTextField23.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                            jTextField23ActionPerformed(evt);
+                        }
+                    });
+
+                    jButton55.setText("File...");
+                    jButton55.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                            jButton55ActionPerformed(evt);
+                        }
+                    });
+
+                    jButton57.setText("Import");
+                    jButton57.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                            jButton57ActionPerformed(evt);
+                        }
+                    });
+
+                    javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
+                    jPanel13.setLayout(jPanel13Layout);
+                    jPanel13Layout.setHorizontalGroup(
+                        jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel13Layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel13Layout.createSequentialGroup()
+                                    .addComponent(jLabel23)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jTextField23, javax.swing.GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jButton55))
+                                .addComponent(jButton57))
+                            .addContainerGap())
+                    );
+                    jPanel13Layout.setVerticalGroup(
+                        jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel13Layout.createSequentialGroup()
+                            .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jTextField23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel23)
+                                .addComponent(jButton55))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jButton57)
+                            .addContainerGap(81, Short.MAX_VALUE))
+                    );
+
+                    jTabbedPane1.addTab("Furnace File", jPanel13);
 
                     javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
                     jPanel3.setLayout(jPanel3Layout);
@@ -1549,7 +1607,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel19.setText("Template Furnace File : ");
 
-                    jTextField19.setText("C:\\SEGADEV\\AUDIO\\data\\sf2\\templates\\furnace\\template.fur");
+                    jTextField19.setText("C:\\SEGADEV\\AUDIO\\data\\sf2\\templates\\furnace\\template0683.fur");
                     jTextField19.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField19ActionPerformed(evt);
@@ -2066,6 +2124,23 @@ public class MainEditor extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton51ActionPerformed
 
+    private void jTextField23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField23ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField23ActionPerformed
+
+    private void jButton55ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton55ActionPerformed
+        int returnVal = jFileChooser1.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = jFileChooser1.getSelectedFile();
+            jTextField23.setText(file.getAbsolutePath());
+        }
+    }//GEN-LAST:event_jButton55ActionPerformed
+
+    private void jButton57ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton57ActionPerformed
+        String filePath = jTextField23.getText();
+        ccm.importFurnaceFile(filePath);
+    }//GEN-LAST:event_jButton57ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -2148,7 +2223,9 @@ public class MainEditor extends javax.swing.JFrame {
     private javax.swing.JButton jButton52;
     private javax.swing.JButton jButton53;
     private javax.swing.JButton jButton54;
+    private javax.swing.JButton jButton55;
     private javax.swing.JButton jButton56;
+    private javax.swing.JButton jButton57;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox3;
@@ -2161,6 +2238,7 @@ public class MainEditor extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
@@ -2207,6 +2285,7 @@ public class MainEditor extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
@@ -2236,6 +2315,7 @@ public class MainEditor extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField18;
     private javax.swing.JTextField jTextField19;
     private javax.swing.JTextField jTextField22;
+    private javax.swing.JTextField jTextField23;
     private javax.swing.JTextField jTextField24;
     private javax.swing.JTextField jTextField25;
     private javax.swing.JTextField jTextField26;

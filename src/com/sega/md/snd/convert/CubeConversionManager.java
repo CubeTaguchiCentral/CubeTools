@@ -14,6 +14,7 @@ import com.sega.md.snd.convert.io.FurnaceFileManager;
 import com.sega.md.snd.formats.cube.MusicEntry;
 import com.sega.md.snd.formats.cube.SampleEntry;
 import com.sega.md.snd.formats.cube.SfxEntry;
+import com.sega.md.snd.formats.furnace.file.FurnaceFile;
 import java.io.File;
 
 /**
@@ -32,6 +33,8 @@ public class CubeConversionManager {
     MusicEntry[] mes = new MusicEntry[32];
     SfxEntry[] ses;
     int maxSampleIndex = 0;
+    
+    FurnaceFile ff = null;
     
     public void importMusicEntryFromBinaryMusicBank(String filePath, int ptOffset, int ramPreloadOffset, int index, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int ymTimerBIncrement, int sampleEntriesOffset, boolean multipleBanksFormat, int[] sampleBanksOffsets){
         System.out.println("CubeConversionManager.importMusicEntryFromBinaryMusicBank() - Importing ...");
@@ -227,6 +230,19 @@ public class CubeConversionManager {
         mes[0].hasMainLoop();
         mes[0].hasIntro();
         System.out.println("CubeConversionManager.importMusicEntryFromBinaryFile() - ... Done.");
+    }
+    
+    public void importFurnaceFile(String filePath){
+        System.out.println("CubeConversionManager.importFurnaceFile() - Importing ...");
+        this.ff = FurnaceFileManager.importFurnaceFile(filePath);
+        exportFurnaceFile(filePath+"exported.fur");
+        System.out.println("CubeConversionManager.importFurnaceFile() - ... Done.");
+    }
+    
+    public void exportFurnaceFile(String filePath){
+        System.out.println("CubeConversionManager.exportFurnaceFile() - Exporting ...");
+        FurnaceFileManager.exportFurnaceFile(this.ff, filePath);
+        System.out.println("CubeConversionManager.exportFurnaceFile() - ... Done.");
     }
     
     public void exportMusicEntryToBinaryMusicBank(String filePath, int ptOffset, int index, boolean unroll, boolean optimize){

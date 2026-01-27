@@ -36,7 +36,7 @@ public class ChipFlagsBlock {
         blockSize = bb.getInt();    
         rawData = getByteArray(bb, blockSize);
         String[] flags =  new String(rawData, StandardCharsets.UTF_8).split("\n");
-        for(int i=0;i<flags.length;i++){
+        for(int i=0;i<flags.length-1;i++){
             String[] strings = flags[i].split("=");
             String key = strings[0];
             String value = strings[1];
