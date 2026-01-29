@@ -1248,7 +1248,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel15.setText("ASM Music Entry File : ");
 
-                    jTextField15.setText("C:\\SEGADEV\\SOUNDRESEARCH\\CUBE\\Space Invaders 91\\output.asm");
+                    jTextField15.setText("C:\\SEGADEV\\GITHUB\\CubeCentral\\CubeAssets\\template0683.asm");
                     jTextField15.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField15ActionPerformed(evt);

@@ -37,6 +37,9 @@ import java.util.List;
  */
 public class PsgToneChannel extends CubeChannel {
     
+    public PsgToneChannel() {
+        
+    }
     
     public PsgToneChannel(byte[] data, int cursor){
         List<CubeCommand> ccs = new ArrayList();

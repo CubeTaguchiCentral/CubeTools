@@ -40,6 +40,9 @@ import java.util.List;
  */
 public class YmChannel extends CubeChannel {
     
+    public YmChannel(){
+        
+    }
     
     public YmChannel(byte[] data, int cursor){
         List<CubeCommand> ccs = new ArrayList();
@@ -133,8 +136,5 @@ public class YmChannel extends CubeChannel {
         CubeCommand[] ccsArray = new CubeCommand[ccs.size()];
         this.setCcs(ccs.toArray(ccsArray));
     }
-    
-    
-    
     
 }

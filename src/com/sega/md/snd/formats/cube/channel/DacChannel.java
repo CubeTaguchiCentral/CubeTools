@@ -38,7 +38,10 @@ import java.util.List;
  * @author Wiz
  */
 public class DacChannel extends CubeChannel {
-    
+
+    public DacChannel(){
+        
+    }    
     
     public DacChannel(byte[] data, int cursor){
         List<CubeCommand> ccs = new ArrayList();

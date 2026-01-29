@@ -26,7 +26,7 @@ import java.util.List;
  */
 public abstract class CubeChannel {
     
-    private CubeCommand[] ccs;
+    private CubeCommand[] ccs = new CubeCommand[0];
 
     public CubeCommand[] getCcs() {
         return ccs;
@@ -40,8 +40,8 @@ public abstract class CubeChannel {
     
     public String produceAsmOutput(){
         StringBuilder sb = new StringBuilder();
-        for(CubeCommand cc : ccs){
-            sb.append("\n    "+cc.produceAsmOutput());
+        for(int i=0;i<ccs.length;i++){
+            sb.append("\n    "+ccs[i].produceAsmOutput());
         }
         return sb.toString();
     }    

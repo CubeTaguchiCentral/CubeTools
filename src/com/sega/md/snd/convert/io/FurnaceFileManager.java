@@ -8,6 +8,7 @@ package com.sega.md.snd.convert.io;
 import com.sega.md.snd.formats.cube.MusicEntry;
 import com.sega.md.snd.convert.cubetofurnace.C2FMusicFileConverter;
 import com.sega.md.snd.convert.cubetofurnace.C2FSfxFileConverter;
+import com.sega.md.snd.convert.furnacetocube.F2CMusicFileconverter;
 import com.sega.md.snd.formats.cube.SfxEntry;
 import com.sega.md.snd.formats.furnace.file.FurnaceFile;
 import java.io.File;
@@ -24,16 +25,17 @@ import java.util.logging.Logger;
  */
 public class FurnaceFileManager {
            
-    public static FurnaceFile importFurnaceFile(String filePath){
-        FurnaceFile ff = null;
+    public static MusicEntry importFurnaceFile(String filePath){
+        MusicEntry me = null;
         try{
             File f = new File(filePath);
             byte[] inputData = Files.readAllBytes(Paths.get(f.getAbsolutePath()));
-            ff = new FurnaceFile(inputData);
+            FurnaceFile ff = new FurnaceFile(inputData);
+            me = F2CMusicFileconverter.convertFurnaceFile(ff);
         } catch (IOException ex) {
             Logger.getLogger(CubeBinaryManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return ff;
+        return me;
     }
     
     public static void exportFurnaceFile(FurnaceFile ff, String outputFilePath){

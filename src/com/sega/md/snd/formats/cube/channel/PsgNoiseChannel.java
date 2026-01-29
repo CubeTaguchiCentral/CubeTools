@@ -33,7 +33,10 @@ import java.util.List;
  * @author Wiz
  */
 public class PsgNoiseChannel extends CubeChannel {
-    
+
+    public PsgNoiseChannel() {
+        
+    }
     
     public PsgNoiseChannel(byte[] data, int cursor){
         List<CubeCommand> ccs = new ArrayList();
@@ -108,8 +111,5 @@ public class PsgNoiseChannel extends CubeChannel {
         CubeCommand[] ccsArray = new CubeCommand[ccs.size()];
         this.setCcs(ccs.toArray(ccsArray));
     }
-    
-    
-    
     
 }

@@ -93,6 +93,10 @@ public class MusicEntry {
         this.channels = channels;
     }
     
+    public MusicEntry(){
+        
+    }
+    
     public MusicEntry(byte [] data, int entryOffset, int baseOffset, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int ymTimerBIncrement){
         this(data, entryOffset, baseOffset);
         this.ymTimerBIncrement = ymTimerBIncrement;
