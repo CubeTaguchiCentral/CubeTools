@@ -16,6 +16,12 @@ import com.sega.md.snd.formats.cube.SampleEntry;
 import com.sega.md.snd.formats.cube.SfxEntry;
 import com.sega.md.snd.formats.furnace.file.FurnaceFile;
 import java.io.File;
+import java.io.FileFilter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -90,6 +96,27 @@ public class CubeConversionManager {
         System.out.println("CubeConversionManager.importMusicEntriesFromBinaryMusicBank() - ... Done.");
     }
     
+    public void importMusicEntriesFromFurnaceFolder(String folderPath){
+        System.out.println("CubeConversionManager.importMusicEntriesFromFurnaceFolder() - Importing ...");     
+ 
+        Path path = Paths.get(folderPath);
+        File folder = path.toFile();
+        File[] files = folder.listFiles();
+        Arrays.sort(files);
+        List<MusicEntry> musicEntries = new ArrayList();
+        for(File file : files){
+            String filename = file.getName();
+            if(!file.isDirectory() && filename.endsWith(".fur")){
+                System.out.println("Processing "+filename+" ...");
+                MusicEntry musicEntry = FurnaceFileManager.importFurnaceFile(file.getAbsolutePath());
+                musicEntries.add(musicEntry);
+            }
+        }
+        mes = musicEntries.toArray(new MusicEntry[musicEntries.size()]);
+
+        System.out.println("CubeConversionManager.importMusicEntriesFromFurnaceFolder() - ... Done.");
+    }
+    
     public void importSfxEntriesFromBinary(String filePath, int sfxOffset, int ramPreloadOffset, int driverOffset, int pitchEffectsOffset, int ymLevelsOffset, int ymInstOffset, int psgInstOffset, boolean ssgEg, int ymTimerBIncrement, int sampleEntriesOffset, int sampleCount, boolean multipleBanksFormat, int[] sampleBanksOffsets, int sfxCount, int sfxParamSize, byte averageYmTimerBValue){
         System.out.println("CubeConversionManager.importSfxEntriesFromBinary() - Importing ...");
         ses = new SfxEntry[sfxCount];
@@ -141,7 +168,7 @@ public class CubeConversionManager {
     
     public void exportMusicEntriesAsAsm(String filePath, String name, boolean unroll, boolean optimize){
         System.out.println("CubeConversionManager.exportMusicEntryAsAsm() - Exporting ...");
-        for(int i=0;i<32;i++){ 
+        for(int i=0;i<mes.length;i++){ 
             if(mes[i]!=null){
                 try{
                     mes[i].setName(name+String.format("%02d", i+1));
