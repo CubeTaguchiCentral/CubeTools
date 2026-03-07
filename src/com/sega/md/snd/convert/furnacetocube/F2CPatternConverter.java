@@ -60,6 +60,7 @@ public class F2CPatternConverter {
     
     private static final byte EFFECT_VIBRATO = (byte)0x04;
     private static final byte EFFECT_DETUNE = (byte)0x53;
+    private static final byte EFFECT_LEGATO = (byte)0xEA;
     
     private static final int YMINSTR_INDEX_OFFSET = 0x0;
     private static final int PSGINSTR_INDEX_OFFSET = 0xA0;
@@ -105,6 +106,7 @@ public class F2CPatternConverter {
         int currentRelease = 0;
         int currentVibratoDelay = 0;
         boolean mainLoopStartRequiresSustain = false;
+        boolean legato = false;
         if(!channelHasNotes(rows)){
             cubeCommands.add(new ChannelEnd());
         } else{
@@ -128,6 +130,19 @@ public class F2CPatternConverter {
                 boolean noteInterruptedByMainLoopStart = isNoteInterruptedByMainLoopStart(rows, cursor, mainLoopStartIndex, playLength);
                 boolean noteInterruptedByMainLoopEnd = isNoteInterruptedByMainLoopEnd(rows, cursor, mainLoopEndIndex, playLength);
                 int release = findRelease(rows, cursor, playLength);
+                if(!legato && release==playLength){
+                    boolean legatoActivated = isLegatoActivated(rows, cursor, playLength);
+                    if(legatoActivated){
+                        cubeCommands.add(new Sustain());
+                        legato = true;
+                        currentRelease = 0;
+                    }
+                }else if(legato){
+                    boolean legatoDeactivated = isLegatoDeactivated(rows, cursor, playLength);
+                    if(legatoDeactivated){
+                        legato = false;
+                    }
+                }
                 if((noteInterruptedByMainLoopStart || noteInterruptedByMainLoopEnd) && release==playLength){
                     release = currentRelease;
                     mainLoopStartRequiresSustain = true;
@@ -140,6 +155,11 @@ public class F2CPatternConverter {
                     }
                     if(type==EFFECT_DETUNE){
                         applyDetune(cubeCommands, value);
+                    }
+                    if(type==EFFECT_LEGATO){
+                        if(value==0){
+                            legato = false;
+                        }
                     }
                 }
                 if(instrument!=null){
@@ -164,20 +184,17 @@ public class F2CPatternConverter {
                         cubeCommands.add(new WaitL((byte)playLength));
                         currentPlayLength = playLength;
                     }
-                    //applyWait(cubeCommands, currentPlayLength, playLength);
                 }else{
-                     
                     if(mainLoopStartRequiresSustain){
                         cubeCommands.add(new Sustain());
                         mainLoopStartRequiresSustain = false;
-                    }else if(release!=currentRelease){
+                    }else if(!legato && release!=currentRelease){
                         cubeCommands.add(new SetRelease((byte)release));
                         currentRelease = release;
                     }
                     int vibratoDelay = findVibratoDelay(rows, cursor, playLength);
                     if(playLength>currentVibratoDelay && vibratoDelay!=currentVibratoDelay){
-                        //byte value = getVibratoValue(rows, cursor, vibratoDelay);
-                        int index = 4;
+                        int index = 2;
                         int delay = (vibratoDelay/2)&0x0F;
                         byte value = (byte)(index<<4|delay);
                         cubeCommands.add(new Vibrato(value));
@@ -284,6 +301,7 @@ public class F2CPatternConverter {
         int currentRelease = 0;
         int currentVibratoDelay = 0;
         boolean mainLoopStartRequiresSustain = false;
+        boolean legato = false;
         if(!channelHasNotes(rows)){
             cubeCommands.add(new ChannelEnd());
         } else{
@@ -309,6 +327,19 @@ public class F2CPatternConverter {
                 boolean noteInterruptedByMainLoopStart = isNoteInterruptedByMainLoopStart(rows, cursor, mainLoopStartIndex, playLength);
                 boolean noteInterruptedByMainLoopEnd = isNoteInterruptedByMainLoopEnd(rows, cursor, mainLoopEndIndex, playLength);
                 int release = findRelease(rows, cursor, playLength);
+                if(!legato && release==playLength){
+                    boolean legatoActivated = isLegatoActivated(rows, cursor, playLength);
+                    if(legatoActivated){
+                        cubeCommands.add(new Sustain());
+                        legato = true;
+                        currentRelease = 0;
+                    }
+                }else if(legato){
+                    boolean legatoDeactivated = isLegatoDeactivated(rows, cursor, playLength);
+                    if(legatoDeactivated){
+                        legato = false;
+                    }
+                }
                 if((noteInterruptedByMainLoopStart || noteInterruptedByMainLoopEnd) && release==playLength){
                     release = currentRelease;
                     mainLoopStartRequiresSustain = true;
@@ -316,11 +347,13 @@ public class F2CPatternConverter {
                 for(Effect effect : effects){
                     byte type = effect.getType();
                     byte value = effect.getValue();
-                    if(type==EFFECT_PANNING){
-                        applyStereo(cubeCommands, value);
-                    }
                     if(type==EFFECT_DETUNE){
                         applyDetune(cubeCommands, value);
+                    }
+                    if(type==EFFECT_LEGATO){
+                        if(value==0){
+                            legato = false;
+                        }
                     }
                 }
                 if(instrument!=null){
@@ -352,7 +385,7 @@ public class F2CPatternConverter {
                     if(mainLoopStartRequiresSustain){
                         cubeCommands.add(new Sustain());
                         mainLoopStartRequiresSustain = false;
-                    }else if(release!=currentRelease){
+                    }else if(!legato && release!=currentRelease){
                         cubeCommands.add(new SetRelease((byte)release));
                         currentRelease = release;
                     }
@@ -392,6 +425,7 @@ public class F2CPatternConverter {
         int currentRelease = 0;
         int currentVibratoDelay = 0;
         boolean mainLoopStartRequiresSustain = false;
+        boolean legato = false;
         if(!channelHasNotes(rows)){
             cubeCommands.add(new ChannelEnd());
         } else{
@@ -417,6 +451,19 @@ public class F2CPatternConverter {
                 boolean noteInterruptedByMainLoopStart = isNoteInterruptedByMainLoopStart(rows, cursor, mainLoopStartIndex, playLength);
                 boolean noteInterruptedByMainLoopEnd = isNoteInterruptedByMainLoopEnd(rows, cursor, mainLoopEndIndex, playLength);
                 int release = findRelease(rows, cursor, playLength);
+                if(!legato && release==playLength){
+                    boolean legatoActivated = isLegatoActivated(rows, cursor, playLength);
+                    if(legatoActivated){
+                        cubeCommands.add(new Sustain());
+                        legato = true;
+                        currentRelease = 0;
+                    }
+                }else if(legato){
+                    boolean legatoDeactivated = isLegatoDeactivated(rows, cursor, playLength);
+                    if(legatoDeactivated){
+                        legato = false;
+                    }
+                }
                 if((noteInterruptedByMainLoopStart || noteInterruptedByMainLoopEnd) && release==playLength){
                     release = currentRelease;
                     mainLoopStartRequiresSustain = true;
@@ -424,6 +471,11 @@ public class F2CPatternConverter {
                 for(Effect effect : effects){
                     byte type = effect.getType();
                     byte value = effect.getValue();
+                    if(type==EFFECT_LEGATO){
+                        if(value==0){
+                            legato = false;
+                        }
+                    }
                 }
                 if(instrument!=null){
                     int instrumentValue = (instrument.getValue()&0xFF) - PSGINSTR_INDEX_OFFSET;
@@ -454,7 +506,7 @@ public class F2CPatternConverter {
                     if(mainLoopStartRequiresSustain){
                         cubeCommands.add(new Sustain());
                         mainLoopStartRequiresSustain = false;
-                    }else if(release!=currentRelease){
+                    }else if(!legato && release!=currentRelease){
                         cubeCommands.add(new SetRelease((byte)release));
                         currentRelease = release;
                     }
@@ -544,6 +596,36 @@ public class F2CPatternConverter {
         }
     }
     
+    private static boolean isLegatoActivated(Row[] rows, int startIndex, int playLength){
+        int cursor = startIndex+playLength;
+        while(cursor>startIndex){
+            Row row = rows[cursor];
+            List<Effect> effects = row.getEffectList();
+            for(Effect effect : effects){
+                if(effect.getType()==EFFECT_LEGATO && effect.getValue()!=0){
+                    return true;
+                }
+            }
+            cursor--;
+        }
+        return false;
+    }
+    
+    private static boolean isLegatoDeactivated(Row[] rows, int startIndex, int playLength){
+        int cursor = startIndex+playLength;
+        while(cursor>startIndex){
+            Row row = rows[cursor];
+            List<Effect> effects = row.getEffectList();
+            for(Effect effect : effects){
+                if(effect.getType()==EFFECT_LEGATO && effect.getValue()==0){
+                    return true;
+                }
+            }
+            cursor--;
+        }
+        return false;
+    }
+    
     private static int findRelease(Row[] rows, int startIndex, int playLength){
         int release = 1;
         int cursor = startIndex+playLength-1;
@@ -565,7 +647,7 @@ public class F2CPatternConverter {
             List<Effect> effects = row.getEffectList();
             for(Effect effect : effects){
                 if(effect.getType()==EFFECT_VIBRATO && effect.getValue()!=0){
-                    System.out.println("Effect:0x"+String.format("%02X", effect.getType())+",Value:0x"+String.format("%02X", effect.getValue()));
+                    //System.out.println("Effect:0x"+String.format("%02X", effect.getType())+",Value:0x"+String.format("%02X", effect.getValue()));
                     return delay;
                 }
             }
