@@ -48,7 +48,11 @@ public class SampleBlock {
         loopStart = bb.getInt();
         loopEnd = bb.getInt();
         samplePresenceBitfield = getByteArray(bb, 16);
-        rawData = getByteArray(bb, length*2);
+        try{
+            rawData = getByteArray(bb, length*2);
+        }catch(Exception e){
+            System.out.println("Error when loading sample raw data : "+e.getMessage());
+        }
     }
 
     private byte[] getByteArray(ByteBuffer bb, int length){
