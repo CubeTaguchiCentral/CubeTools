@@ -31,6 +31,16 @@ public class RepeatSection3Start extends CubeCommand {
             return false;
         }
     }
+
+    @Override
+    public int getPlayLength() {
+        return 0;
+    }
+    
+    @Override
+    public boolean equals(CubeCommand cc, int currentPlayLength) {
+        return equals(cc);
+    }
     
     
     

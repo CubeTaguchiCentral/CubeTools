@@ -45,6 +45,21 @@ public class WaitL extends CubeCommand {
     public void setValue(byte value) {
         this.value = value;
     }
+
+    @Override
+    public int getPlayLength() {
+        return this.value;
+    }
+    
+    @Override
+    public boolean equals(CubeCommand cc, int currentPlayLength) {
+        if(cc instanceof Wait 
+                && (this.value&0xFF) == currentPlayLength){
+            return true;
+        }else{
+            return equals(cc);
+        }
+    }
     
     
     

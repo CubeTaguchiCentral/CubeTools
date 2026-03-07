@@ -14,5 +14,7 @@ public abstract class CubeCommand {
     public abstract byte[] produceBinaryOutput();
     public abstract String produceAsmOutput();
     public abstract boolean equals(CubeCommand cc);
+    public abstract int getPlayLength();
+    public abstract boolean equals(CubeCommand cc, int currentPlayLength);
     
 }

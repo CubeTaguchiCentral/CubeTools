@@ -57,6 +57,16 @@ public class SampleL extends CubeCommand {
     public void setLength(byte length) {
         this.length = length;
     }
+
+    @Override
+    public int getPlayLength() {
+        return this.length;
+    }
+    
+    @Override
+    public boolean equals(CubeCommand cc, int currentPlayLength) {
+        return equals(cc);
+    }
     
     
     

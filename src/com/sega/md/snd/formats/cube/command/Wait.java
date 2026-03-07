@@ -31,6 +31,21 @@ public class Wait extends CubeCommand {
             return false;
         }
     }
+
+    @Override
+    public int getPlayLength() {
+        return 0;
+    }
+    
+    @Override
+    public boolean equals(CubeCommand cc, int currentPlayLength) {
+        if(cc instanceof WaitL 
+                && (((WaitL)cc).value&0xFF) == currentPlayLength){
+            return true;
+        }else{
+            return equals(cc);
+        }
+    }
     
     
     

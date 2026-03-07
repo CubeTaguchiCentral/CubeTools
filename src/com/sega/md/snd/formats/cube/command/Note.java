@@ -47,6 +47,16 @@ public class Note extends CubeCommand {
     public void setNote(Pitch note) {
         this.note = note;
     }
+
+    @Override
+    public int getPlayLength() {
+        return 0;
+    }
+    
+    @Override
+    public boolean equals(CubeCommand cc, int currentPlayLength) {
+        return equals(cc);
+    }
     
     
     

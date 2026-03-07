@@ -247,7 +247,7 @@ public class MainEditor extends javax.swing.JFrame {
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -353,7 +353,7 @@ public class MainEditor extends javax.swing.JFrame {
                         .addComponent(jTextField24)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton40))
-                    .addComponent(jLabel39, javax.swing.GroupLayout.DEFAULT_SIZE, 768, Short.MAX_VALUE)
+                    .addComponent(jLabel39, javax.swing.GroupLayout.DEFAULT_SIZE, 975, Short.MAX_VALUE)
                     .addGroup(jPanel12Layout.createSequentialGroup()
                         .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel12Layout.createSequentialGroup()
@@ -504,7 +504,7 @@ public class MainEditor extends javax.swing.JFrame {
                         .addGroup(jPanel19Layout.createSequentialGroup()
                             .addComponent(jLabel36)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jTextField30, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
+                            .addComponent(jTextField30, javax.swing.GroupLayout.DEFAULT_SIZE, 796, Short.MAX_VALUE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(jButton44))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel19Layout.createSequentialGroup()
@@ -588,7 +588,7 @@ public class MainEditor extends javax.swing.JFrame {
                             .addGroup(jPanel20Layout.createSequentialGroup()
                                 .addComponent(jLabel43)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField31, javax.swing.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)
+                                .addComponent(jTextField31, javax.swing.GroupLayout.DEFAULT_SIZE, 787, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButton45))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel20Layout.createSequentialGroup()
@@ -692,7 +692,7 @@ public class MainEditor extends javax.swing.JFrame {
                                 .addComponent(jLabel45)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jTextField38, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 255, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 462, Short.MAX_VALUE)
                                 .addComponent(jLabel46)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jTextField39, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -788,7 +788,7 @@ public class MainEditor extends javax.swing.JFrame {
                                 .addGroup(jPanel23Layout.createSequentialGroup()
                                     .addComponent(jLabel50)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jTextField42, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE)
+                                    .addComponent(jTextField42, javax.swing.GroupLayout.DEFAULT_SIZE, 789, Short.MAX_VALUE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jButton54)))
                             .addContainerGap())
@@ -867,7 +867,7 @@ public class MainEditor extends javax.swing.JFrame {
                                 .addGroup(jPanel24Layout.createSequentialGroup()
                                     .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jTextField51)
-                                        .addComponent(jTextField52, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE))
+                                        .addComponent(jTextField52, javax.swing.GroupLayout.DEFAULT_SIZE, 789, Short.MAX_VALUE))
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jButton50, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -909,15 +909,16 @@ public class MainEditor extends javax.swing.JFrame {
                     jPanel2.setLayout(jPanel2Layout);
                     jPanel2Layout.setHorizontalGroup(
                         jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE)
-                        .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
+                        .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
                     );
                     jPanel2Layout.setVerticalGroup(
                         jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
+                            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     );
 
                     jTabbedPane3.addTab("Bank", jPanel2);
@@ -1055,7 +1056,7 @@ public class MainEditor extends javax.swing.JFrame {
                                     .addComponent(jTextField47, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jButton43))
-                                .addComponent(jLabel55, javax.swing.GroupLayout.DEFAULT_SIZE, 768, Short.MAX_VALUE)
+                                .addComponent(jLabel55, javax.swing.GroupLayout.DEFAULT_SIZE, 975, Short.MAX_VALUE)
                                 .addGroup(jPanel10Layout.createSequentialGroup()
                                     .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(jPanel10Layout.createSequentialGroup()
@@ -1159,7 +1160,7 @@ public class MainEditor extends javax.swing.JFrame {
                                 .addGroup(jPanel11Layout.createSequentialGroup()
                                     .addComponent(jLabel22)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jTextField22, javax.swing.GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
+                                    .addComponent(jTextField22, javax.swing.GroupLayout.DEFAULT_SIZE, 881, Short.MAX_VALUE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jButton35))
                                 .addComponent(jButton36))
@@ -1181,7 +1182,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel23.setText("File :");
 
-                    jTextField23.setText("C:\\SEGADEV\\GITHUB\\CubeCentral\\CubeAssets\\template0683.fur");
+                    jTextField23.setText("C:\\SEGADEV\\GITHUB\\CubeCentral\\CubeAssets\\Shining Force II\\Furnace\\bank0\\01.fur");
                     jTextField23.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField23ActionPerformed(evt);
@@ -1212,7 +1213,7 @@ public class MainEditor extends javax.swing.JFrame {
                                 .addGroup(jPanel13Layout.createSequentialGroup()
                                     .addComponent(jLabel23)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jTextField23, javax.swing.GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
+                                    .addComponent(jTextField23, javax.swing.GroupLayout.DEFAULT_SIZE, 881, Short.MAX_VALUE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jButton55))
                                 .addComponent(jButton57))
@@ -1248,7 +1249,7 @@ public class MainEditor extends javax.swing.JFrame {
 
                     jLabel15.setText("ASM Music Entry File : ");
 
-                    jTextField15.setText("C:\\SEGADEV\\GITHUB\\CubeCentral\\CubeAssets\\template0683.asm");
+                    jTextField15.setText("C:\\SEGADEV\\GITHUB\\SF2DISASM\\disasm\\data\\sound\\musicbank0\\01.fur.asm");
                     jTextField15.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                             jTextField15ActionPerformed(evt);
@@ -1302,7 +1303,7 @@ public class MainEditor extends javax.swing.JFrame {
                                 .addGroup(jPanel14Layout.createSequentialGroup()
                                     .addComponent(jLabel15)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jTextField15, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
+                                    .addComponent(jTextField15, javax.swing.GroupLayout.DEFAULT_SIZE, 796, Short.MAX_VALUE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jButton27))
                                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel14Layout.createSequentialGroup()
@@ -1386,7 +1387,7 @@ public class MainEditor extends javax.swing.JFrame {
                                 .addGroup(jPanel16Layout.createSequentialGroup()
                                     .addComponent(jLabel16)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jTextField16, javax.swing.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)
+                                    .addComponent(jTextField16, javax.swing.GroupLayout.DEFAULT_SIZE, 787, Short.MAX_VALUE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jButton28))
                                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel16Layout.createSequentialGroup()
@@ -1490,7 +1491,7 @@ public class MainEditor extends javax.swing.JFrame {
                                     .addComponent(jLabel26)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jTextField26, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 255, Short.MAX_VALUE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 462, Short.MAX_VALUE)
                                     .addComponent(jLabel38)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jTextField34, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1563,7 +1564,7 @@ public class MainEditor extends javax.swing.JFrame {
                                 .addGroup(jPanel17Layout.createSequentialGroup()
                                     .addComponent(jLabel17)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jTextField17, javax.swing.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
+                                    .addComponent(jTextField17, javax.swing.GroupLayout.DEFAULT_SIZE, 751, Short.MAX_VALUE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jButton29)))
                             .addContainerGap())
@@ -1641,7 +1642,7 @@ public class MainEditor extends javax.swing.JFrame {
                                 .addGroup(jPanel18Layout.createSequentialGroup()
                                     .addComponent(jLabel19)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jTextField19, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE)
+                                    .addComponent(jTextField19, javax.swing.GroupLayout.DEFAULT_SIZE, 789, Short.MAX_VALUE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jButton39)))
                             .addContainerGap())
@@ -1681,15 +1682,16 @@ public class MainEditor extends javax.swing.JFrame {
                     jPanel1.setLayout(jPanel1Layout);
                     jPanel1Layout.setHorizontalGroup(
                         jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
                     );
                     jPanel1Layout.setVerticalGroup(
                         jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addContainerGap())
                     );
 
                     jTabbedPane3.addTab("Single", jPanel1);
@@ -1704,13 +1706,12 @@ public class MainEditor extends javax.swing.JFrame {
                     layout.setVerticalGroup(
                         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                            .addComponent(jTabbedPane3)
+                            .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(20, 20, 20))
+                            .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     );
 
-                    setSize(new java.awt.Dimension(826, 662));
+                    setSize(new java.awt.Dimension(1033, 807));
                     setLocationRelativeTo(null);
                 }// </editor-fold>//GEN-END:initComponents
 

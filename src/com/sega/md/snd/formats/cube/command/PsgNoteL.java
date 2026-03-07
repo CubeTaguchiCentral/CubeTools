@@ -58,6 +58,22 @@ public class PsgNoteL extends CubeCommand {
     public void setLength(byte length) {
         this.length = length;
     }
+
+    @Override
+    public int getPlayLength() {
+        return this.length;
+    }
+    
+    @Override
+    public boolean equals(CubeCommand cc, int currentPlayLength) {
+        if(cc instanceof PsgNote 
+                && ((PsgNote)cc).note == this.note
+                && (this.length&0xFF) == currentPlayLength){
+            return true;
+        }else{
+            return equals(cc);
+        }
+    }
     
     
     

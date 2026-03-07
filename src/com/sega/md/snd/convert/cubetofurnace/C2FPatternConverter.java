@@ -51,26 +51,28 @@ public class C2FPatternConverter {
     
     //public static Set<String> unrecognizedPitchEffectStrings = new HashSet();
     
-    public static final int MD_CRYSTAL_FREQUENCY = 53693175;
-    public static final float YM2612_INPUT_FREQUENCY = MD_CRYSTAL_FREQUENCY / 7;
-    public static final int YM2612_CHANNEL_SAMPLE_CYCLES = 6*24;
-    public static final float YM2612_OUTPUT_RATE = YM2612_INPUT_FREQUENCY / YM2612_CHANNEL_SAMPLE_CYCLES;
+    private static final int MD_CRYSTAL_FREQUENCY = 53693175;
+    private static final float YM2612_INPUT_FREQUENCY = MD_CRYSTAL_FREQUENCY / 7;
+    private static final int YM2612_CHANNEL_SAMPLE_CYCLES = 6*24;
+    private static final float YM2612_OUTPUT_RATE = YM2612_INPUT_FREQUENCY / YM2612_CHANNEL_SAMPLE_CYCLES;
     
-    public static final byte[] DEFAULT_YM_LEVELS = {0x70, 0x60, 0x50, 0x40, 0x38, 0x30, 0x2A, 0x26, 0x20, 0x1C, 0x18, 0x14, 0x10, 0xB, 0x8, 0x4};    
+    private static final byte[] DEFAULT_YM_LEVELS = {0x70, 0x60, 0x50, 0x40, 0x38, 0x30, 0x2A, 0x26, 0x20, 0x1C, 0x18, 0x14, 0x10, 0xB, 0x8, 0x4};    
     
-    public static final int PATTERN_LENGTH = 256;
+    private static final int PATTERN_LENGTH = 256;
     
-    public static final int TYPE_FM = 0;
-    public static final int TYPE_DAC = 1;
-    public static final int TYPE_PSGTONE = 2;
-    public static final int TYPE_PSGNOISE = 3;
+    private static final int TYPE_FM = 0;
+    private static final int TYPE_DAC = 1;
+    private static final int TYPE_PSGTONE = 2;
+    private static final int TYPE_PSGNOISE = 3;
     
-    public static final byte NOTE_OFF = (byte)0xB4;
-    public static final byte NOTE_RELEASE = (byte)0xB5;
-    public static final byte MACRO_RELEASE = (byte)0xB6;
+    private static final byte NOTE_OFF = (byte)0xB4;
+    private static final byte NOTE_RELEASE = (byte)0xB5;
+    private static final byte MACRO_RELEASE = (byte)0xB6;
     
-    public static final int PSG_INSTRUMENT_OFFSET = 0xA0;
-    public static final int SAMPLE_INSTRUMENT_OFFSET = 0xC0;
+    private static final int PSG_INSTRUMENT_OFFSET = 0xA0;
+    private static final int SAMPLE_INSTRUMENT_OFFSET = 0xC0;
+    
+    private static final int NOTE_OFFSET = 12;
     
     private Row[] rows;
     
@@ -342,8 +344,8 @@ public class C2FPatternConverter {
     private void applyYmNote(CubeCommand cc){
         previousNoteValue = newNoteValue;
         newNoteValue = cc instanceof Note ? 
-                C2FPitch.valueFromCubeValue(((Note)cc).getNote().getValue()-12).getFurnaceValue()
-                : C2FPitch.valueFromCubeValue(((NoteL)cc).getNote().getValue()-12).getFurnaceValue();
+                C2FPitch.valueFromCubeValue(((Note)cc).getNote().getValue()-NOTE_OFFSET).getFurnaceValue()
+                : C2FPitch.valueFromCubeValue(((NoteL)cc).getNote().getValue()-NOTE_OFFSET).getFurnaceValue();
         if(cc instanceof NoteL){
             playLength = 0xFF & ((NoteL)cc).getLength();
         }
@@ -366,8 +368,8 @@ public class C2FPatternConverter {
     private void applyPsgNote(CubeCommand cc){
         previousNoteValue = newNoteValue;
         newNoteValue = cc instanceof PsgNote ? 
-                C2FPitch.valueFromCubeValue(((PsgNote)cc).getNote().getValue()-12).getFurnaceValue()
-                : C2FPitch.valueFromCubeValue(((PsgNoteL)cc).getNote().getValue()-12).getFurnaceValue();
+                C2FPitch.valueFromCubeValue(((PsgNote)cc).getNote().getValue()-NOTE_OFFSET).getFurnaceValue()
+                : C2FPitch.valueFromCubeValue(((PsgNoteL)cc).getNote().getValue()-NOTE_OFFSET).getFurnaceValue();
         if(cc instanceof PsgNoteL){
             playLength = 0xFF & ((PsgNoteL)cc).getLength();
         }

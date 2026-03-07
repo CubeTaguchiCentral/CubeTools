@@ -5,16 +5,71 @@
  */
 package com.sega.md.snd.convert.furnacetocube;
 
+import com.sega.md.snd.formats.cube.CubeChannel;
+import com.sega.md.snd.formats.cube.CubeCommand;
+import com.sega.md.snd.formats.cube.Pitch;
+import com.sega.md.snd.formats.cube.channel.DacChannel;
+import com.sega.md.snd.formats.cube.channel.PsgNoiseChannel;
+import com.sega.md.snd.formats.cube.channel.PsgToneChannel;
+import com.sega.md.snd.formats.cube.channel.YmChannel;
+import com.sega.md.snd.formats.cube.command.ChannelEnd;
+import com.sega.md.snd.formats.cube.command.Inst;
+import com.sega.md.snd.formats.cube.command.MainLoopEnd;
+import com.sega.md.snd.formats.cube.command.MainLoopStart;
+import com.sega.md.snd.formats.cube.command.Note;
+import com.sega.md.snd.formats.cube.command.NoteL;
+import com.sega.md.snd.formats.cube.command.PsgInst;
+import com.sega.md.snd.formats.cube.command.PsgNote;
+import com.sega.md.snd.formats.cube.command.PsgNoteL;
+import com.sega.md.snd.formats.cube.command.Sample;
+import com.sega.md.snd.formats.cube.command.SampleL;
+import com.sega.md.snd.formats.cube.command.SetRelease;
+import com.sega.md.snd.formats.cube.command.Shifting;
+import com.sega.md.snd.formats.cube.command.Stereo;
+import com.sega.md.snd.formats.cube.command.Sustain;
+import com.sega.md.snd.formats.cube.command.Vibrato;
+import com.sega.md.snd.formats.cube.command.Vol;
+import com.sega.md.snd.formats.cube.command.Wait;
+import com.sega.md.snd.formats.cube.command.WaitL;
+import com.sega.md.snd.formats.furnace.pattern.Effect;
+import com.sega.md.snd.formats.furnace.pattern.FNote;
+import com.sega.md.snd.formats.furnace.pattern.Instrument;
+import com.sega.md.snd.formats.furnace.pattern.Pattern;
+import com.sega.md.snd.formats.furnace.pattern.Row;
+import com.sega.md.snd.formats.furnace.pattern.Volume;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author Wiz
  */
 public class F2CPatternConverter {
     
-    public static final int MD_CRYSTAL_FREQUENCY = 53693175;
-    public static final float YM2612_INPUT_FREQUENCY = MD_CRYSTAL_FREQUENCY / 7;
-    public static final int YM2612_CHANNEL_SAMPLE_CYCLES = 6*24;
-    public static final float YM2612_OUTPUT_RATE = YM2612_INPUT_FREQUENCY / YM2612_CHANNEL_SAMPLE_CYCLES;
+    private static final int MD_CRYSTAL_FREQUENCY = 53693175;
+    private static final float YM2612_INPUT_FREQUENCY = MD_CRYSTAL_FREQUENCY / 7;
+    private static final int YM2612_CHANNEL_SAMPLE_CYCLES = 6*24;
+    private static final float YM2612_OUTPUT_RATE = YM2612_INPUT_FREQUENCY / YM2612_CHANNEL_SAMPLE_CYCLES;
+    
+    private static final byte[] DEFAULT_YM_LEVELS = {0x7F-0x70, 0x7F-0x60, 0x7F-0x50, 0x7F-0x40, 0x7F-0x38, 0x7F-0x30, 0x7F-0x2A, 0x7F-0x26, 0x7F-0x20, 0x7F-0x1C, 0x7F-0x18, 0x7F-0x14, 0x7F-0x10, 0x7F-0xB, 0x7F-0x8, 0x7F-0x4};
+    
+    private static final byte EFFECT_PANNING = (byte)0x80;
+    private static final byte STEREO_LEFT = (byte)0x80;
+    private static final byte STEREO_CENTER = (byte)0xC0;
+    private static final byte STEREO_RIGHT = (byte)0x40;
+    
+    private static final byte EFFECT_VIBRATO = (byte)0x04;
+    private static final byte EFFECT_DETUNE = (byte)0x53;
+    
+    private static final int YMINSTR_INDEX_OFFSET = 0x0;
+    private static final int PSGINSTR_INDEX_OFFSET = 0xA0;
+    private static final int SAMPLE_INDEX_OFFSET = 0xC0;
+    
+    private static final int NOTE_OFFSET = 12;
+    
+    public static final byte NOTE_OFF = (byte)0xB4;
+    public static final byte NOTE_RELEASE = (byte)0xB5;
+    public static final byte MACRO_RELEASE = (byte)0xB6;
     
     public static int calculateYmTimerB(float ticksPerSecond, int speed){  
         int ymTimerB;
@@ -22,6 +77,531 @@ public class F2CPatternConverter {
         ymTimerB = Math.round(256 - (timerPeriod * (YM2612_INPUT_FREQUENCY/2) / (8*144)));
         System.out.println(ticksPerSecond+" ticks per second"+" -> "+"Timer B value "+Integer.toString(0xFF&ymTimerB));
         return ymTimerB;
+    }
+    
+    public static CubeChannel convertFurnacePatternToCubeChannel(Pattern[] patterns, int channelIndex, CubeChannel cubeChannel, int mainLoopStartIndex, int mainLoopEndIndex){
+        
+        if(cubeChannel instanceof YmChannel){
+            convertFurnacePatternToYmChannel(patterns, channelIndex, (YmChannel)cubeChannel, mainLoopStartIndex, mainLoopEndIndex);
+        }else if(cubeChannel instanceof DacChannel){
+            convertFurnacePatternToDacChannel(patterns, channelIndex, (DacChannel)cubeChannel, mainLoopStartIndex, mainLoopEndIndex);
+        }else if (cubeChannel instanceof PsgToneChannel){
+            convertFurnacePatternToPsgToneChannel(patterns, channelIndex, (PsgToneChannel)cubeChannel, mainLoopStartIndex, mainLoopEndIndex);
+        }else if (cubeChannel instanceof PsgNoiseChannel){
+            convertFurnacePatternToPsgNoiseChannel(patterns, channelIndex, (PsgNoiseChannel)cubeChannel, mainLoopStartIndex, mainLoopEndIndex);
+        }
+        
+        return cubeChannel;
+    }
+    
+    private static void convertFurnacePatternToYmChannel(Pattern[] patterns, int channelIndex, YmChannel ymChannel, int mainLoopStartIndex, int mainLoopEndIndex){
+        Row[] rows = patterns[channelIndex].getRows();
+        List<CubeCommand> cubeCommands = new ArrayList();
+        int cursor = 0;
+        boolean mainLoopEndReached = false;
+        int currentPlayLength = 0;
+        int currentInstrument = 0;
+        int currentVolume = 0;
+        int currentRelease = 0;
+        int currentVibratoDelay = 0;
+        boolean mainLoopStartRequiresSustain = false;
+        if(!channelHasNotes(rows)){
+            cubeCommands.add(new ChannelEnd());
+        } else{
+            while(cursor<rows.length){
+                if(cursor==mainLoopStartIndex){
+                    cubeCommands.add(new MainLoopStart());
+                    currentPlayLength = 0;
+                    currentRelease = 0;
+                }
+                if(!mainLoopEndReached && cursor>=mainLoopEndIndex){
+                    mainLoopEndReached = true;
+                    cubeCommands.add(new MainLoopEnd());
+                    break;
+                }
+                Row row = rows[cursor];
+                FNote note = row.getNote();
+                Instrument instrument = row.getInstrument();
+                Volume volume = row.getVolume();
+                List<Effect> effects = row.getEffectList();
+                int playLength = findPlayLength(rows, cursor, mainLoopStartIndex, mainLoopEndIndex);
+                boolean noteInterruptedByMainLoopStart = isNoteInterruptedByMainLoopStart(rows, cursor, mainLoopStartIndex, playLength);
+                boolean noteInterruptedByMainLoopEnd = isNoteInterruptedByMainLoopEnd(rows, cursor, mainLoopEndIndex, playLength);
+                int release = findRelease(rows, cursor, playLength);
+                if((noteInterruptedByMainLoopStart || noteInterruptedByMainLoopEnd) && release==playLength){
+                    release = currentRelease;
+                    mainLoopStartRequiresSustain = true;
+                }
+                for(Effect effect : effects){
+                    byte type = effect.getType();
+                    byte value = effect.getValue();
+                    if(type==EFFECT_PANNING){
+                        applyStereo(cubeCommands, value);
+                    }
+                    if(type==EFFECT_DETUNE){
+                        applyDetune(cubeCommands, value);
+                    }
+                }
+                if(instrument!=null){
+                    int instrumentValue = (instrument.getValue()&0xFF) - YMINSTR_INDEX_OFFSET;
+                    if(instrumentValue!=currentInstrument){
+                        cubeCommands.add(new Inst((byte)instrumentValue));
+                        currentInstrument = instrumentValue;
+                    }
+                }
+                if(volume!=null){
+                    int volumeValue = volume.getValue()&0xFF;
+                    int cubeVolume = findCubeVolume(volumeValue);
+                    if(cubeVolume!=currentVolume){
+                        cubeCommands.add(new Vol((byte)cubeVolume));
+                        currentVolume = cubeVolume;
+                    }
+                }
+                if(note==null || note.getValue()==NOTE_RELEASE){
+                    if(playLength==currentPlayLength){
+                        cubeCommands.add(new Wait());
+                    }else{
+                        cubeCommands.add(new WaitL((byte)playLength));
+                        currentPlayLength = playLength;
+                    }
+                    //applyWait(cubeCommands, currentPlayLength, playLength);
+                }else{
+                     
+                    if(mainLoopStartRequiresSustain){
+                        cubeCommands.add(new Sustain());
+                        mainLoopStartRequiresSustain = false;
+                    }else if(release!=currentRelease){
+                        cubeCommands.add(new SetRelease((byte)release));
+                        currentRelease = release;
+                    }
+                    int vibratoDelay = findVibratoDelay(rows, cursor, playLength);
+                    if(playLength>currentVibratoDelay && vibratoDelay!=currentVibratoDelay){
+                        //byte value = getVibratoValue(rows, cursor, vibratoDelay);
+                        int index = 4;
+                        int delay = (vibratoDelay/2)&0x0F;
+                        byte value = (byte)(index<<4|delay);
+                        cubeCommands.add(new Vibrato(value));
+                        currentVibratoDelay = vibratoDelay;
+                    }
+                    int noteValue = note.getValue()&0xFF;
+                    if(playLength==currentPlayLength){
+                        cubeCommands.add(new Note(Pitch.valueOf(F2CPitch.valueOf(noteValue+NOTE_OFFSET).getCubeValue())));
+                    }else{
+                        cubeCommands.add(new NoteL(Pitch.valueOf(F2CPitch.valueOf(noteValue+NOTE_OFFSET).getCubeValue()), (byte)playLength));
+                        currentPlayLength = playLength;
+                    }
+                }
+                cursor+=playLength;
+            }
+        }
+        ymChannel.setCcs(cubeCommands.toArray(new CubeCommand[cubeCommands.size()]));
+    }
+    
+    private static int findCubeVolume(int furnaceValue){
+        int index = 0;
+        int diff = 0xFF;
+        for(int i=0;i<DEFAULT_YM_LEVELS.length;i++){
+            if(furnaceValue==DEFAULT_YM_LEVELS[i]){
+                index = i;
+                break;
+            }else{
+                int candidateDiff = Math.abs(furnaceValue-DEFAULT_YM_LEVELS[i]);
+                if(candidateDiff<diff){
+                    index = i;
+                    diff = candidateDiff;
+                }
+            }
+        }
+        return index;
+    }
+    
+    private static void convertFurnacePatternToDacChannel(Pattern[] patterns, int channelIndex, DacChannel dacChannel, int mainLoopStartIndex, int mainLoopEndIndex){
+        Row[] rows = patterns[channelIndex].getRows();
+        List<CubeCommand> cubeCommands = new ArrayList();
+        int cursor = 0;
+        boolean mainLoopEndReached = false;
+        int currentPlayLength = 0;
+        byte currentInstrument = 0;
+        byte currentVolume = 0;
+        if(!channelHasNotes(rows)){
+            cubeCommands.add(new ChannelEnd());
+        } else{
+            while(cursor<rows.length){            
+                if(cursor==mainLoopStartIndex){
+                    cubeCommands.add(new MainLoopStart());
+                }
+                if(!mainLoopEndReached && cursor>=mainLoopEndIndex){
+                    mainLoopEndReached = true;
+                    cubeCommands.add(new MainLoopEnd());
+                    break;
+                }
+                Row row = rows[cursor];
+                FNote note = row.getNote();
+                Instrument instrument = row.getInstrument();
+                Volume volume = row.getVolume();
+                List<Effect> effects = row.getEffectList();
+                int playLength = findPlayLength(rows, cursor, mainLoopStartIndex, mainLoopEndIndex);
+                for(Effect effect : effects){
+                    byte type = effect.getType();
+                    byte value = effect.getValue();
+                    if(type==EFFECT_PANNING){
+                        applyStereo(cubeCommands, value);
+                    }
+                }
+                if(note==null || note.getValue()==NOTE_RELEASE){
+                    if(playLength==currentPlayLength){
+                        cubeCommands.add(new Wait());
+                    }else{
+                        cubeCommands.add(new WaitL((byte)playLength));
+                        currentPlayLength = playLength;
+                    }
+                    //applyWait(cubeCommands, currentPlayLength, playLength);
+                }else{
+                    int sampleValue = (instrument.getValue()&0xFF) - SAMPLE_INDEX_OFFSET;
+                    if(playLength==currentPlayLength){
+                        cubeCommands.add(new Sample((byte)sampleValue));
+                    }else{
+                        cubeCommands.add(new SampleL((byte)sampleValue, (byte)playLength));
+                        currentPlayLength = playLength;
+                    }
+                }
+                cursor+=playLength;
+            }
+        }
+        dacChannel.setCcs(cubeCommands.toArray(new CubeCommand[cubeCommands.size()]));
+    }
+    
+    private static void convertFurnacePatternToPsgToneChannel(Pattern[] patterns, int channelIndex, PsgToneChannel psgToneChannel, int mainLoopStartIndex, int mainLoopEndIndex){
+        Row[] rows = patterns[channelIndex].getRows();
+        List<CubeCommand> cubeCommands = new ArrayList();
+        int cursor = 0;
+        boolean mainLoopEndReached = false;
+        int currentPlayLength = 0;
+        int currentInstrument = 0;
+        boolean newInstrument = false;
+        int currentVolume = 0;
+        boolean newVolume = false;
+        int currentRelease = 0;
+        int currentVibratoDelay = 0;
+        boolean mainLoopStartRequiresSustain = false;
+        if(!channelHasNotes(rows)){
+            cubeCommands.add(new ChannelEnd());
+        } else{
+            while(cursor<rows.length){
+                newInstrument = false;
+                newVolume = false;
+                if(cursor==mainLoopStartIndex){
+                    cubeCommands.add(new MainLoopStart());
+                    currentPlayLength = 0;
+                    currentRelease = 0;
+                }
+                if(!mainLoopEndReached && cursor>=mainLoopEndIndex){
+                    mainLoopEndReached = true;
+                    cubeCommands.add(new MainLoopEnd());
+                    break;
+                }
+                Row row = rows[cursor];
+                FNote note = row.getNote();
+                Instrument instrument = row.getInstrument();
+                Volume volume = row.getVolume();
+                List<Effect> effects = row.getEffectList();
+                int playLength = findPlayLength(rows, cursor, mainLoopStartIndex, mainLoopEndIndex);
+                boolean noteInterruptedByMainLoopStart = isNoteInterruptedByMainLoopStart(rows, cursor, mainLoopStartIndex, playLength);
+                boolean noteInterruptedByMainLoopEnd = isNoteInterruptedByMainLoopEnd(rows, cursor, mainLoopEndIndex, playLength);
+                int release = findRelease(rows, cursor, playLength);
+                if((noteInterruptedByMainLoopStart || noteInterruptedByMainLoopEnd) && release==playLength){
+                    release = currentRelease;
+                    mainLoopStartRequiresSustain = true;
+                }
+                for(Effect effect : effects){
+                    byte type = effect.getType();
+                    byte value = effect.getValue();
+                    if(type==EFFECT_PANNING){
+                        applyStereo(cubeCommands, value);
+                    }
+                    if(type==EFFECT_DETUNE){
+                        applyDetune(cubeCommands, value);
+                    }
+                }
+                if(instrument!=null){
+                    int instrumentValue = (instrument.getValue()&0xFF) - PSGINSTR_INDEX_OFFSET;
+                    if(instrumentValue!=currentInstrument){
+                        currentInstrument = instrumentValue;
+                        newInstrument = true;
+                    }
+                }
+                if(volume!=null){
+                    int volumeValue = volume.getValue()&0xFF;
+                    if(volumeValue!=currentVolume){
+                        currentVolume = volumeValue;
+                        newVolume = true;
+                    }
+                }
+                if(newInstrument || newVolume){
+                    byte psgInstValue = (byte)((currentInstrument<<4) + currentVolume);
+                    cubeCommands.add(new PsgInst((byte)psgInstValue));
+                }
+                if(note==null || note.getValue()==NOTE_RELEASE){
+                    if(playLength==currentPlayLength){
+                        cubeCommands.add(new Wait());
+                    }else{
+                        cubeCommands.add(new WaitL((byte)playLength));
+                        currentPlayLength = playLength;
+                    }
+                }else{
+                    if(mainLoopStartRequiresSustain){
+                        cubeCommands.add(new Sustain());
+                        mainLoopStartRequiresSustain = false;
+                    }else if(release!=currentRelease){
+                        cubeCommands.add(new SetRelease((byte)release));
+                        currentRelease = release;
+                    }
+                    int vibratoDelay = findVibratoDelay(rows, cursor, playLength);
+                    if(playLength>currentVibratoDelay && vibratoDelay!=currentVibratoDelay){
+                        //byte value = getVibratoValue(rows, cursor, vibratoDelay);
+                        int index = 4;
+                        int delay = (vibratoDelay/2)&0x0F;
+                        byte value = (byte)(index<<4|delay);
+                        cubeCommands.add(new Vibrato(value));
+                        currentVibratoDelay = vibratoDelay;
+                    }                    
+                    int noteValue = note.getValue()&0xFF;
+                    if(playLength==currentPlayLength){
+                        cubeCommands.add(new PsgNote(Pitch.valueOf(F2CPitch.valueOf(noteValue+NOTE_OFFSET).getCubeValue())));
+                    }else{
+                        cubeCommands.add(new PsgNoteL(Pitch.valueOf(F2CPitch.valueOf(noteValue+NOTE_OFFSET).getCubeValue()), (byte)playLength));
+                        currentPlayLength = playLength;
+                    }
+                }
+                cursor+=playLength;
+            }
+        }
+        psgToneChannel.setCcs(cubeCommands.toArray(new CubeCommand[cubeCommands.size()]));
+    }
+    
+    private static void convertFurnacePatternToPsgNoiseChannel(Pattern[] patterns, int channelIndex, PsgNoiseChannel psgNoiseChannel, int mainLoopStartIndex, int mainLoopEndIndex){
+        Row[] rows = patterns[channelIndex].getRows();
+        List<CubeCommand> cubeCommands = new ArrayList();
+        int cursor = 0;
+        boolean mainLoopEndReached = false;
+        int currentPlayLength = 0;
+        int currentInstrument = 0;
+        boolean newInstrument = false;
+        int currentVolume = 0;
+        boolean newVolume = false;
+        int currentRelease = 0;
+        int currentVibratoDelay = 0;
+        boolean mainLoopStartRequiresSustain = false;
+        if(!channelHasNotes(rows)){
+            cubeCommands.add(new ChannelEnd());
+        } else{
+            while(cursor<rows.length){
+                newInstrument = false;
+                newVolume = false;
+                if(cursor==mainLoopStartIndex){
+                    cubeCommands.add(new MainLoopStart());
+                    currentPlayLength = 0;
+                    currentRelease = 0;
+                }
+                if(!mainLoopEndReached && cursor>=mainLoopEndIndex){
+                    mainLoopEndReached = true;
+                    cubeCommands.add(new MainLoopEnd());
+                    break;
+                }
+                Row row = rows[cursor];
+                FNote note = row.getNote();
+                Instrument instrument = row.getInstrument();
+                Volume volume = row.getVolume();
+                List<Effect> effects = row.getEffectList();
+                int playLength = findPlayLength(rows, cursor, mainLoopStartIndex, mainLoopEndIndex);
+                boolean noteInterruptedByMainLoopStart = isNoteInterruptedByMainLoopStart(rows, cursor, mainLoopStartIndex, playLength);
+                boolean noteInterruptedByMainLoopEnd = isNoteInterruptedByMainLoopEnd(rows, cursor, mainLoopEndIndex, playLength);
+                int release = findRelease(rows, cursor, playLength);
+                if((noteInterruptedByMainLoopStart || noteInterruptedByMainLoopEnd) && release==playLength){
+                    release = currentRelease;
+                    mainLoopStartRequiresSustain = true;
+                }
+                for(Effect effect : effects){
+                    byte type = effect.getType();
+                    byte value = effect.getValue();
+                }
+                if(instrument!=null){
+                    int instrumentValue = (instrument.getValue()&0xFF) - PSGINSTR_INDEX_OFFSET;
+                    if(instrumentValue!=currentInstrument){
+                        currentInstrument = instrumentValue;
+                        newInstrument = true;
+                    }
+                }
+                if(volume!=null){
+                    int volumeValue = volume.getValue()&0xFF;
+                    if(volumeValue!=currentVolume){
+                        currentVolume = volumeValue;
+                        newVolume = true;
+                    }
+                }
+                if(newInstrument || newVolume){
+                    byte psgInstValue = (byte)((currentInstrument<<4) + currentVolume);
+                    cubeCommands.add(new PsgInst((byte)psgInstValue));
+                }
+                if(note==null || note.getValue()==NOTE_RELEASE){
+                    if(playLength==currentPlayLength){
+                        cubeCommands.add(new Wait());
+                    }else{
+                        cubeCommands.add(new WaitL((byte)playLength));
+                        currentPlayLength = playLength;
+                    }
+                }else{
+                    if(mainLoopStartRequiresSustain){
+                        cubeCommands.add(new Sustain());
+                        mainLoopStartRequiresSustain = false;
+                    }else if(release!=currentRelease){
+                        cubeCommands.add(new SetRelease((byte)release));
+                        currentRelease = release;
+                    }
+                    int vibratoDelay = findVibratoDelay(rows, cursor, playLength);
+                    if(playLength>currentVibratoDelay && vibratoDelay!=currentVibratoDelay){
+                        //byte value = getVibratoValue(rows, cursor, vibratoDelay);
+                        int index = 4;
+                        int delay = (vibratoDelay/2)&0x0F;
+                        byte value = (byte)(index<<4|delay);
+                        cubeCommands.add(new Vibrato(value));
+                        currentVibratoDelay = vibratoDelay;
+                    }                    
+                    int noteValue = note.getValue()&0xFF;
+                    if(playLength==currentPlayLength){
+                        cubeCommands.add(new PsgNote(Pitch.valueOf(F2CPitch.valueOf(noteValue+NOTE_OFFSET).getCubeValue())));
+                    }else{
+                        cubeCommands.add(new PsgNoteL(Pitch.valueOf(F2CPitch.valueOf(noteValue+NOTE_OFFSET).getCubeValue()), (byte)playLength));
+                        currentPlayLength = playLength;
+                    }
+                }
+                cursor+=playLength;
+            }
+        }
+        psgNoiseChannel.setCcs(cubeCommands.toArray(new CubeCommand[cubeCommands.size()]));
+    }
+    
+    private static void applyStereo(List<CubeCommand> cubeCommands, byte value){
+        byte stereoValue = 0;
+        switch(value){
+            case (byte)0x00 : stereoValue = STEREO_LEFT; break;
+            case (byte)0x80 : stereoValue = STEREO_CENTER; break;
+            case (byte)0xFF : stereoValue = STEREO_RIGHT; break;
+            default : stereoValue = STEREO_CENTER; break;
+        }
+        Stereo stereo = new Stereo(stereoValue);
+        cubeCommands.add(stereo);
+    }
+    
+    private static void applyDetune(List<CubeCommand> cubeCommands, byte value){
+        /* Furnace detune command description : 
+        53 xy Set detune (x: operator from 1 to 4 (0 for all ops); y: detune where 3 is center)
+        */        
+        int detuneValue = value - 3;
+        int shiftingValue = Math.abs(detuneValue)<<4;
+        if(detuneValue<0){
+            shiftingValue+=0x80;
+        }
+        Shifting shifting = new Shifting((byte)(shiftingValue&0xFF));
+        cubeCommands.add(shifting);
+    }
+    
+    private static int findPlayLength(Row[] rows, int startIndex, int mainLoopStartIndex, int mainLoopEndIndex){
+        int cursor = startIndex+1;
+        boolean released = false;
+        while(cursor<rows.length){
+            Row row = rows[cursor];
+            if((cursor-startIndex)==255
+                    || cursor==mainLoopStartIndex
+                    || cursor==mainLoopEndIndex
+                    || row.getNote()!=null
+                    || row.getInstrument()!=null
+                    || row.getVolume()!=null){
+                if(!released && row.getNote()!=null && row.getNote().getValue()==NOTE_RELEASE && cursor!=mainLoopEndIndex){
+                    released = true;
+                }else{
+                    break;
+                }
+            }
+            cursor++;
+        }
+        return cursor-startIndex;
+    }
+    
+    private static boolean isNoteInterruptedByMainLoopStart(Row[] rows, int startIndex, int mainLoopStartIndex, int playLength){
+        if((startIndex+playLength)==mainLoopStartIndex){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    private static boolean isNoteInterruptedByMainLoopEnd(Row[] rows, int startIndex, int mainLoopEndIndex, int playLength){
+        if((startIndex+playLength)==mainLoopEndIndex){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    private static int findRelease(Row[] rows, int startIndex, int playLength){
+        int release = 1;
+        int cursor = startIndex+playLength-1;
+        while(cursor>startIndex){
+            Row row = rows[cursor];
+            if(row.getNote()!=null && row.getNote().getValue()==NOTE_RELEASE){
+                break;
+            }
+            release++;
+            cursor--;
+        }
+        return release;
+    }
+    
+    private static int findVibratoDelay(Row[] rows, int startIndex, int playLength){
+        int delay = 0;
+        while(delay<playLength){
+            Row row = rows[startIndex+delay];
+            List<Effect> effects = row.getEffectList();
+            for(Effect effect : effects){
+                if(effect.getType()==EFFECT_VIBRATO && effect.getValue()!=0){
+                    System.out.println("Effect:0x"+String.format("%02X", effect.getType())+",Value:0x"+String.format("%02X", effect.getValue()));
+                    return delay;
+                }
+            }
+            delay++;
+        }
+        return 0;
+    }
+    
+    private static byte getVibratoValue(Row[] rows, int startIndex, int delay){
+        byte value = 0;
+        Row row = rows[delay];
+        List<Effect> effects = row.getEffectList();
+        for(Effect effect : effects){
+            if(effect.getType()==EFFECT_VIBRATO){
+                value = effect.getValue();
+            }
+        }
+        return value;
+    }
+    
+    private static void applyWait(List<CubeCommand> cubeCommands, int previousPlayLength, int playLength){
+        if(playLength==previousPlayLength){
+            cubeCommands.add(new Wait());
+        }else{
+            cubeCommands.add(new WaitL((byte)playLength));
+            previousPlayLength = playLength;
+        }
+    }
+    
+    private static boolean channelHasNotes(Row[] rows){
+        for(int i=0;i<rows.length;i++){
+            if(rows[i].getNote()!=null && rows[i].getNote().getValue()!=NOTE_RELEASE){
+                return true;
+            }
+        }
+        return false;
     }
     
 }
