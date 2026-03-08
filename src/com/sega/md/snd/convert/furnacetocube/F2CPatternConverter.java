@@ -16,6 +16,7 @@ import com.sega.md.snd.formats.cube.command.ChannelEnd;
 import com.sega.md.snd.formats.cube.command.Inst;
 import com.sega.md.snd.formats.cube.command.MainLoopEnd;
 import com.sega.md.snd.formats.cube.command.MainLoopStart;
+import com.sega.md.snd.formats.cube.command.NoSlide;
 import com.sega.md.snd.formats.cube.command.Note;
 import com.sega.md.snd.formats.cube.command.NoteL;
 import com.sega.md.snd.formats.cube.command.PsgInst;
@@ -24,6 +25,7 @@ import com.sega.md.snd.formats.cube.command.PsgNoteL;
 import com.sega.md.snd.formats.cube.command.Sample;
 import com.sega.md.snd.formats.cube.command.SampleL;
 import com.sega.md.snd.formats.cube.command.SetRelease;
+import com.sega.md.snd.formats.cube.command.SetSlide;
 import com.sega.md.snd.formats.cube.command.Shifting;
 import com.sega.md.snd.formats.cube.command.Stereo;
 import com.sega.md.snd.formats.cube.command.Sustain;
@@ -58,6 +60,7 @@ public class F2CPatternConverter {
     private static final byte STEREO_CENTER = (byte)0xC0;
     private static final byte STEREO_RIGHT = (byte)0x40;
     
+    private static final byte EFFECT_PORTAMENTO = (byte)0x03;
     private static final byte EFFECT_VIBRATO = (byte)0x04;
     private static final byte EFFECT_DETUNE = (byte)0x53;
     private static final byte EFFECT_LEGATO = (byte)0xEA;
@@ -107,10 +110,13 @@ public class F2CPatternConverter {
         int currentVibratoDelay = 0;
         boolean mainLoopStartRequiresSustain = false;
         boolean legato = false;
+        boolean portamentoEffectFound = false;
+        int currentSlide = 0;
         if(!channelHasNotes(rows)){
             cubeCommands.add(new ChannelEnd());
         } else{
             while(cursor<rows.length){
+                portamentoEffectFound = false;
                 if(cursor==mainLoopStartIndex){
                     cubeCommands.add(new MainLoopStart());
                     currentPlayLength = 0;
@@ -127,6 +133,21 @@ public class F2CPatternConverter {
                 Volume volume = row.getVolume();
                 List<Effect> effects = row.getEffectList();
                 int playLength = findPlayLength(rows, cursor, mainLoopStartIndex, mainLoopEndIndex);
+                if(playLength==1){
+                    /* Managing special case of Cube slide effect converted to a 2-note solution for Furnace 
+                       Workaround description at https://github.com/CubeTaguchiCentral/CubeAssets/issues/2 
+                    */
+                    byte nextRowPortamentoValue = getNextRowPortamentoValue(rows, cursor);
+                    if(nextRowPortamentoValue!=0){
+                        int newSlide = applySlide(cubeCommands, nextRowPortamentoValue, currentSlide);
+                        if(newSlide != currentSlide){
+                            currentSlide = newSlide;
+                        }
+                        portamentoEffectFound = true;
+                        note = rows[cursor+1].getNote();
+                        playLength = 1 + findPlayLength(rows, cursor+1, mainLoopStartIndex, mainLoopEndIndex);
+                    }
+                }
                 boolean noteInterruptedByMainLoopStart = isNoteInterruptedByMainLoopStart(rows, cursor, mainLoopStartIndex, playLength);
                 boolean noteInterruptedByMainLoopEnd = isNoteInterruptedByMainLoopEnd(rows, cursor, mainLoopEndIndex, playLength);
                 int release = findRelease(rows, cursor, playLength);
@@ -161,6 +182,17 @@ public class F2CPatternConverter {
                             legato = false;
                         }
                     }
+                    if(type==EFFECT_PORTAMENTO){
+                        int newSlide = applySlide(cubeCommands, value, currentSlide);
+                        if(newSlide != currentSlide){
+                            currentSlide = newSlide;
+                        }
+                        portamentoEffectFound = true;
+                    }
+                }
+                if(currentSlide!=0 && !portamentoEffectFound){
+                    cubeCommands.add(new NoSlide());
+                    currentSlide = 0;
                 }
                 if(instrument!=null){
                     int instrumentValue = (instrument.getValue()&0xFF) - YMINSTR_INDEX_OFFSET;
@@ -558,6 +590,15 @@ public class F2CPatternConverter {
         cubeCommands.add(shifting);
     }
     
+    private static int applySlide(List<CubeCommand> cubeCommands, byte value, int currentSlide){
+            int slideValue = 0x80|(value*2-2);
+            if(slideValue!=currentSlide){
+                SetSlide setSlide = new SetSlide((byte)(slideValue&0xFF));
+                cubeCommands.add(setSlide);
+            }
+            return slideValue;
+    }
+    
     private static int findPlayLength(Row[] rows, int startIndex, int mainLoopStartIndex, int mainLoopEndIndex){
         int cursor = startIndex+1;
         boolean released = false;
@@ -578,6 +619,17 @@ public class F2CPatternConverter {
             cursor++;
         }
         return cursor-startIndex;
+    }
+    
+    private static byte getNextRowPortamentoValue(Row[] rows, int cursor){
+        Row row = rows[cursor+1];
+        List<Effect> effects = row.getEffectList();
+        for(Effect effect : effects){
+            if(row.getNote()!=null && effect.getType()==EFFECT_PORTAMENTO){
+                return effect.getValue();
+            }
+        }
+        return 0;
     }
     
     private static boolean isNoteInterruptedByMainLoopStart(Row[] rows, int startIndex, int mainLoopStartIndex, int playLength){
