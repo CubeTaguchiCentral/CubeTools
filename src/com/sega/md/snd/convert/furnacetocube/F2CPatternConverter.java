@@ -108,6 +108,8 @@ public class F2CPatternConverter {
         int currentVolume = 0;
         int currentRelease = 0;
         int currentVibratoDelay = 0;
+        byte currentPanning = (byte)0x80;
+        byte currentDetune = 3;
         boolean mainLoopStartRequiresSustain = false;
         boolean legato = false;
         boolean portamentoEffectFound = false;
@@ -121,6 +123,10 @@ public class F2CPatternConverter {
                     cubeCommands.add(new MainLoopStart());
                     currentPlayLength = 0;
                     currentRelease = 0;
+                    applyYmInstrument(cubeCommands, currentInstrument, -1);
+                    applyYmVolume(cubeCommands, currentVolume, -1);
+                    applyDetune(cubeCommands, currentDetune);
+                    applyStereo(cubeCommands, currentPanning);
                 }
                 if(!mainLoopEndReached && cursor>=mainLoopEndIndex){
                     mainLoopEndReached = true;
@@ -173,9 +179,11 @@ public class F2CPatternConverter {
                     byte value = effect.getValue();
                     if(type==EFFECT_PANNING){
                         applyStereo(cubeCommands, value);
+                        currentPanning = value;
                     }
                     if(type==EFFECT_DETUNE){
                         applyDetune(cubeCommands, value);
+                        currentDetune = value;
                     }
                     if(type==EFFECT_LEGATO){
                         if(value==0){
@@ -195,19 +203,16 @@ public class F2CPatternConverter {
                     currentSlide = 0;
                 }
                 if(instrument!=null){
-                    int instrumentValue = (instrument.getValue()&0xFF) - YMINSTR_INDEX_OFFSET;
-                    if(instrumentValue!=currentInstrument){
-                        cubeCommands.add(new Inst((byte)instrumentValue));
-                        currentInstrument = instrumentValue;
+                    currentInstrument = applyYmInstrument(cubeCommands, instrument.getValue()&0xFF, currentInstrument);
+                    int cubeVolume = currentVolume;
+                    if(volume!=null){
+                        cubeVolume = findCubeVolume(volume.getValue()&0xFF);
                     }
+                    currentVolume = applyYmVolume(cubeCommands, cubeVolume, -1);
                 }
                 if(volume!=null){
-                    int volumeValue = volume.getValue()&0xFF;
-                    int cubeVolume = findCubeVolume(volumeValue);
-                    if(cubeVolume!=currentVolume){
-                        cubeCommands.add(new Vol((byte)cubeVolume));
-                        currentVolume = cubeVolume;
-                    }
+                    int cubeVolume = findCubeVolume(volume.getValue()&0xFF);
+                    currentVolume = applyYmVolume(cubeCommands, cubeVolume, currentVolume);
                 }
                 if(note==null || note.getValue()==NOTE_RELEASE){
                     if(playLength==currentPlayLength){
@@ -597,6 +602,23 @@ public class F2CPatternConverter {
                 cubeCommands.add(setSlide);
             }
             return slideValue;
+    }
+    
+    private static int applyYmInstrument(List<CubeCommand> cubeCommands, int instrument, int currentInstrument){
+        int instrumentValue = instrument - YMINSTR_INDEX_OFFSET;
+        if(instrumentValue!=currentInstrument){
+            cubeCommands.add(new Inst((byte)instrumentValue));
+            currentInstrument = instrumentValue;
+        }
+        return currentInstrument;
+    }
+    
+    private static int applyYmVolume(List<CubeCommand> cubeCommands, int volume, int currentVolume){
+        if(volume!=currentVolume){
+                cubeCommands.add(new Vol((byte)volume));
+                currentVolume = volume;
+        }
+        return currentVolume;
     }
     
     private static int findPlayLength(Row[] rows, int startIndex, int mainLoopStartIndex, int mainLoopEndIndex){
