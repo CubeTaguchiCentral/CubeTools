@@ -114,12 +114,18 @@ public class F2CPatternConverter {
         boolean legato = false;
         boolean portamentoEffectFound = false;
         int currentSlide = 0;
+        int endIndex = -1;
+        if(mainLoopEndIndex < 0){
+            endIndex = findChannelEndIndex(rows);
+        }else{
+            endIndex = mainLoopEndIndex;
+        }
         if(!channelHasNotes(rows)){
             cubeCommands.add(new ChannelEnd());
         } else{
             while(cursor<rows.length){
                 portamentoEffectFound = false;
-                if(cursor==mainLoopStartIndex){
+                if(mainLoopEndIndex >0 && cursor==mainLoopStartIndex){
                     cubeCommands.add(new MainLoopStart());
                     currentPlayLength = 0;
                     currentRelease = 0;
@@ -128,9 +134,13 @@ public class F2CPatternConverter {
                     applyDetune(cubeCommands, currentDetune);
                     applyStereo(cubeCommands, currentPanning);
                 }
-                if(!mainLoopEndReached && cursor>=mainLoopEndIndex){
+                if(mainLoopEndIndex >0 && !mainLoopEndReached && cursor>=mainLoopEndIndex){
                     mainLoopEndReached = true;
                     cubeCommands.add(new MainLoopEnd());
+                    break;
+                }
+                if(mainLoopEndIndex<0 && cursor>=endIndex){
+                    cubeCommands.add(new ChannelEnd());
                     break;
                 }
                 Row row = rows[cursor];
@@ -138,7 +148,7 @@ public class F2CPatternConverter {
                 Instrument instrument = row.getInstrument();
                 Volume volume = row.getVolume();
                 List<Effect> effects = row.getEffectList();
-                int playLength = findPlayLength(rows, cursor, mainLoopStartIndex, mainLoopEndIndex);
+                int playLength = findPlayLength(rows, cursor, mainLoopStartIndex, endIndex);
                 if(playLength==1){
                     /* Managing special case of Cube slide effect converted to a 2-note solution for Furnace 
                        Workaround description at https://github.com/CubeTaguchiCentral/CubeAssets/issues/2 
@@ -151,7 +161,7 @@ public class F2CPatternConverter {
                         }
                         portamentoEffectFound = true;
                         note = rows[cursor+1].getNote();
-                        playLength = 1 + findPlayLength(rows, cursor+1, mainLoopStartIndex, mainLoopEndIndex);
+                        playLength = 1 + findPlayLength(rows, cursor+1, mainLoopStartIndex, endIndex);
                     }
                 }
                 boolean noteInterruptedByMainLoopStart = isNoteInterruptedByMainLoopStart(rows, cursor, mainLoopStartIndex, playLength);
@@ -277,16 +287,26 @@ public class F2CPatternConverter {
         int currentPlayLength = 0;
         byte currentInstrument = 0;
         byte currentVolume = 0;
+        int endIndex = -1;
+        if(mainLoopEndIndex < 0){
+            endIndex = findChannelEndIndex(rows);
+        }else{
+            endIndex = mainLoopEndIndex;
+        }
         if(!channelHasNotes(rows)){
             cubeCommands.add(new ChannelEnd());
         } else{
             while(cursor<rows.length){            
-                if(cursor==mainLoopStartIndex){
+                if(mainLoopEndIndex >0 && cursor==mainLoopStartIndex){
                     cubeCommands.add(new MainLoopStart());
                 }
-                if(!mainLoopEndReached && cursor>=mainLoopEndIndex){
+                if(mainLoopEndIndex >0 && !mainLoopEndReached && cursor>=mainLoopEndIndex){
                     mainLoopEndReached = true;
                     cubeCommands.add(new MainLoopEnd());
+                    break;
+                }
+                if(mainLoopEndIndex<0 && cursor>=endIndex){
+                    cubeCommands.add(new ChannelEnd());
                     break;
                 }
                 Row row = rows[cursor];
@@ -294,7 +314,7 @@ public class F2CPatternConverter {
                 Instrument instrument = row.getInstrument();
                 Volume volume = row.getVolume();
                 List<Effect> effects = row.getEffectList();
-                int playLength = findPlayLength(rows, cursor, mainLoopStartIndex, mainLoopEndIndex);
+                int playLength = findPlayLength(rows, cursor, mainLoopStartIndex, endIndex);
                 for(Effect effect : effects){
                     byte type = effect.getType();
                     byte value = effect.getValue();
@@ -302,7 +322,7 @@ public class F2CPatternConverter {
                         applyStereo(cubeCommands, value);
                     }
                 }
-                if(note==null || note.getValue()==NOTE_RELEASE){
+                if(note==null || note.getValue()==NOTE_RELEASE || note.getValue()==NOTE_OFF){
                     if(playLength==currentPlayLength){
                         cubeCommands.add(new Wait());
                     }else{
@@ -331,7 +351,7 @@ public class F2CPatternConverter {
         int cursor = 0;
         boolean mainLoopEndReached = false;
         int currentPlayLength = 0;
-        int currentInstrument = 0;
+        int currentInstrument = -1;
         boolean newInstrument = false;
         int currentVolume = 0;
         boolean newVolume = false;
@@ -339,20 +359,30 @@ public class F2CPatternConverter {
         int currentVibratoDelay = 0;
         boolean mainLoopStartRequiresSustain = false;
         boolean legato = false;
+        int endIndex = -1;
+        if(mainLoopEndIndex < 0){
+            endIndex = findChannelEndIndex(rows);
+        }else{
+            endIndex = mainLoopEndIndex;
+        }
         if(!channelHasNotes(rows)){
             cubeCommands.add(new ChannelEnd());
         } else{
             while(cursor<rows.length){
                 newInstrument = false;
                 newVolume = false;
-                if(cursor==mainLoopStartIndex){
+                if(mainLoopEndIndex >0 && cursor==mainLoopStartIndex){
                     cubeCommands.add(new MainLoopStart());
                     currentPlayLength = 0;
                     currentRelease = 0;
                 }
-                if(!mainLoopEndReached && cursor>=mainLoopEndIndex){
+                if(mainLoopEndIndex >0 && !mainLoopEndReached && cursor>=mainLoopEndIndex){
                     mainLoopEndReached = true;
                     cubeCommands.add(new MainLoopEnd());
+                    break;
+                }
+                if(mainLoopEndIndex<0 && cursor>=endIndex){
+                    cubeCommands.add(new ChannelEnd());
                     break;
                 }
                 Row row = rows[cursor];
@@ -360,7 +390,7 @@ public class F2CPatternConverter {
                 Instrument instrument = row.getInstrument();
                 Volume volume = row.getVolume();
                 List<Effect> effects = row.getEffectList();
-                int playLength = findPlayLength(rows, cursor, mainLoopStartIndex, mainLoopEndIndex);
+                int playLength = findPlayLength(rows, cursor, mainLoopStartIndex, endIndex);
                 boolean noteInterruptedByMainLoopStart = isNoteInterruptedByMainLoopStart(rows, cursor, mainLoopStartIndex, playLength);
                 boolean noteInterruptedByMainLoopEnd = isNoteInterruptedByMainLoopEnd(rows, cursor, mainLoopEndIndex, playLength);
                 int release = findRelease(rows, cursor, playLength);
@@ -455,7 +485,7 @@ public class F2CPatternConverter {
         int cursor = 0;
         boolean mainLoopEndReached = false;
         int currentPlayLength = 0;
-        int currentInstrument = 0;
+        int currentInstrument = -1;
         boolean newInstrument = false;
         int currentVolume = 0;
         boolean newVolume = false;
@@ -463,20 +493,30 @@ public class F2CPatternConverter {
         int currentVibratoDelay = 0;
         boolean mainLoopStartRequiresSustain = false;
         boolean legato = false;
+        int endIndex = -1;
+        if(mainLoopEndIndex < 0){
+            endIndex = findChannelEndIndex(rows);
+        }else{
+            endIndex = mainLoopEndIndex;
+        }
         if(!channelHasNotes(rows)){
             cubeCommands.add(new ChannelEnd());
         } else{
             while(cursor<rows.length){
                 newInstrument = false;
                 newVolume = false;
-                if(cursor==mainLoopStartIndex){
+                if(mainLoopEndIndex >0 && cursor==mainLoopStartIndex){
                     cubeCommands.add(new MainLoopStart());
                     currentPlayLength = 0;
                     currentRelease = 0;
                 }
-                if(!mainLoopEndReached && cursor>=mainLoopEndIndex){
+                if(mainLoopEndIndex >0 && !mainLoopEndReached && cursor>=mainLoopEndIndex){
                     mainLoopEndReached = true;
                     cubeCommands.add(new MainLoopEnd());
+                    break;
+                }
+                if(mainLoopEndIndex<0 && cursor>=endIndex){
+                    cubeCommands.add(new ChannelEnd());
                     break;
                 }
                 Row row = rows[cursor];
@@ -484,7 +524,7 @@ public class F2CPatternConverter {
                 Instrument instrument = row.getInstrument();
                 Volume volume = row.getVolume();
                 List<Effect> effects = row.getEffectList();
-                int playLength = findPlayLength(rows, cursor, mainLoopStartIndex, mainLoopEndIndex);
+                int playLength = findPlayLength(rows, cursor, mainLoopStartIndex, endIndex);
                 boolean noteInterruptedByMainLoopStart = isNoteInterruptedByMainLoopStart(rows, cursor, mainLoopStartIndex, playLength);
                 boolean noteInterruptedByMainLoopEnd = isNoteInterruptedByMainLoopEnd(rows, cursor, mainLoopEndIndex, playLength);
                 int release = findRelease(rows, cursor, playLength);
@@ -621,18 +661,32 @@ public class F2CPatternConverter {
         return currentVolume;
     }
     
-    private static int findPlayLength(Row[] rows, int startIndex, int mainLoopStartIndex, int mainLoopEndIndex){
+    private static int findChannelEndIndex(Row[] rows){
+        int cursor = 0;
+        while(cursor<rows.length){
+            Row row = rows[cursor];
+            FNote note = row.getNote();
+            if(note!=null && note.getValue()==NOTE_OFF){
+                return cursor;
+            }
+            cursor++;
+        }
+        System.out.println("WARNING : reached end of channel data without finding an OFF note for channel end. Cursor="+cursor);
+        return cursor;
+    }
+    
+    private static int findPlayLength(Row[] rows, int startIndex, int mainLoopStartIndex, int endIndex){
         int cursor = startIndex+1;
         boolean released = false;
         while(cursor<rows.length){
             Row row = rows[cursor];
             if((cursor-startIndex)==255
                     || cursor==mainLoopStartIndex
-                    || cursor==mainLoopEndIndex
+                    || cursor==endIndex
                     || row.getNote()!=null
                     || row.getInstrument()!=null
                     || row.getVolume()!=null){
-                if(!released && row.getNote()!=null && row.getNote().getValue()==NOTE_RELEASE && cursor!=mainLoopEndIndex){
+                if(!released && row.getNote()!=null && row.getNote().getValue()==NOTE_RELEASE && cursor!=endIndex){
                     released = true;
                 }else{
                     break;
@@ -672,6 +726,10 @@ public class F2CPatternConverter {
     
     private static boolean isLegatoActivated(Row[] rows, int startIndex, int playLength){
         int cursor = startIndex+playLength;
+        if(cursor>=rows.length){
+            System.out.println("WARNING - isLegatoActivated out of bounds : rows.length="+rows.length+", cursor="+cursor+". Cursor decreased to last row.");
+            cursor = rows.length-1;
+        }
         while(cursor>startIndex){
             Row row = rows[cursor];
             List<Effect> effects = row.getEffectList();
@@ -687,6 +745,10 @@ public class F2CPatternConverter {
     
     private static boolean isLegatoDeactivated(Row[] rows, int startIndex, int playLength){
         int cursor = startIndex+playLength;
+        if(cursor>=rows.length){
+            System.out.println("WARNING - isLegatoDeactivated out of bounds : rows.length="+rows.length+", cursor="+cursor+". Cursor decreased to last row.");
+            cursor = rows.length-1;
+        }        
         while(cursor>startIndex){
             Row row = rows[cursor];
             List<Effect> effects = row.getEffectList();
