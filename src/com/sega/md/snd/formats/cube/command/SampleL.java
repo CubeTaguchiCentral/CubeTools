@@ -65,6 +65,12 @@ public class SampleL extends CubeCommand {
     
     @Override
     public boolean equals(CubeCommand cc, int currentPlayLength) {
+        if(cc instanceof Sample){
+            if(((Sample) cc).sample == this.sample
+                && (this.length&0xFF) == currentPlayLength){
+                return true;
+            }
+        }
         return equals(cc);
     }
     

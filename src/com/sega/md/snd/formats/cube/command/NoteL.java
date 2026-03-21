@@ -66,7 +66,13 @@ public class NoteL extends CubeCommand {
     
     @Override
     public boolean equals(CubeCommand cc, int currentPlayLength) {
-        return equals(cc);
+        if(cc instanceof Note 
+                && ((Note)cc).note == this.note
+                && (this.length&0xFF) == currentPlayLength){
+            return true;
+        }else{
+            return equals(cc);
+        }
     }
     
     

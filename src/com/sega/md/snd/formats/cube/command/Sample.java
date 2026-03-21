@@ -14,9 +14,15 @@ import com.sega.md.snd.formats.cube.CubeCommand;
 public class Sample extends CubeCommand {
     
     byte sample = 0;
+    byte currentPlayLength = 0;
 
     public Sample(byte sample) {
         this.sample = sample;
+    }
+
+    public Sample(byte sample, byte currentLength) {
+        this.sample = sample;
+        this.currentPlayLength = currentLength;
     }
 
     @Override
@@ -31,12 +37,17 @@ public class Sample extends CubeCommand {
 
     @Override
     public boolean equals(CubeCommand cc) {
-        if(cc instanceof Sample 
-                && ((Sample)cc).sample == this.sample){
-            return true;
-        }else{
-            return false;
+        if(cc instanceof Sample){ 
+            if(((Sample)cc).sample == this.sample
+                && (this.currentPlayLength==0
+                    || ((Sample)cc).currentPlayLength==0
+                    || ((Sample)cc).currentPlayLength==this.currentPlayLength
+                    )
+               ){
+                return true;
+            }
         }
+        return false;
     }
 
     public byte getSample() {
@@ -47,6 +58,14 @@ public class Sample extends CubeCommand {
         this.sample = sample;
     }
 
+    public byte getCurrentPlayLength() {
+        return currentPlayLength;
+    }
+
+    public void setCurrentPlayLength(byte currentLength) {
+        this.currentPlayLength = currentLength;
+    }
+
     @Override
     public int getPlayLength() {
         return 0;
@@ -54,6 +73,13 @@ public class Sample extends CubeCommand {
     
     @Override
     public boolean equals(CubeCommand cc, int currentPlayLength) {
+        if(cc instanceof SampleL){ 
+                if((((SampleL)cc).sample&0xFF) == this.sample
+                    && (((SampleL)cc).length&0xFF) == currentPlayLength
+                    ){
+                    return true;
+                }
+        }
         return equals(cc);
     }
     

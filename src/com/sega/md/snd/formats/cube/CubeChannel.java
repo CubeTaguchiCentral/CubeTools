@@ -263,15 +263,22 @@ public abstract class CubeChannel {
             if(candidateCountedLoopGain>=candidateRepeatGain){
                 finalGain = candidateCountedLoopGain;
                 for(int c=0;c<candidateCountedLoopCount;c++){
-                    ccl.subList(candidateCountedLoopStartIndex, candidateCountedLoopStartIndex+candidateCountedLoopLength).clear();
+                    ccl.subList(candidateCountedLoopStartIndex+candidateCountedLoopLength, candidateCountedLoopStartIndex+2*candidateCountedLoopLength).clear();
                 }
-                applyStartPlayLength(ccl, candidateCountedLoopStartIndex, candidateCountedLoopStartIndex+candidateCountedLoopLength,candidateCountedLoopStartPlayLength);
+                int foundCurrentPlayLength = findCurrentPlayLength(ccl, candidateCountedLoopStartIndex);
+                int countedLoopStartPlayLength = 0;
+                if(foundCurrentPlayLength>=0){
+                    countedLoopStartPlayLength = foundCurrentPlayLength;
+                }else{
+                    countedLoopStartPlayLength = candidateCountedLoopStartPlayLength;
+                }
+                applyStartPlayLength(ccl, candidateCountedLoopStartIndex, candidateCountedLoopStartIndex+candidateCountedLoopLength,countedLoopStartPlayLength);
                 ccl.add(candidateCountedLoopStartIndex+candidateCountedLoopLength, new CountedLoopEnd());
                 ccl.add(candidateCountedLoopStartIndex, new CountedLoopStart((byte)(0xFF&candidateCountedLoopCount)));
                 CubeCommand[] newCcs = new CubeCommand[ccl.size()];
                 ccs = ccl.toArray(newCcs);
                 System.out.println("    Applied Counted Loop with gain "+candidateCountedLoopGain+" : start="+candidateCountedLoopStartIndex
-                        +", candidateCommandLength="+candidateCountedLoopLength+", candidateLoopCount="+candidateCountedLoopCount);  
+                        +", candidateCommandLength="+candidateCountedLoopLength+", candidateLoopCount="+candidateCountedLoopCount+", countedLoopStartPlayLength="+countedLoopStartPlayLength);  
                 /*for(int p=candidateStartIndex;p<candidateStartIndex+candidateCommandLength;p++){System.out.println(ccl.get(p).produceAsmOutput());}        */
             }else if(candidateRepeatGain>candidateCountedLoopGain){
                 finalGain = candidateRepeatGain;
@@ -316,6 +323,47 @@ public abstract class CubeChannel {
         }
         gain = gain*(count) - 2 - 2;
         return gain;
+    }
+    
+    private int findCurrentPlayLength(List<CubeCommand> ccl, int cursor){
+        int playLength = -1;
+        while(cursor>=0){
+            CubeCommand cc = ccl.get(cursor);
+            if(cc instanceof WaitL || cc instanceof NoteL || cc instanceof SampleL || cc instanceof PsgNoteL){
+                playLength = cc.getPlayLength();
+                break;
+            }else{
+                if(cc instanceof RepeatSection3Start || cc instanceof RepeatSection2Start){
+                    int repeatCursor = cursor-1;
+                    int repeatPlayLength = -1;
+                    while(repeatCursor>=0){
+                        CubeCommand rcc = ccl.get(repeatCursor);
+                        if(rcc instanceof RepeatSection1Start){
+                            int startSectionCursor = repeatCursor-1;
+                            while(startSectionCursor>=0){
+                                CubeCommand sscc = ccl.get(startSectionCursor);
+                                if(sscc instanceof WaitL || sscc instanceof NoteL || sscc instanceof SampleL || sscc instanceof PsgNoteL){
+                                    repeatPlayLength = sscc.getPlayLength();
+                                    break;
+                                }else{
+                                     if(sscc instanceof RepeatStart){
+                                         break;
+                                     }
+                                }
+                                startSectionCursor--;
+                            }
+                        }
+                        repeatCursor--;
+                    }
+                    if(repeatPlayLength>=0){
+                        playLength = repeatPlayLength;
+                        break;
+                    }
+                }
+            }
+            cursor--;
+        }        
+        return playLength;
     }
     
     private void applyStartPlayLength(List<CubeCommand> ccl, int startIndex, int endIndex, int playLength){

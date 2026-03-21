@@ -15,6 +15,7 @@ import com.sega.md.snd.formats.cube.Pitch;
 public class PsgNote extends CubeCommand {
     
     Pitch note;
+    byte currentPlayLength = 0;
 
     public PsgNote(Pitch note) {
         this.note = note;
@@ -32,12 +33,17 @@ public class PsgNote extends CubeCommand {
 
     @Override
     public boolean equals(CubeCommand cc) {
-        if(cc instanceof PsgNote 
-                && ((PsgNote)cc).note == this.note){
-            return true;
-        }else{
-            return false;
+        if(cc instanceof PsgNote){ 
+            if(((PsgNote)cc).note == this.note
+                && (this.currentPlayLength==0
+                    || ((PsgNote)cc).currentPlayLength==0
+                    || ((PsgNote)cc).currentPlayLength==this.currentPlayLength
+                    )
+               ){
+                return true;
+            }
         }
+        return false;         
     }
 
     public Pitch getNote() {
@@ -51,6 +57,14 @@ public class PsgNote extends CubeCommand {
     @Override
     public int getPlayLength() {
         return 0;
+    }
+
+    public byte getCurrentPlayLength() {
+        return currentPlayLength;
+    }
+
+    public void setCurrentPlayLength(byte currentLength) {
+        this.currentPlayLength = currentLength;
     }
     
     @Override

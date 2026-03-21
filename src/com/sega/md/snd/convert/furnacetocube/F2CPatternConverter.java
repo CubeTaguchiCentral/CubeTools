@@ -333,7 +333,7 @@ public class F2CPatternConverter {
                 }else{
                     int sampleValue = (instrument.getValue()&0xFF) - SAMPLE_INDEX_OFFSET;
                     if(playLength==currentPlayLength){
-                        cubeCommands.add(new Sample((byte)sampleValue));
+                        cubeCommands.add(new Sample((byte)sampleValue, (byte)playLength));
                     }else{
                         cubeCommands.add(new SampleL((byte)sampleValue, (byte)playLength));
                         currentPlayLength = playLength;
