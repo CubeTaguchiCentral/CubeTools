@@ -115,6 +115,7 @@ public class F2CPatternConverter {
         boolean portamentoEffectFound = false;
         int currentSlide = 0;
         int endIndex = -1;
+        FNote previousNote = null;
         if(mainLoopEndIndex < 0){
             endIndex = findChannelEndIndex(rows);
         }else{
@@ -225,13 +226,16 @@ public class F2CPatternConverter {
                     currentVolume = applyYmVolume(cubeCommands, cubeVolume, currentVolume);
                 }
                 if(note==null || note.getValue()==NOTE_RELEASE){
-                    if(playLength==currentPlayLength){
+                    if(legato && previousNote!=null){
+                        note = previousNote;
+                    }else if(playLength==currentPlayLength){
                         cubeCommands.add(new Wait());
                     }else{
                         cubeCommands.add(new WaitL((byte)playLength));
                         currentPlayLength = playLength;
                     }
-                }else{
+                }
+                if(note!=null && note.getValue()!=NOTE_RELEASE){
                     if(mainLoopStartRequiresSustain){
                         cubeCommands.add(new Sustain());
                         mainLoopStartRequiresSustain = false;
@@ -254,6 +258,7 @@ public class F2CPatternConverter {
                         cubeCommands.add(new NoteL(Pitch.valueOf(F2CPitch.valueOf(noteValue+NOTE_OFFSET).getCubeValue()), (byte)playLength));
                         currentPlayLength = playLength;
                     }
+                    previousNote = note;
                 }
                 cursor+=playLength;
             }
