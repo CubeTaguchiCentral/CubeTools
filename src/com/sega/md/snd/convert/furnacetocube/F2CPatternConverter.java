@@ -226,6 +226,9 @@ public class F2CPatternConverter {
                     currentVolume = applyYmVolume(cubeCommands, cubeVolume, currentVolume);
                 }
                 if(note==null || note.getValue()==NOTE_RELEASE){
+                    if(mainLoopStartRequiresSustain){
+                        mainLoopStartRequiresSustain = false;
+                    }
                     if(legato && previousNote!=null){
                         note = previousNote;
                     }else if(playLength==currentPlayLength){
