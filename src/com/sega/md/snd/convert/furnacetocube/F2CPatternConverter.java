@@ -701,7 +701,7 @@ public class F2CPatternConverter {
                 Instrument instrument = row.getInstrument();
                 Volume vol = row.getVolume();
                 List<Effect> effects = row.getEffectList();
-                if(cursor==mainLoopStartIndex){
+                if(cursor==mainLoopStartIndex || instrument!=null || vol!=null){
                     break;
                 }
                 if(!released && note!=null && note.getValue()==NOTE_RELEASE && cursor!=endIndex){
