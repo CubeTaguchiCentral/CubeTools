@@ -228,6 +228,9 @@ public class F2CPatternConverter {
                 if(note==null || note.getValue()==NOTE_RELEASE){
                     if(mainLoopStartRequiresSustain){
                         mainLoopStartRequiresSustain = false;
+                    }else if(release!=currentRelease && release==1){
+                        cubeCommands.add(new SetRelease((byte)release));
+                        currentRelease = release;
                     }
                     if(legato && previousNote!=null){
                         note = previousNote;
@@ -242,7 +245,7 @@ public class F2CPatternConverter {
                     if(mainLoopStartRequiresSustain){
                         cubeCommands.add(new Sustain());
                         mainLoopStartRequiresSustain = false;
-                    }else if(!legato && release!=currentRelease){
+                    }else if(!legato && release!=currentRelease && release<playLength){
                         cubeCommands.add(new SetRelease((byte)release));
                         currentRelease = release;
                     }
