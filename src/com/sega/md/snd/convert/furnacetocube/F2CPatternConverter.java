@@ -269,25 +269,12 @@ public class F2CPatternConverter {
                 cursor+=playLength;
             }
         }
-        ymChannel.setCcs(cubeCommands.toArray(new CubeCommand[cubeCommands.size()]));
-    }
-    
-    private static int findCubeVolume(int furnaceValue){
-        int index = 0;
-        int diff = 0xFF;
-        for(int i=0;i<DEFAULT_YM_LEVELS.length;i++){
-            if(furnaceValue==DEFAULT_YM_LEVELS[i]){
-                index = i;
-                break;
-            }else{
-                int candidateDiff = Math.abs(furnaceValue-DEFAULT_YM_LEVELS[i]);
-                if(candidateDiff<diff){
-                    index = i;
-                    diff = candidateDiff;
-                }
-            }
+        int firstNoteIndex = findFirstNoteIndex(cubeCommands);
+        if(firstNoteIndex>=0){
+            secureStartStereo(cubeCommands);
+            secureStartVibrato(cubeCommands, firstNoteIndex);
         }
-        return index;
+        ymChannel.setCcs(cubeCommands.toArray(new CubeCommand[cubeCommands.size()]));
     }
     
     private static void convertFurnacePatternToDacChannel(Pattern[] patterns, int channelIndex, DacChannel dacChannel, int mainLoopStartIndex, int mainLoopEndIndex){
@@ -487,6 +474,10 @@ public class F2CPatternConverter {
                 cursor+=playLength;
             }
         }
+        int firstNoteIndex = findFirstNoteIndex(cubeCommands);
+        if(firstNoteIndex>=0){
+            secureStartVibrato(cubeCommands, firstNoteIndex);
+        }
         psgToneChannel.setCcs(cubeCommands.toArray(new CubeCommand[cubeCommands.size()]));
     }
     
@@ -618,7 +609,29 @@ public class F2CPatternConverter {
                 cursor+=playLength;
             }
         }
+        int firstNoteIndex = findFirstNoteIndex(cubeCommands);
+        if(firstNoteIndex>=0){
+            secureStartVibrato(cubeCommands, firstNoteIndex);
+        }
         psgNoiseChannel.setCcs(cubeCommands.toArray(new CubeCommand[cubeCommands.size()]));
+    }
+    
+    private static int findCubeVolume(int furnaceValue){
+        int index = 0;
+        int diff = 0xFF;
+        for(int i=0;i<DEFAULT_YM_LEVELS.length;i++){
+            if(furnaceValue==DEFAULT_YM_LEVELS[i]){
+                index = i;
+                break;
+            }else{
+                int candidateDiff = Math.abs(furnaceValue-DEFAULT_YM_LEVELS[i]);
+                if(candidateDiff<diff){
+                    index = i;
+                    diff = candidateDiff;
+                }
+            }
+        }
+        return index;
     }
     
     private static void applyStereo(List<CubeCommand> cubeCommands, byte value){
@@ -631,6 +644,52 @@ public class F2CPatternConverter {
         }
         Stereo stereo = new Stereo(stereoValue);
         cubeCommands.add(stereo);
+    }
+    
+    private static void secureStartStereo(List<CubeCommand> cubeCommands){
+        int stereoCommandIndex = -1;
+        for(int i=0;i<cubeCommands.size();i++){
+            CubeCommand cc = cubeCommands.get(i);
+            if(cc instanceof Stereo){
+                stereoCommandIndex = i;
+                break;
+            }
+        }
+        if(stereoCommandIndex>=0){
+            CubeCommand stereoCommand = cubeCommands.get(stereoCommandIndex);
+            cubeCommands.remove(stereoCommandIndex);
+            cubeCommands.add(0, stereoCommand);
+        }else{
+            cubeCommands.add(0, new Stereo(STEREO_CENTER));
+        }
+    }
+    
+    private static void secureStartVibrato(List<CubeCommand> cubeCommands, int firstNoteIndex){
+        int vibratoCommandIndex = -1;
+        for(int i=0;i<cubeCommands.size();i++){
+            CubeCommand cc = cubeCommands.get(i);
+            if(cc instanceof Vibrato){
+                vibratoCommandIndex = i;
+                break;
+            }
+        }
+        if(vibratoCommandIndex>=0){
+            CubeCommand vibratoCommand = cubeCommands.get(vibratoCommandIndex);
+            cubeCommands.remove(vibratoCommandIndex);
+            cubeCommands.add(firstNoteIndex, vibratoCommand);
+        }else{
+            cubeCommands.add(firstNoteIndex, new Vibrato((byte)0));
+        }
+    }
+    
+    private static int findFirstNoteIndex(List<CubeCommand> cubeCommands){
+        for(int i=0;i<cubeCommands.size();i++){
+            CubeCommand cc = cubeCommands.get(i);
+            if(cc instanceof Note || cc instanceof NoteL || cc instanceof PsgNote || cc instanceof PsgNoteL){
+                return i;
+            }
+        }
+        return -1;
     }
     
     private static void applyDetune(List<CubeCommand> cubeCommands, byte value){
