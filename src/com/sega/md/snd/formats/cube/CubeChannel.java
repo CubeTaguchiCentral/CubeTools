@@ -330,7 +330,7 @@ public abstract class CubeChannel {
         while(cursor>=0){
             CubeCommand cc = ccl.get(cursor);
             if(cc instanceof WaitL || cc instanceof NoteL || cc instanceof SampleL || cc instanceof PsgNoteL){
-                playLength = cc.getPlayLength();
+                playLength = cc.getPlayLength()&0xFF;
                 break;
             }else{
                 if(cc instanceof RepeatSection3Start || cc instanceof RepeatSection2Start){
@@ -343,7 +343,7 @@ public abstract class CubeChannel {
                             while(startSectionCursor>=0){
                                 CubeCommand sscc = ccl.get(startSectionCursor);
                                 if(sscc instanceof WaitL || sscc instanceof NoteL || sscc instanceof SampleL || sscc instanceof PsgNoteL){
-                                    repeatPlayLength = sscc.getPlayLength();
+                                    repeatPlayLength = sscc.getPlayLength()&0xFF;
                                     break;
                                 }else{
                                      if(sscc instanceof RepeatStart){
