@@ -410,11 +410,10 @@ public abstract class CubeChannel {
                     outerloop:
                     for(int sectionBase=0;section2Start+repeatLength+sectionBase<ccs.length-repeatLength;sectionBase++){
                         for(int sectionCursor=0;sectionCursor<=repeatLength;sectionCursor++){
-                            if(ccs[section2Start+repeatLength] instanceof RepeatStart
-                                ||ccs[section2Start+repeatLength] instanceof CountedLoopStart
-                                || ccs[section2Start+repeatLength] instanceof CountedLoopEnd){
+                            CubeCommand cc = ccs[section2Start+repeatLength+sectionBase+sectionCursor];
+                            if(cc instanceof RepeatStart || cc instanceof CountedLoopStart || cc instanceof CountedLoopEnd){
                                 /* Met an incompatible pattern ahead, stop here */
-                                break;
+                                break outerloop;
                             }
                             if(!ccs[start+sectionCursor].equals(ccs[section2Start+repeatLength+sectionBase+sectionCursor])){
                                 /* Intro pattern stopped matching, try again from one command ahead */
@@ -479,11 +478,10 @@ public abstract class CubeChannel {
                     outerloop:
                     for(int sectionBase=0;section2Start+repeatLength+sectionBase<ccs.length-repeatLength;sectionBase++){
                         for(int sectionCursor=0;sectionCursor<=repeatLength;sectionCursor++){
-                            if(ccs[section2Start+repeatLength] instanceof RepeatStart
-                                ||ccs[section2Start+repeatLength] instanceof CountedLoopStart
-                                || ccs[section2Start+repeatLength] instanceof CountedLoopEnd){
+                            CubeCommand cc = ccs[section2Start+repeatLength+sectionBase+sectionCursor];
+                            if(cc instanceof RepeatStart || cc instanceof CountedLoopStart || cc instanceof CountedLoopEnd){
                                 /* Met an incompatible pattern ahead, stop here */
-                                break;
+                                break outerloop;
                             }
                             if(!ccs[start+sectionCursor].equals(ccs[section2Start+repeatLength+sectionBase+sectionCursor])){
                                 /* Intro pattern stopped matching, try again from one command ahead */
