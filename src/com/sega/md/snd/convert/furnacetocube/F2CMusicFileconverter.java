@@ -187,7 +187,7 @@ public class F2CMusicFileconverter {
             for(Row row : pattern.getRows()){
                 for(Effect effect1 : row.getEffectList()){
                     if(effect1.getType()==EFFECT_JUMP_TO_ORDER){
-                        return cursor;
+                        return cursor+1;
                     }
                 }
                 cursor++;
