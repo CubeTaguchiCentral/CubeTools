@@ -48,7 +48,7 @@ public class F2CMusicFileconverter {
         int mainLoopStartIndex = getMainLoopStartIndex(aggregatedFurnacePatterns, ff.getSongInfo().getPatternLength());   
         int mainLoopEndIndex = getMainLoopEndIndex(aggregatedFurnacePatterns, ff.getSongInfo().getPatternLength());        
         
-        CubeChannel[] cubeChannels = convertPatterns(aggregatedFurnacePatterns, me.isYm6InDacMode(), mainLoopStartIndex, mainLoopEndIndex);
+        CubeChannel[] cubeChannels = convertPatterns(aggregatedFurnacePatterns, me.isYm6InDacMode(), mainLoopStartIndex, mainLoopEndIndex, ff);
         
         me.setChannels(cubeChannels);
         
@@ -139,23 +139,23 @@ public class F2CMusicFileconverter {
         return rowIndex;
     }
     
-    public static CubeChannel[] convertPatterns(Pattern[] patterns, boolean ym6InDacMode, int mainLoopStartIndex, int mainLoopEndIndex){
+    public static CubeChannel[] convertPatterns(Pattern[] patterns, boolean ym6InDacMode, int mainLoopStartIndex, int mainLoopEndIndex, FurnaceFile ff){
         CubeChannel[] channels = new CubeChannel[CHANNEL_COUNT];
         
-        channels[0] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 0, new YmChannel(), mainLoopStartIndex, mainLoopEndIndex);
-        channels[1] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 1, new YmChannel(), mainLoopStartIndex, mainLoopEndIndex);
-        channels[2] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 2, new YmChannel(), mainLoopStartIndex, mainLoopEndIndex);
-        channels[3] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 3, new YmChannel(), mainLoopStartIndex, mainLoopEndIndex);
-        channels[4] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 4, new YmChannel(), mainLoopStartIndex, mainLoopEndIndex);
+        channels[0] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 0, new YmChannel(), mainLoopStartIndex, mainLoopEndIndex, ff);
+        channels[1] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 1, new YmChannel(), mainLoopStartIndex, mainLoopEndIndex, ff);
+        channels[2] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 2, new YmChannel(), mainLoopStartIndex, mainLoopEndIndex, ff);
+        channels[3] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 3, new YmChannel(), mainLoopStartIndex, mainLoopEndIndex, ff);
+        channels[4] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 4, new YmChannel(), mainLoopStartIndex, mainLoopEndIndex, ff);
         if(ym6InDacMode){
-            channels[5] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 5, new DacChannel(), mainLoopStartIndex, mainLoopEndIndex);
+            channels[5] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 5, new DacChannel(), mainLoopStartIndex, mainLoopEndIndex, ff);
         }else{
-            channels[5] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 5, new YmChannel(), mainLoopStartIndex, mainLoopEndIndex);
+            channels[5] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 5, new YmChannel(), mainLoopStartIndex, mainLoopEndIndex, ff);
         }
-        channels[6] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 6, new PsgToneChannel(), mainLoopStartIndex, mainLoopEndIndex);
-        channels[7] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 7, new PsgToneChannel(), mainLoopStartIndex, mainLoopEndIndex);
-        channels[8] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 8, new PsgToneChannel(), mainLoopStartIndex, mainLoopEndIndex);
-        channels[9] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 9, new PsgNoiseChannel(), mainLoopStartIndex, mainLoopEndIndex);
+        channels[6] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 6, new PsgToneChannel(), mainLoopStartIndex, mainLoopEndIndex, ff);
+        channels[7] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 7, new PsgToneChannel(), mainLoopStartIndex, mainLoopEndIndex, ff);
+        channels[8] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 8, new PsgToneChannel(), mainLoopStartIndex, mainLoopEndIndex, ff);
+        channels[9] = F2CPatternConverter.convertFurnacePatternToCubeChannel(patterns, 9, new PsgNoiseChannel(), mainLoopStartIndex, mainLoopEndIndex, ff);
         
         return channels;
     }

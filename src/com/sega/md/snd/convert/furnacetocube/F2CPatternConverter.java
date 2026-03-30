@@ -33,6 +33,8 @@ import com.sega.md.snd.formats.cube.command.Vibrato;
 import com.sega.md.snd.formats.cube.command.Vol;
 import com.sega.md.snd.formats.cube.command.Wait;
 import com.sega.md.snd.formats.cube.command.WaitL;
+import com.sega.md.snd.formats.cube.command.YmTimer;
+import com.sega.md.snd.formats.furnace.file.FurnaceFile;
 import com.sega.md.snd.formats.furnace.pattern.Effect;
 import com.sega.md.snd.formats.furnace.pattern.FNote;
 import com.sega.md.snd.formats.furnace.pattern.Instrument;
@@ -63,6 +65,7 @@ public class F2CPatternConverter {
     private static final byte EFFECT_PORTAMENTO = (byte)0x03;
     private static final byte EFFECT_VIBRATO = (byte)0x04;
     private static final byte EFFECT_DETUNE = (byte)0x53;
+    private static final byte EFFECT_TICKRATE = (byte)0xC0;
     private static final byte EFFECT_LEGATO = (byte)0xEA;
     
     private static final int YMINSTR_INDEX_OFFSET = 0x0;
@@ -83,14 +86,14 @@ public class F2CPatternConverter {
         return ymTimerB;
     }
     
-    public static CubeChannel convertFurnacePatternToCubeChannel(Pattern[] patterns, int channelIndex, CubeChannel cubeChannel, int mainLoopStartIndex, int mainLoopEndIndex){
+    public static CubeChannel convertFurnacePatternToCubeChannel(Pattern[] patterns, int channelIndex, CubeChannel cubeChannel, int mainLoopStartIndex, int mainLoopEndIndex, FurnaceFile ff){
         
         if(cubeChannel instanceof YmChannel){
             convertFurnacePatternToYmChannel(patterns, channelIndex, (YmChannel)cubeChannel, mainLoopStartIndex, mainLoopEndIndex);
         }else if(cubeChannel instanceof DacChannel){
             convertFurnacePatternToDacChannel(patterns, channelIndex, (DacChannel)cubeChannel, mainLoopStartIndex, mainLoopEndIndex);
         }else if (cubeChannel instanceof PsgToneChannel){
-            convertFurnacePatternToPsgToneChannel(patterns, channelIndex, (PsgToneChannel)cubeChannel, mainLoopStartIndex, mainLoopEndIndex);
+            convertFurnacePatternToPsgToneChannel(patterns, channelIndex, (PsgToneChannel)cubeChannel, mainLoopStartIndex, mainLoopEndIndex, ff);
         }else if (cubeChannel instanceof PsgNoiseChannel){
             convertFurnacePatternToPsgNoiseChannel(patterns, channelIndex, (PsgNoiseChannel)cubeChannel, mainLoopStartIndex, mainLoopEndIndex);
         }
@@ -343,7 +346,7 @@ public class F2CPatternConverter {
         dacChannel.setCcs(cubeCommands.toArray(new CubeCommand[cubeCommands.size()]));
     }
     
-    private static void convertFurnacePatternToPsgToneChannel(Pattern[] patterns, int channelIndex, PsgToneChannel psgToneChannel, int mainLoopStartIndex, int mainLoopEndIndex){
+    private static void convertFurnacePatternToPsgToneChannel(Pattern[] patterns, int channelIndex, PsgToneChannel psgToneChannel, int mainLoopStartIndex, int mainLoopEndIndex, FurnaceFile ff){
         Row[] rows = patterns[channelIndex].getRows();
         List<CubeCommand> cubeCommands = new ArrayList();
         int cursor = 0;
@@ -414,6 +417,9 @@ public class F2CPatternConverter {
                     byte value = effect.getValue();
                     if(type==EFFECT_DETUNE){
                         applyDetune(cubeCommands, value);
+                    }
+                    if((type&0xF0)==(EFFECT_TICKRATE&0xF0)){
+                        applyYmTimer(cubeCommands, type, value, ff);
                     }
                     if(type==EFFECT_LEGATO){
                         if(value==0){
@@ -703,6 +709,12 @@ public class F2CPatternConverter {
         }
         Shifting shifting = new Shifting((byte)(shiftingValue&0xFF));
         cubeCommands.add(shifting);
+    }
+    
+    private static void applyYmTimer(List<CubeCommand> cubeCommands, byte type, byte value, FurnaceFile ff){
+        int timerValue = ((type&0x0F)<<8) + (value&0xFF);
+        YmTimer ymTimer = new YmTimer((byte)(F2CPatternConverter.calculateYmTimerB(timerValue, ff.getSongInfo().getSpeed1()&0xFF)&0xFF));
+        cubeCommands.add(ymTimer);
     }
     
     private static int applySlide(List<CubeCommand> cubeCommands, byte value, int currentSlide){
