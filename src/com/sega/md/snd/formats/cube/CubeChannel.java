@@ -217,8 +217,8 @@ public abstract class CubeChannel {
                             candidateCountedLoopLength = j-i;
                             candidateCountedLoopCount = count;
                             candidateCountedLoopStartPlayLength = currentPlayLength;
-                            System.out.println("    Detected new Counted Loop candidate with gain of "+candidateCountedLoopGain+" : start="+candidateCountedLoopStartIndex
-                                +", candidateCommandLength="+candidateCountedLoopLength+", candidateLoopCount="+candidateCountedLoopCount);
+                            /*System.out.println("    Detected new Counted Loop candidate with gain of "+candidateCountedLoopGain+" : start="+candidateCountedLoopStartIndex
+                                +", candidateCommandLength="+candidateCountedLoopLength+", candidateLoopCount="+candidateCountedLoopCount);*/
                             /*for(int p=repeatLength;p<j;p++){System.out.println(ccl.get(p).produceAsmOutput());}  */
                         }
                     }
@@ -236,8 +236,8 @@ public abstract class CubeChannel {
                             candidateRepeatGain = gain;
                             candidateRepeatStart = i;
                             candidateRepeatSection2 = j;
-                            System.out.println("    Detected new Volta Brackets candidate with gain of "+candidateRepeatGain+" : candidateRepeatStart="+candidateRepeatStart
-                                +", candidateRepeatSection2="+candidateRepeatSection2);
+                            /*System.out.println("    Detected new Volta Brackets candidate with gain of "+candidateRepeatGain+" : candidateRepeatStart="+candidateRepeatStart
+                                +", candidateRepeatSection2="+candidateRepeatSection2);*/
                             /*for(int p=repeatLength;p<j;p++){System.out.println(ccl.get(p).produceAsmOutput());}*/
                         }
                     }
