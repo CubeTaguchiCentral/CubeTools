@@ -336,6 +336,7 @@ public abstract class CubeChannel {
                 if(cc instanceof RepeatSection3Start || cc instanceof RepeatSection2Start){
                     int repeatCursor = cursor-1;
                     int repeatPlayLength = -1;
+                    outerloop:
                     while(repeatCursor>=0){
                         CubeCommand rcc = ccl.get(repeatCursor);
                         if(rcc instanceof RepeatSection1Start){
@@ -344,7 +345,7 @@ public abstract class CubeChannel {
                                 CubeCommand sscc = ccl.get(startSectionCursor);
                                 if(sscc instanceof WaitL || sscc instanceof NoteL || sscc instanceof SampleL || sscc instanceof PsgNoteL){
                                     repeatPlayLength = sscc.getPlayLength()&0xFF;
-                                    break;
+                                    break outerloop;
                                 }else{
                                      if(sscc instanceof RepeatStart){
                                          break;
