@@ -718,7 +718,7 @@ public class F2CPatternConverter {
     }
     
     private static int applySlide(List<CubeCommand> cubeCommands, byte value, int currentSlide){
-            int slideValue = 0x80|(value*2-2);
+            int slideValue = 0x80|(value*2-1);
             if(slideValue!=currentSlide){
                 SetSlide setSlide = new SetSlide((byte)(slideValue&0xFF));
                 cubeCommands.add(setSlide);
