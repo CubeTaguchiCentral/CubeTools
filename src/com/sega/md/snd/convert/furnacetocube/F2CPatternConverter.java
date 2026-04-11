@@ -66,6 +66,7 @@ public class F2CPatternConverter {
     private static final byte EFFECT_VIBRATO = (byte)0x04;
     private static final byte EFFECT_DETUNE = (byte)0x53;
     private static final byte EFFECT_TICKRATE = (byte)0xC0;
+    private static final byte EFFECT_VIBRATO_SHAPE = (byte)0xE3;
     private static final byte EFFECT_LEGATO = (byte)0xEA;
     
     private static final int YMINSTR_INDEX_OFFSET = 0x0;
@@ -77,6 +78,8 @@ public class F2CPatternConverter {
     public static final byte NOTE_OFF = (byte)0xB4;
     public static final byte NOTE_RELEASE = (byte)0xB5;
     public static final byte MACRO_RELEASE = (byte)0xB6;
+    
+    public static final int DEFAULT_VIBRATO_INDEX = 2;
     
     public static int calculateYmTimerB(float ticksPerSecond, int speed){  
         int ymTimerB;
@@ -260,7 +263,10 @@ public class F2CPatternConverter {
                     }
                     int vibratoDelay = findVibratoDelay(rows, cursor, playLength);
                     if(playLength>currentVibratoDelay && vibratoDelay!=currentVibratoDelay){
-                        int index = 2;
+                        byte vibratoValue = getVibratoValue(rows, cursor);
+                        int speed = (vibratoValue&0xF0)>>4;
+                        int depth = vibratoValue&0x0F;
+                        int index = getVibratoIndex(rows, cursor+vibratoDelay, speed, depth);
                         int delay = (vibratoDelay/2)&0x0F;
                         byte value = (byte)(index<<4|delay);
                         cubeCommands.add(new Vibrato(value));
@@ -887,13 +893,95 @@ public class F2CPatternConverter {
         return 0;
     }
     
-    private static byte getVibratoValue(Row[] rows, int startIndex, int delay){
+    private static byte getVibratoValue(Row[] rows, int index){
         byte value = 0;
-        Row row = rows[delay];
+        Row row = rows[index];
         List<Effect> effects = row.getEffectList();
         for(Effect effect : effects){
             if(effect.getType()==EFFECT_VIBRATO){
                 value = effect.getValue();
+            }
+        }
+        return value;
+    }
+    
+    private static byte getVibratoIndex(Row[] rows, int cursor, int speed, int depth){
+        /* Applying standard pitch effect table, inherited from Shining Force II.
+          This may not match original game's table, resulting in wrong pitch effect.
+          Complementary solution : custom Cube driver CubeWiz will allow to rely 
+          on standard table when exporting new songs pointing to it explicitely.
+        
+          Standard pitch effect table<== Furnace vibrato shape, speed, depth
+          0:0
+          1:-16,16,16,-16            <== 06: square, speed 0xF, depth 8
+          2:-3,-3,-1,1,3,3,3,1,-1,-3 <== 00: sine, speed 5, depth 2
+          3:-2,-2,-1,1,2,2,2,1,-1,-2 <== 00: sine, speed 5, depth 2
+          4:-1,-1,0,1,1,1,1,0,-1,-1  <== 00: sine, speed 5, depth 1
+          5:-1,0,0,1,0,1,0,0,-1,0    <== 00: sine, speed 2, depth 1
+          6:2                        <== 04: ramp up, speed 2, depth 0xF
+          7:-2                       <== 05: ramp down, speed 2, depth 0xF
+          8:4                        <== 04: ramp up, speed 4, depth 0xF
+          9:-4                       <== 05: ramp down, speed 4, depth 0xF
+          A:8                        <== 04: ramp up, speed 8, depth 0xF
+          B:-8                       <== 05: ramp down, speed 8, depth 0xF
+          C:16                       <== 04: ramp up, speed 0xC, depth 0xF
+          D:-16                      <== 05: ramp down, speed 0xC, depth 0xF
+          E:32                       <== 04: ramp up, speed 0xF, depth 0xF
+          F:-32                      <== 05: ramp down, speed 0xF, depth 0xF
+        */
+        byte value = 0;
+        Row row = rows[cursor];
+        List<Effect> effects = row.getEffectList();
+        for(Effect effect : effects){
+            if(effect.getType()==EFFECT_VIBRATO_SHAPE){
+                value = effect.getValue();
+                switch(value&0xFF){
+                    case 0x06:
+                        /* Square */
+                        value = 1;
+                        break;
+                    case 0x00:
+                        /* Sine */
+                        if(depth>=2){
+                            value = DEFAULT_VIBRATO_INDEX;
+                        }else if(speed>=5){
+                            value = 4;
+                        }else{
+                            value = 5;
+                        }
+                        break;
+                    case 0x04:
+                        /* Ramp up */
+                        if(speed>=0xF){
+                            value=0xE;
+                        }else if(speed>=0xC){
+                            value=0xC;
+                        }else if(speed>=8){
+                            value=0xA;
+                        }else if(speed>=4){
+                            value=8;
+                        }else{
+                            value=6;
+                        } 
+                        break;
+                    case 0x05:
+                        /* Ramp down */
+                        if(speed>=0xF){
+                            value=0xF;
+                        }else if(speed>=0xC){
+                            value=0xD;
+                        }else if(speed>=8){
+                            value=0xB;
+                        }else if(speed>=4){
+                            value=9;
+                        }else{
+                            value=7;
+                        } 
+                        break;
+                    default:
+                        value = DEFAULT_VIBRATO_INDEX;
+                        break;
+                }
             }
         }
         return value;
