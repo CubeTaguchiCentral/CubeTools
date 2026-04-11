@@ -35,6 +35,7 @@ public class CubeConversionManager {
     public static final String MASS_EXPORT_FOLDER_ASM = "ASM";
     public static final String MASS_EXPORT_FOLDER_FURNACE = "Furnace";    
     public static final String MASS_EXPORT_FOLDER_FURNACE_CLIPBOARD = "FurnaceClipboard";
+    public static final String MASS_EXPORT_FOLDER_FURNACETOASM = "FurToAsm"; 
     
     MusicEntry[] mes = new MusicEntry[32];
     SfxEntry[] ses;
@@ -390,6 +391,7 @@ public class CubeConversionManager {
             int ymTimerBValues = 0;
             int ymTimerBValueCount = 0;
             byte[][] yminstruments = new byte[0][];
+            List<MusicEntry> musicEntryList = new ArrayList();
             for(int j=0;j<musicBankOffsets.length;j++){
                 System.out.println("Importing "+gameName+" music bank "+(j)+" ...");
                 mes = new MusicEntry[32];
@@ -406,6 +408,7 @@ public class CubeConversionManager {
                         if(mes[k].getYmInstruments().length>yminstruments.length){
                             yminstruments = mes[k].getYmInstruments();
                         }
+                        musicEntryList.add(mes[k]);
                     }
                 }
                 String completeAsmOutputFilePath = completeRomFilepath.substring(0, completeRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_ASM + File.separator + targetFolders[j];
@@ -415,6 +418,9 @@ public class CubeConversionManager {
                 String completeFurnaceOutputFilePath = completeRomFilepath.substring(0, completeRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_FURNACE + File.separator + targetFolders[j];
                 System.out.println("Exporting "+gameName+" music bank "+(j)+" ...");
                 exportMusicEntriesAsFurnaceFiles(templateFilePath, completeFurnaceOutputFilePath);
+                String completeFurnaceToAsmOutputFilePath = completeRomFilepath.substring(0, completeRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_FURNACETOASM + File.separator + targetFolders[j];
+                importMusicEntriesFromFurnaceFolder(completeFurnaceOutputFilePath);
+                exportMusicEntriesAsAsm(completeFurnaceToAsmOutputFilePath, DEFAULT_ASM_MUSIC_ENTRY_NAME, false, true);
                 System.out.println("... "+gameName+" music bank "+(j)+" exported.");
             }
             byte averageYmTimerBValue = (byte)(0xFF & (ymTimerBValues / ymTimerBValueCount) );
@@ -443,7 +449,7 @@ public class CubeConversionManager {
                     }
                 }
             }
-            CubeBinaryManager.exportYmInstrumentsToIndividualFiles(ymInstrumentsIndividualEntriesOutputPath, yminstruments, mes, ses);
+            CubeBinaryManager.exportYmInstrumentsToIndividualFiles(ymInstrumentsIndividualEntriesOutputPath, yminstruments, musicEntryList.toArray(new MusicEntry[0]), ses);
             System.out.println("... "+gameName+" YM instruments exported. ("+yminstruments.length+")");    
             System.out.println("... "+gameName+" assets exported.");
         }    
