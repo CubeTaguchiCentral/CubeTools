@@ -153,7 +153,7 @@ public class F2CPatternConverter {
                 Volume volume = row.getVolume();
                 List<Effect> effects = row.getEffectList();
                 int playLength = findPlayLength(rows, cursor, mainLoopStartIndex, endIndex);
-                if(playLength==1){
+                if(playLength==1 && (cursor+1)<rows.length){
                     /* Managing special case of Cube slide effect converted to a 2-note solution for Furnace 
                        Workaround description at https://github.com/CubeTaguchiCentral/CubeAssets/issues/2 
                     */
