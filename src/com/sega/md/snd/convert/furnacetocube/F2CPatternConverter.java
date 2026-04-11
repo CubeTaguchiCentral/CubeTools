@@ -159,6 +159,12 @@ public class F2CPatternConverter {
                     */
                     byte nextRowPortamentoValue = getNextRowPortamentoValue(rows, cursor);
                     if(nextRowPortamentoValue!=0){
+                        if(note!=null && previousNote!=null && previousNote.getValue()!=note.getValue()){
+                            /* Managing case of Shining Force II b0/s10 having 0-length note as initial pitch before slide */
+                            playLength = 0;
+                            cubeCommands.add(new NoteL(Pitch.valueOf(F2CPitch.valueOf((note.getValue()&0xFF)+NOTE_OFFSET).getCubeValue()), (byte)playLength));
+                            currentPlayLength = playLength;
+                        }                  
                         int newSlide = applySlide(cubeCommands, nextRowPortamentoValue, currentSlide);
                         if(newSlide != currentSlide){
                             currentSlide = newSlide;
