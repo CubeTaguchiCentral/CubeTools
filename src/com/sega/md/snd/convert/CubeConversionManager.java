@@ -420,7 +420,7 @@ public class CubeConversionManager {
                 exportMusicEntriesAsFurnaceFiles(templateFilePath, completeFurnaceOutputFilePath);
                 String completeFurnaceToAsmOutputFilePath = completeRomFilepath.substring(0, completeRomFilepath.lastIndexOf(File.separator)+1) + MASS_EXPORT_FOLDER_FURNACETOASM + File.separator + targetFolders[j];
                 importMusicEntriesFromFurnaceFolder(completeFurnaceOutputFilePath);
-                exportMusicEntriesAsAsm(completeFurnaceToAsmOutputFilePath, DEFAULT_ASM_MUSIC_ENTRY_NAME, false, true);
+                exportMusicEntriesAsAsm(completeFurnaceToAsmOutputFilePath, DEFAULT_ASM_MUSIC_ENTRY_NAME, true, true);
                 System.out.println("... "+gameName+" music bank "+(j)+" exported.");
             }
             byte averageYmTimerBValue = (byte)(0xFF & (ymTimerBValues / ymTimerBValueCount) );
