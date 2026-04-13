@@ -28,9 +28,11 @@ public class C2FYmInstrumentConverter {
     public static void convertYmInstruments(byte[][] cubeInstruments, boolean ssgEg, FurnaceFile ff){
         //ff.setInstruments(new InstrumentBlock[cubeInstruments.length]);
         for(int i=0;i<cubeInstruments.length;i++){
-            Feature[] newFeatures = new Feature[2];
+            Feature[] newFeatures = new Feature[4];
             newFeatures[0] = new Feature("yminst"+String.format("%02d", i));
             newFeatures[1] = convertCubeInstrumentToFurnaceFeature(cubeInstruments[i], ssgEg);
+            newFeatures[2] = produceOplDrumsFeature();
+            newFeatures[3] = produceEndFeature();
             /*if(ff.getInstruments()[i]==null){
                 ff.getInstruments()[i] = new InstrumentBlock();
             }*/
@@ -92,6 +94,25 @@ public class C2FYmInstrumentConverter {
         data[5+3*8+7] = 0;
         
         return new Feature(code, length, data);
+    }    
+    
+    public static Feature produceOplDrumsFeature(){
+        String code = "LD";
+        short length = (short)7;
+        byte[] data = new byte[7];
+        data[0] = (byte)0x00;
+        data[1] = (byte)0x20;
+        data[2] = (byte)0x05;
+        data[3] = (byte)0x50;
+        data[4] = (byte)0x05;
+        data[5] = (byte)0xC0;
+        data[6] = (byte)0x01;
+        return new Feature(code, length, data);
+    }   
+    
+    public static Feature produceEndFeature(){
+        String code = "EN";
+        return new Feature(code, (short)0, null);
     }    
     
 }

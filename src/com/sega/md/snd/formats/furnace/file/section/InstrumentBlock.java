@@ -53,7 +53,6 @@ public class InstrumentBlock {
                 Logger.getLogger(InstrumentBlock.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        baos.write((byte)0xFF);
         bytes = baos.toByteArray();
         return bytes;
     }        

@@ -220,7 +220,7 @@ public class PatternBlock {
                 boolean otherEffect6ValuePresent = effectList.size()>6 && effectList.get(6).getValue()!=null;
                 boolean otherEffect7TypePresent = effectList.size()>7;
                 boolean otherEffect7ValuePresent = effectList.size()>7 && effectList.get(7).getValue()!=null;
-                boolean otherEffects03Present = otherEffect0TypePresent || otherEffect1TypePresent || otherEffect2TypePresent || otherEffect3TypePresent;
+                boolean otherEffects03Present = otherEffect1TypePresent || otherEffect2TypePresent || otherEffect3TypePresent;
                 boolean otherEffects47Present = otherEffect4TypePresent || otherEffect5TypePresent || otherEffect6TypePresent || otherEffect7TypePresent;
                 byte nextByte = (byte)(
                         ((notePresent?1:0)<<0)
@@ -267,15 +267,9 @@ public class PatternBlock {
                 if(volumePresent){
                     baos.write(volume.getValue());
                 }
-                /*if(effect0TypePresent){
+                if(effect0TypePresent || otherEffect0TypePresent){
                     baos.write(effectList.get(0).getType());
                     if(effect0ValuePresent){
-                        baos.write((byte)effectList.get(0).getValue());
-                    }
-                }*/
-                if(otherEffect0TypePresent){
-                    baos.write(effectList.get(0).getType());
-                    if(otherEffect0ValuePresent){
                         baos.write((byte)effectList.get(0).getValue());
                     }
                 }

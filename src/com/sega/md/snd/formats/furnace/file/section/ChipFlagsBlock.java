@@ -36,11 +36,13 @@ public class ChipFlagsBlock {
         blockSize = bb.getInt();    
         rawData = getByteArray(bb, blockSize);
         String[] flags =  new String(rawData, StandardCharsets.UTF_8).split("\n");
-        for(int i=0;i<flags.length-1;i++){
+        for(int i=0;i<flags.length;i++){
             String[] strings = flags[i].split("=");
-            String key = strings[0];
-            String value = strings[1];
-            flagMap.put(key, value);
+            if(strings.length>=2){
+                String key = strings[0];
+                String value = strings[1];
+                flagMap.put(key, value);
+            }
         }        
     }
 
@@ -143,7 +145,7 @@ public class ChipFlagsBlock {
     }
     
     public int findLength(){
-        return 4+4+rawData.length+1;
+        return 4+4+rawData.length;
     }
     
     

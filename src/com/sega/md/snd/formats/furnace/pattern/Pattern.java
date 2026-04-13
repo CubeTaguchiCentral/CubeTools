@@ -142,16 +142,9 @@ public class Pattern {
                 if(volumePresent){
                     r.setVolume(new Volume(bb.get()));
                 }
-                /*if(effect0TypePresent){
+                if(effect0TypePresent || otherEffect0TypePresent){
                     Effect e = new Effect(bb.get());
-                    if(effect0ValuePresent){
-                        e.setValue(bb.get());
-                    }
-                    r.getEffectList().add(e);
-                }*/
-                if(otherEffect0TypePresent){
-                    Effect e = new Effect(bb.get());
-                    if(otherEffect0ValuePresent){
+                    if(effect0ValuePresent || otherEffect0ValuePresent){
                         e.setValue(bb.get());
                     }
                     r.getEffectList().add(e);

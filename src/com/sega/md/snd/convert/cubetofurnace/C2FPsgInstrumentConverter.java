@@ -5,6 +5,7 @@
  */
 package com.sega.md.snd.convert.cubetofurnace;
 
+import static com.sega.md.snd.convert.cubetofurnace.C2FYmInstrumentConverter.produceEndFeature;
 import com.sega.md.snd.formats.cube.MusicEntry;
 import com.sega.md.snd.formats.furnace.file.FurnaceFile;
 import com.sega.md.snd.formats.furnace.file.section.Feature;
@@ -21,10 +22,10 @@ public class C2FPsgInstrumentConverter {
         //ff.setInstruments(new InstrumentBlock[cubeInstruments.length]);
         if(cubeInstruments!=null){
             for(int i=0;i<cubeInstruments.length;i++){
-                Feature[] newFeatures = new Feature[2];
+                Feature[] newFeatures = new Feature[3];
                 newFeatures[0] = new Feature("psginst"+String.format("%02d", i));
                 newFeatures[1] = convertCubeInstrumentToFurnaceFeature(cubeInstruments[i]);
-                //newFeatures[2] = new Feature("EN", (short)0, new byte[0]);
+                newFeatures[2] = produceEndFeature();
                 /*if(ff.getInstruments()[i]==null){
                     ff.getInstruments()[i] = new InstrumentBlock();
                 }*/
@@ -58,6 +59,11 @@ public class C2FPsgInstrumentConverter {
         data[data.length-1] = -1;
         short length = (short)(data.length);
         return new Feature(code, length, data);
+    }   
+    
+    public static Feature produceEndFeature(){
+        String code = "EN";
+        return new Feature(code, (short)0, null);
     }    
     
 }

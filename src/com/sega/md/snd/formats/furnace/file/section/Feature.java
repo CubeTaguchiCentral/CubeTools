@@ -15,6 +15,8 @@ import java.nio.charset.StandardCharsets;
  */
 public class Feature {
     
+    public static final String END_FEATURE_CODE = "EN";
+    
     private String code = "";
     private short length = 0;
     private byte[] data = null;
@@ -57,13 +59,21 @@ public class Feature {
     }
     
     public byte[] toByteArray(){
-        ByteBuffer bb = ByteBuffer.allocate(findLength());
-        bb.order(ByteOrder.LITTLE_ENDIAN);
-        bb.position(0);
-        bb.put(code.getBytes(StandardCharsets.UTF_8));
-        bb.putShort((short)(findLength()-2-2));
-        bb.put(data);
-        return bb.array();
+        if(!END_FEATURE_CODE.equals(code)){
+            ByteBuffer bb = ByteBuffer.allocate(findLength());
+            bb.order(ByteOrder.LITTLE_ENDIAN);
+            bb.position(0);
+            bb.put(code.getBytes(StandardCharsets.UTF_8));
+            bb.putShort((short)(findLength()-2-2));
+            bb.put(data);
+            return bb.array();
+        }else{
+            ByteBuffer bb = ByteBuffer.allocate(2);
+            bb.order(ByteOrder.LITTLE_ENDIAN);
+            bb.position(0);
+            bb.put(code.getBytes(StandardCharsets.UTF_8));
+            return bb.array();
+        }
     }
     
     public int findLength(){
