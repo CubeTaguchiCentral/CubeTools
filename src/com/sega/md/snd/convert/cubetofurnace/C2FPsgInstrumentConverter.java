@@ -50,7 +50,7 @@ public class C2FPsgInstrumentConverter {
         data[4] = -1; // macro loop
         data[5] = (byte)release; // macro release
         data[6] = 0; // macro mode
-        data[7] = 1; // macro open/type/word size
+        data[7] = 0x9; // macro open/type/word size
         data[8] = 0; // macro delay
         data[9] = 1; // macro speed
         for(int i=0;i<cubeInstrument.length;i++){
