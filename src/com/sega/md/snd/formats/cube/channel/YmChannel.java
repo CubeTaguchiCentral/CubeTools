@@ -123,10 +123,10 @@ public class YmChannel extends CubeChannel {
             }else if((cmd&0xFF)>=0x80){
                 cmdLength = 2;
                 byte b1 = data[cursor+1];
-                ccs.add(new NoteL(Pitch.valueOf((cmd&0x7F)+24),b1));
+                ccs.add(new NoteL(Pitch.valueOf((cmd&0x7F)),b1));
             }else {
                 cmdLength = 1;
-                ccs.add(new Note(Pitch.valueOf((cmd&0xFF)+24)));
+                ccs.add(new Note(Pitch.valueOf((cmd&0xFF))));
             }            
             
             //System.out.println(ccs.get(ccs.size()-1).produceAsmOutput());

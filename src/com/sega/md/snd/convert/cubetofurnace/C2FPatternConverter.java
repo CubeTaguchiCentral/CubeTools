@@ -72,7 +72,8 @@ public class C2FPatternConverter {
     private static final int PSG_INSTRUMENT_OFFSET = 0xA0;
     private static final int SAMPLE_INSTRUMENT_OFFSET = 0xC0;
     
-    private static final int NOTE_OFFSET = 12;
+    private static final int YM_NOTE_OFFSET = 0;
+    private static final int PSG_NOTE_OFFSET = 24;
     
     private Row[] rows;
     
@@ -344,8 +345,8 @@ public class C2FPatternConverter {
     private void applyYmNote(CubeCommand cc){
         previousNoteValue = newNoteValue;
         newNoteValue = cc instanceof Note ? 
-                C2FPitch.valueFromCubeValue(((Note)cc).getNote().getValue()-NOTE_OFFSET).getFurnaceValue()
-                : C2FPitch.valueFromCubeValue(((NoteL)cc).getNote().getValue()-NOTE_OFFSET).getFurnaceValue();
+                C2FPitch.valueFromCubeValue(((Note)cc).getNote().getValue()).getFurnaceValue()-YM_NOTE_OFFSET
+                : C2FPitch.valueFromCubeValue(((NoteL)cc).getNote().getValue()).getFurnaceValue()-YM_NOTE_OFFSET;
         if(cc instanceof NoteL){
             playLength = 0xFF & ((NoteL)cc).getLength();
         }
