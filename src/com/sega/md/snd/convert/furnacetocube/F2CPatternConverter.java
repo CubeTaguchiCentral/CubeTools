@@ -623,9 +623,9 @@ public class F2CPatternConverter {
                     }                    
                     int noteValue = note.getValue()&0xFF;
                     if(playLength==currentPlayLength){
-                        cubeCommands.add(new PsgNote(Pitch.valueOf(F2CPitch.valueOf(noteValue+NOTE_OFFSET).getCubeValue())));
+                        cubeCommands.add(new PsgNote((byte)noteValue));
                     }else{
-                        cubeCommands.add(new PsgNoteL(Pitch.valueOf(F2CPitch.valueOf(noteValue+NOTE_OFFSET).getCubeValue()), (byte)playLength));
+                        cubeCommands.add(new PsgNoteL((byte)noteValue, (byte)playLength));
                         currentPlayLength = playLength;
                     }
                 }

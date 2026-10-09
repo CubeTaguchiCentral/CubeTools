@@ -98,10 +98,10 @@ public class PsgNoiseChannel extends CubeChannel {
             }else if((cmd&0xFF)>=0x80){
                 cmdLength = 2;
                 byte b1 = data[cursor+1];
-                ccs.add(new PsgNoteL(Pitch.valueOf(cmd&0xFF),b1));
+                ccs.add(new PsgNoteL((byte)(cmd&0x7F),b1));
             }else {
                 cmdLength = 1;
-                ccs.add(new PsgNote(Pitch.valueOf(cmd&0xFF)));
+                ccs.add(new PsgNote(cmd));
             }            
             
             //System.out.println(ccs.get(ccs.size()-1).produceAsmOutput());

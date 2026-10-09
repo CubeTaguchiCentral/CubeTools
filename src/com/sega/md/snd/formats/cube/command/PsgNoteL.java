@@ -15,6 +15,7 @@ import com.sega.md.snd.formats.cube.Pitch;
 public class PsgNoteL extends CubeCommand {
     
     Pitch note;
+    byte noiseValue = 0;
     byte length = 0;
 
     public PsgNoteL(Pitch note, byte length) {
@@ -22,20 +23,25 @@ public class PsgNoteL extends CubeCommand {
         this.length = length;
     }
 
+    public PsgNoteL(byte noiseValue, byte length) {
+        this.noiseValue = noiseValue;
+        this.length = length;
+    }
+
     @Override
     public byte[] produceBinaryOutput() {
-        return new byte[]{(byte)(note.getValue()+0x80), length};
+        return new byte[]{(byte)((note!=null?note.getValue():noiseValue)+0x80), length};
     }
 
     @Override
     public String produceAsmOutput() {
-        return "        psgNoteL "+note+", "+Integer.toString(length&0xFF);
+        return "        psgNoteL "+(note!=null?note:("0"+Integer.toHexString(noiseValue&0xFF)+"h"))+", "+Integer.toString(length&0xFF);
     }
 
     @Override
     public boolean equals(CubeCommand cc) {
         if(cc instanceof PsgNoteL 
-                && ((PsgNoteL)cc).note == this.note
+                && ((note!=null && ((PsgNoteL)cc).note == this.note) || (note==null && ((PsgNoteL)cc).noiseValue == noiseValue))
                 && ((PsgNoteL)cc).length == this.length){
             return true;
         }else{
@@ -49,6 +55,14 @@ public class PsgNoteL extends CubeCommand {
 
     public void setNote(Pitch note) {
         this.note = note;
+    }
+
+    public byte getNoiseValue() {
+        return noiseValue;
+    }
+
+    public void setNoiseValue(byte noiseValue) {
+        this.noiseValue = noiseValue;
     }
 
     public byte getLength() {
@@ -67,7 +81,7 @@ public class PsgNoteL extends CubeCommand {
     @Override
     public boolean equals(CubeCommand cc, int currentPlayLength) {
         if(cc instanceof PsgNote 
-                && ((PsgNote)cc).note == this.note
+                && ( (note!=null && ((PsgNote)cc).note == this.note) || (note==null && ((PsgNote)cc).noiseValue == this.noiseValue) )
                 && (this.length&0xFF) == currentPlayLength){
             return true;
         }else{

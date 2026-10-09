@@ -383,7 +383,11 @@ public abstract class CubeChannel {
                     ccl.set(startIndex+i, new SampleL(((Sample) cc).getSample(),(byte)playLength));
                     break;
                 }else if(cc instanceof PsgNote){
-                    ccl.set(startIndex+i, new PsgNoteL(((PsgNote) cc).getNote(),(byte)playLength));
+                    if(((PsgNote) cc).getNote()!=null){
+                        ccl.set(startIndex+i, new PsgNoteL(((PsgNote) cc).getNote(),(byte)playLength));
+                    }else{
+                        ccl.set(startIndex+i, new PsgNoteL(((PsgNote) cc).getNoiseValue(),(byte)playLength));
+                    }
                     break;
                 }
             }
