@@ -15,26 +15,31 @@ import com.sega.md.snd.formats.cube.Pitch;
 public class PsgNote extends CubeCommand {
     
     Pitch note;
+    byte noiseValue = 0;
     byte currentPlayLength = 0;
 
     public PsgNote(Pitch note) {
         this.note = note;
     }
 
+    public PsgNote(byte noiseValue) {
+        this.noiseValue = noiseValue;
+    }
+
     @Override
     public byte[] produceBinaryOutput() {
-        return new byte[]{(byte)note.getValue()};
+        return new byte[]{(byte)(note!=null?note.getValue():noiseValue)};
     }
 
     @Override
     public String produceAsmOutput() {
-        return "        psgNote "+note;
+        return "        psgNote "+(note!=null?note:("0"+Integer.toHexString(noiseValue&0xFF)+"h"));
     }
 
     @Override
     public boolean equals(CubeCommand cc) {
         if(cc instanceof PsgNote){ 
-            if(((PsgNote)cc).note == this.note
+            if( ( (note!=null && ((PsgNote)cc).note == this.note) || (note==null && ((PsgNote)cc).noiseValue == this.noiseValue) )
                 && (this.currentPlayLength==0
                     || ((PsgNote)cc).currentPlayLength==0
                     || ((PsgNote)cc).currentPlayLength==this.currentPlayLength
@@ -54,6 +59,14 @@ public class PsgNote extends CubeCommand {
         this.note = note;
     }
 
+    public byte getNoiseValue() {
+        return noiseValue;
+    }
+
+    public void setNoiseValue(byte noiseValue) {
+        this.noiseValue = noiseValue;
+    }
+
     @Override
     public int getPlayLength() {
         return 0;
@@ -70,7 +83,7 @@ public class PsgNote extends CubeCommand {
     @Override
     public boolean equals(CubeCommand cc, int currentPlayLength) {
         if(cc instanceof PsgNoteL 
-                && ((PsgNoteL)cc).note == this.note
+                && ((note!=null && ((PsgNoteL)cc).note == this.note) || (note==null && ((PsgNoteL)cc).noiseValue == noiseValue))
                 && (((PsgNoteL)cc).length&0xFF) == currentPlayLength){
             return true;
         }else{

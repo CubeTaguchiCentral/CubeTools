@@ -8,6 +8,7 @@ package com.sega.md.snd.convert.cubetofurnace;
 import com.sega.md.snd.formats.cube.CubeChannel;
 import com.sega.md.snd.formats.cube.CubeCommand;
 import com.sega.md.snd.formats.cube.MusicEntry;
+import com.sega.md.snd.formats.cube.Pitch;
 import com.sega.md.snd.formats.cube.command.ChannelEnd;
 import com.sega.md.snd.formats.cube.command.Inst;
 import com.sega.md.snd.formats.cube.command.MainLoopEnd;
@@ -72,7 +73,8 @@ public class C2FPatternConverter {
     private static final int PSG_INSTRUMENT_OFFSET = 0xA0;
     private static final int SAMPLE_INSTRUMENT_OFFSET = 0xC0;
     
-    private static final int NOTE_OFFSET = 12;
+    private static final int YM_NOTE_OFFSET = 0;
+    private static final int PSG_NOTE_OFFSET = 24;
     
     private Row[] rows;
     
@@ -129,6 +131,7 @@ public class C2FPatternConverter {
     private int newPanning = -1;
     private int currentPanning = -1;
     private int slide = 0;
+    private byte previousPsgNoiseMode = -1;
     private int cursor = 0;
     private int mainLoopStartPosition = 0;
     private boolean mainLoopStarted = false;
@@ -344,8 +347,8 @@ public class C2FPatternConverter {
     private void applyYmNote(CubeCommand cc){
         previousNoteValue = newNoteValue;
         newNoteValue = cc instanceof Note ? 
-                C2FPitch.valueFromCubeValue(((Note)cc).getNote().getValue()-NOTE_OFFSET).getFurnaceValue()
-                : C2FPitch.valueFromCubeValue(((NoteL)cc).getNote().getValue()-NOTE_OFFSET).getFurnaceValue();
+                C2FPitch.valueFromCubeValue(((Note)cc).getNote().getValue()).getFurnaceValue()-YM_NOTE_OFFSET
+                : C2FPitch.valueFromCubeValue(((NoteL)cc).getNote().getValue()).getFurnaceValue()-YM_NOTE_OFFSET;
         if(cc instanceof NoteL){
             playLength = 0xFF & ((NoteL)cc).getLength();
         }
@@ -367,9 +370,43 @@ public class C2FPatternConverter {
     
     private void applyPsgNote(CubeCommand cc){
         previousNoteValue = newNoteValue;
-        newNoteValue = cc instanceof PsgNote ? 
-                C2FPitch.valueFromCubeValue(((PsgNote)cc).getNote().getValue()-NOTE_OFFSET).getFurnaceValue()
-                : C2FPitch.valueFromCubeValue(((PsgNoteL)cc).getNote().getValue()-NOTE_OFFSET).getFurnaceValue();
+        Pitch note = (cc instanceof PsgNote) ? ((PsgNote)cc).getNote() : ((PsgNoteL)cc).getNote();
+        if(note!=null){
+            newNoteValue = cc instanceof PsgNote ? 
+                C2FPitch.valueFromCubeValue(((PsgNote)cc).getNote().getValue()).getFurnaceValue()-PSG_NOTE_OFFSET   
+                : C2FPitch.valueFromCubeValue(((PsgNoteL)cc).getNote().getValue()).getFurnaceValue()-PSG_NOTE_OFFSET;
+        }else{
+            byte noiseValue = cc instanceof PsgNote ? ((PsgNote)cc).getNoiseValue() : ((PsgNoteL)cc).getNoiseValue();
+            byte noiseFrequency = (byte)(noiseValue&0x03);
+            byte useTone2 = (byte)((noiseFrequency==3)?1:0);
+            byte noiseType = (byte)(((noiseValue&0x04)!=0)?1:0);
+            byte psgNoiseMode = (byte)((useTone2<<4)+noiseType);
+            if(psgNoiseMode!=previousPsgNoiseMode){
+                currentRow.getEffectList().add(new Effect(0x20,psgNoiseMode));
+                previousPsgNoiseMode=psgNoiseMode;
+            }
+            if(useTone2==0){
+                switch(noiseFrequency){
+                    case 0:
+                        newNoteValue = C2FPitch.valueFromCubeValue(Pitch.C6.getValue()).getFurnaceValue()-PSG_NOTE_OFFSET;
+                        break;
+                    case 1:
+                        newNoteValue = C2FPitch.valueFromCubeValue(Pitch.Cs6.getValue()).getFurnaceValue()-PSG_NOTE_OFFSET;
+                        break;
+                    case 2:
+                        newNoteValue = C2FPitch.valueFromCubeValue(Pitch.D6.getValue()).getFurnaceValue()-PSG_NOTE_OFFSET;
+                        break;
+                    default:
+                        break;
+                }
+            }else{
+                newNoteValue = 0;
+            }
+            /*
+            System.out.println("C2FPatternConverter.convertCubeChannelToFurnacePattern() "+cursor+" noise note : "
+                    +String.format("%02x", noiseValue)+" -> "+String.format("%02x", noiseFrequency)+" -> "+String.format("%02x", useTone2)+" -> "+String.format("%02x", noiseType)+" -> "+String.format("%02x", psgNoiseMode));
+            */
+        }
         if(cc instanceof PsgNoteL){
             playLength = 0xFF & ((PsgNoteL)cc).getLength();
         }

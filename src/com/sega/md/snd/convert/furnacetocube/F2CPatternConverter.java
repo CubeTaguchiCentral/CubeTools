@@ -73,7 +73,8 @@ public class F2CPatternConverter {
     private static final int PSGINSTR_INDEX_OFFSET = 0xA0;
     private static final int SAMPLE_INDEX_OFFSET = 0xC0;
     
-    private static final int NOTE_OFFSET = 12;
+    private static final int YM_NOTE_OFFSET = 0;
+    private static final int PSG_NOTE_OFFSET = 24;
     
     public static final byte NOTE_OFF = (byte)0xB4;
     public static final byte NOTE_RELEASE = (byte)0xB5;
@@ -169,7 +170,7 @@ public class F2CPatternConverter {
                         if(note!=null && previousNote!=null && previousNote.getValue()!=note.getValue()){
                             /* Managing case of Shining Force II b0/s10 having 0-length note as initial pitch before slide */
                             playLength = 0;
-                            cubeCommands.add(new NoteL(Pitch.valueOf(F2CPitch.valueOf((note.getValue()&0xFF)+NOTE_OFFSET).getCubeValue()), (byte)playLength));
+                            cubeCommands.add(new NoteL(Pitch.valueOf(F2CPitch.valueOf((note.getValue()&0xFF)+YM_NOTE_OFFSET).getCubeValue()), (byte)playLength));
                             currentPlayLength = playLength;
                         }                  
                         int newSlide = applySlide(cubeCommands, nextRowPortamentoValue, currentSlide);
@@ -278,9 +279,9 @@ public class F2CPatternConverter {
                     }
                     int noteValue = note.getValue()&0xFF;
                     if(playLength==currentPlayLength){
-                        cubeCommands.add(new Note(Pitch.valueOf(F2CPitch.valueOf(noteValue+NOTE_OFFSET).getCubeValue())));
+                        cubeCommands.add(new Note(Pitch.valueOf(F2CPitch.valueOf(noteValue+YM_NOTE_OFFSET).getCubeValue())));
                     }else{
-                        cubeCommands.add(new NoteL(Pitch.valueOf(F2CPitch.valueOf(noteValue+NOTE_OFFSET).getCubeValue()), (byte)playLength));
+                        cubeCommands.add(new NoteL(Pitch.valueOf(F2CPitch.valueOf(noteValue+YM_NOTE_OFFSET).getCubeValue()), (byte)playLength));
                         currentPlayLength = playLength;
                     }
                     previousNote = note;
@@ -487,9 +488,9 @@ public class F2CPatternConverter {
                     }                    
                     int noteValue = note.getValue()&0xFF;
                     if(playLength==currentPlayLength){
-                        cubeCommands.add(new PsgNote(Pitch.valueOf(F2CPitch.valueOf(noteValue+NOTE_OFFSET).getCubeValue())));
+                        cubeCommands.add(new PsgNote(Pitch.valueOf(F2CPitch.valueOf(noteValue+PSG_NOTE_OFFSET).getCubeValue())));
                     }else{
-                        cubeCommands.add(new PsgNoteL(Pitch.valueOf(F2CPitch.valueOf(noteValue+NOTE_OFFSET).getCubeValue()), (byte)playLength));
+                        cubeCommands.add(new PsgNoteL(Pitch.valueOf(F2CPitch.valueOf(noteValue+PSG_NOTE_OFFSET).getCubeValue()), (byte)playLength));
                         currentPlayLength = playLength;
                     }
                 }
@@ -622,9 +623,9 @@ public class F2CPatternConverter {
                     }                    
                     int noteValue = note.getValue()&0xFF;
                     if(playLength==currentPlayLength){
-                        cubeCommands.add(new PsgNote(Pitch.valueOf(F2CPitch.valueOf(noteValue+NOTE_OFFSET).getCubeValue())));
+                        cubeCommands.add(new PsgNote((byte)noteValue));
                     }else{
-                        cubeCommands.add(new PsgNoteL(Pitch.valueOf(F2CPitch.valueOf(noteValue+NOTE_OFFSET).getCubeValue()), (byte)playLength));
+                        cubeCommands.add(new PsgNoteL((byte)noteValue, (byte)playLength));
                         currentPlayLength = playLength;
                     }
                 }
